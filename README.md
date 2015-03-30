@@ -13,8 +13,7 @@ Author: Jose Rullan
 Release Date: 03/28/2015  -- Arduino Day 2015!!!
 Release Version: 0.1 beta
 
-License: MIT. Whatever only requires to give credit to original 
-author (i.e. Jose Rullan)
+License: MIT
 
 
 <H2>The main objects</H2>
