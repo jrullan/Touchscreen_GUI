@@ -8,7 +8,6 @@ but useful collection of reusable widgets that can be used
 to create a Graphical User Interface (GUI) for any Arduino 
 project.
 
-Comment out (or delete) lines that are not required for your project.
 Author: Jose Rullan
 Release Date: 03/28/2015  -- Arduino Day 2015!!!
 Release Version: 0.1 beta
