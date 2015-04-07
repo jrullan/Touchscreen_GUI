@@ -1,0 +1,48 @@
+Todo 2015-04-06:
+
+1. Create new class: Indicator
+This class will be the parent class of Dial and Gauge classes. It will 
+refactor these classes operations and attributes to minimize the
+duplicate methods and attributes.
+	Methods:
+		1. getCV   x
+		2. setCV   x
+		3. show    x
+		4. checkTouch  x
+		5. setLimits   x
+		6. setHiLimit  x
+		7. setLowLimit x
+		8. clear	 x
+		9. init		 x
+		10. update x
+	Attributes:
+		1. hiLimit
+		2. lowLimit
+		3. hiLimitColor
+		4. lowLimitColor
+		5. setpoint
+		6. currentValue
+	
+2. Eliminate the isButton method from the Widget class and replace by a public attribute
+isButton.
+
+3. Use the scope resolution operator :: to access the parent method
+and then extend the method in the child class by including additional 
+and specific code.
+	Example:
+	
+	class Indicator{
+		
+		void init(){
+			...
+		}
+	}
+	
+	
+	class Dial: public Indicator{
+	
+		void init(){
+			Indicator::init();
+			...//additional code
+		}
+	}
