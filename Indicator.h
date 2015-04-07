@@ -5,7 +5,7 @@
 //	of the Dial and the Gauge classes by
 //	refactoring common attributes and methods.
 //
-//  Created on:      12-Mar-2015 10:24 PM
+//  Created on:      05-Apr-2015 11:15 PM
 ///////////////////////////////////////////////////////////
 
 #ifndef INDICATOR_H
