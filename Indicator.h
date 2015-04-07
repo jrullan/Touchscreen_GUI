@@ -43,13 +43,13 @@ class Indicator : public Widget{
 		bool isButton();
 		
 		//Attributes
-		unsigned int currentValue,previousValue;
+		unsigned int currentValue;
 		unsigned int hiLimit;
+		int hiLimitColor;		
 		unsigned int lowLimit;
-		int hiLimitColor;
 		int lowLimitColor;
-		unsigned int scaleMin;
 		unsigned int scaleMax;
+		unsigned int scaleMin;
 		unsigned int setpoint;
 		//bool isButton = false;
 
