@@ -1,6 +1,9 @@
 # Touchscreen_GUI
 GUI Library for Seeedstudio Touchscreen Shield v2.0
 
+
+See the wiki: https://github.com/jrullan/Touchscreen_GUI/wiki
+
 This library was developed for Seeedstudio
 TouchShield v2.0, based on their TFTv2 and SeeedTouchscreen
 libraries. This library is intended to provide a minimal
