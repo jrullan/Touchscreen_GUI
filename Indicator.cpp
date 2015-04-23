@@ -26,6 +26,7 @@ void Indicator::init(){
 }
 
 void Indicator::setCV(int cv){
+	previousValue = currentValue;
 	currentValue = constrain(cv,scaleMin,scaleMax);
 	update();
 }
@@ -50,6 +51,30 @@ void Indicator::setLowLimit(unsigned int l, int color){
 	this->lowLimitColor = color;
 }
 
+void Indicator::setNum(int num){
+	clear();
+	char numChar[BUF_SIZE];
+	char chars = 0;
+	
+	// Extract characters representing the powers of ten
+	while(num >= 10)
+	{
+		numChar[chars++] = num%10;
+		num /= 10;
+		//Serial.print("num ");Serial.println(num);
+	}
+	
+	numChar[chars++] = num;
+	
+	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
+	{
+		buf[chars-1-j] = '0'+numChar[j];
+		//Serial.print("buf[i] ");Serial.println(buf[j]);
+	}
+	
+	buf[chars]=0;
+}
+
 //Overriden Methods
 
 bool Indicator::checkTouch(Point* p){
@@ -60,6 +85,7 @@ bool Indicator::isButton(){
 	return false;
 }
 
+/*
 void Indicator::show(){
 	update();
 }
@@ -67,3 +93,4 @@ void Indicator::show(){
 void Indicator::update(){
 	
 }
+*/

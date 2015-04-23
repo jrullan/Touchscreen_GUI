@@ -1,5 +1,7 @@
 Todo 2015-04-06:
 
+
+===DONE===
 1. Create new class: Indicator
 This class will be the parent class of Dial and Gauge classes. It will 
 refactor these classes operations and attributes to minimize the
@@ -16,12 +18,14 @@ duplicate methods and attributes.
 		9. init		 x
 		10. update x
 	Attributes:
-		1. hiLimit
-		2. lowLimit
-		3. hiLimitColor
-		4. lowLimitColor
-		5. setpoint
-		6. currentValue
+		1. hiLimit  x
+		2. lowLimit  x
+		3. hiLimitColor  x
+		4. lowLimitColor  x
+		5. setpoint  x
+		6. currentValue  x
+		7. previousValue x
+======
 	
 2. Eliminate the isButton method from the Widget class and replace by a public attribute
 isButton.
@@ -46,3 +50,7 @@ and specific code.
 			...//additional code
 		}
 	}
+
+4. Refactor: Canvas.pop() to remove the Numkey. If I can find a way to call a Numkey.close() method instead
+it will be better for usability and to prevent popping other controls accidentally.
+This will require a way for the Numkey widget to get a pointer to it's canvas.

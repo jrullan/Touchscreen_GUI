@@ -35,15 +35,16 @@ class Indicator : public Widget{
 		void setHiLimit(unsigned int h, int color);		
 		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
 		void setLowLimit(unsigned int l, int color);
+		void setNum(int num);
 		
 		//Overriden methods
 		bool checkTouch(Point* p);
-		void show();
-		void update();
-		bool isButton();
+		bool isButton();		
+		virtual void update()=0;
+		virtual void show()=0;
 		
 		//Attributes
-		unsigned int currentValue;
+		unsigned int currentValue,previousValue;
 		unsigned int hiLimit;
 		int hiLimitColor;		
 		unsigned int lowLimit;
@@ -53,12 +54,14 @@ class Indicator : public Widget{
 		unsigned int setpoint;
 		//bool isButton = false;
 
+	protected:
+		char* buf;
 		
 	private:
 		//Methods
 		
 		//Attributes
-		char* buf;
+
 };
 
 #endif // INDICATOR_H
