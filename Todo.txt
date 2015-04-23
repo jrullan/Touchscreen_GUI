@@ -26,6 +26,15 @@ duplicate methods and attributes.
 		6. currentValue  x
 		7. previousValue x
 ======
+Notes:
+Previous approach memory statistics:
+Program Storage: 22,222 bytes
+Dynamic memory (Global Variables): 732 bytes
+
+New Approach (inheriting from Indicator):
+Program Storage: 22,200 bytes										22 bytes less  :)
+Dynamic memory (Global Variables): 750 bytes		18 bytes more! :(
+
 	
 2. Eliminate the isButton method from the Widget class and replace by a public attribute
 isButton.

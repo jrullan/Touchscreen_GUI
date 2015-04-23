@@ -18,8 +18,6 @@ NewGauge::~NewGauge(){}
 //Methods
 void NewGauge::init(){
 	Indicator::init();
-	x=0;
-	y=0;
 	borderWidth=2;
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;

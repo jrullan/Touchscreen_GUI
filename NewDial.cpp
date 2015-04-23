@@ -17,9 +17,7 @@ NewDial::~NewDial(){}
 
 //Methods
 void NewDial::init(){
-	x=0;
-	y=0;
-	borderWidth=3;
+	Indicator::init();
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
 	this->currentValue = setpoint;
@@ -38,63 +36,6 @@ void NewDial::clear(){
 			buf[i] = 0;
 	}
 }
-
-
-/*
-unsigned int NewDial::getCV(){
-	return currentValue;
-}
-
-void NewDial::setLimits(unsigned int min, unsigned int sp, unsigned int max){
-	this->scaleMin = min;
-	this->setpoint = sp;
-	this->scaleMax = max;
-}
-
-void NewDial::setHiLimit(unsigned int h, int color){
-	//Serial.print("Hi limit set to : ");Serial.println(h);
-	this->hiLimit = h;
-	this->hiLimitColor = color;
-}
-
-void NewDial::setLowLimit(unsigned int l, int color){
-	this->lowLimit = l;
-	this->lowLimitColor = color;
-}
-
-void NewDial::setCV(int cv){
-	//Serial.print("CV: ");Serial.println(cv);
-	previousValue = currentValue;
-	currentValue = constrain(cv,scaleMin,scaleMax);
-	update();
-}
-
-void NewDial::setNum(int num){
-	clear();
-	char numChar[BUF_SIZE];
-	char chars = 0;
-	
-	// Extract characters representing the powers of ten
-	while(num >= 10)
-	{
-		numChar[chars++] = num%10;
-		num /= 10;
-		//Serial.print("num ");Serial.println(num);
-	}
-	
-	numChar[chars++] = num;
-	
-	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
-	{
-		buf[chars-1-j] = '0'+numChar[j];
-		//Serial.print("buf[i] ");Serial.println(buf[j]);
-	}
-	
-	buf[chars]=0;
-}
-
-*/
-
 
 void NewDial::setSize(int radius){
 	this->w = radius*2;
@@ -218,17 +159,6 @@ int NewDial::getY(int cY, int deg, int radius){
 
 
 //Overriden virtual methods
-/*
-bool NewDial::checkTouch(Point* p){
-	return true;
-}
-
-bool NewDial::isButton(){
-	return false;
-}
-
-*/
-
 void NewDial::show(){
 	// Draw face
 	drawFace();
