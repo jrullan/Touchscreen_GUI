@@ -29,36 +29,13 @@ class NewDial : public Indicator{
 		void init();
 		void clear();
 		void setSize(int radius);
-
-		/*
-		unsigned int getCV();
-		void setCV(int cv);
-		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
-		void setHiLimit(unsigned int h, int color);
-		void setLowLimit(unsigned int l, int color);
-		*/
-
-		//Overriden methods
-		/*
-		bool checkTouch(Point* p);
-		bool isButton();
-		*/
 		void show();
 		void update();
 		
 		//Attributes
-		
-		//unsigned int currentValue,previousValue;
 		unsigned char gap;
-		//unsigned int hiLimit;
-		//unsigned int lowLimit;
-		//int hiLimitColor;
-		//int lowLimitColor;
 		int minDegree,maxDegree;
 		unsigned char radius;
-		//unsigned int scaleMin;//minLimit;
-		//unsigned int scaleMax;//maxLimit;
-		//unsigned int setpoint;
 		unsigned char tickDegree;
 		unsigned char tickSize;
 		bool showVal;
@@ -66,7 +43,6 @@ class NewDial : public Indicator{
 		
 	private:
 		//Methods
-		//void setNum(int num);
 		void drawBorder();
 		void drawFace();
 		void drawNeedle(int cX, int cY, int degree, int radius, int color);
@@ -74,7 +50,6 @@ class NewDial : public Indicator{
 		int getY(int cY, int deg, int radius);
 		
 		//Attributes
-		//char* buf;
 };
 
 #endif // NEWDIAL_H
