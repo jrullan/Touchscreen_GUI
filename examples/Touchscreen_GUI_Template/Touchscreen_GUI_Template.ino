@@ -46,6 +46,8 @@ NewDial dial = NewDial();       // Memory used: (storage/ram: 4,760/64)  11756/3
 Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
 NewGauge gauge = NewGauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
 Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
+Button btnPlus = Button(20,GRAY1,BLACK,WHITE);	//Initialization version for round buttons
+Button btnMinus = Button(20,GRAY1,BLACK,WHITE); //Initialization version for round buttons
 
 // Global variables
 // If you need global variables in your program put them here,
@@ -66,6 +68,16 @@ void setup() {
     button.setEventHandler(&buttonEventHandler);
     button.init();
     button.setDebounce(100);  
+
+    btnPlus.setText("+");
+    btnPlus.setEventHandler(&btnPlusEventHandler);
+    btnPlus.init();
+    btnPlus.setDebounce(100);  
+
+    btnMinus.setText("-");
+    btnMinus.setEventHandler(&btnMinusEventHandler);
+    btnMinus.init();
+    btnMinus.setDebounce(100);  
 
     dial.setSize(50);
     dial.setColors(GRAY2,YELLOW,GRAY1);
@@ -90,6 +102,7 @@ void setup() {
     numkey.setColors(GRAY1,BLACK,WHITE);
     numkey.init();
     numkey.setNumkeyEventHandler(&numkeyEventHandler);
+    numkey.setDebounce(100);
     
   // Add widgets to canvas
   // (Use layout template for coordinates)
@@ -98,6 +111,8 @@ void setup() {
   canvas.add(&dial,55,110);
   canvas.add(&disp,5,0);
   canvas.add(&gauge,110,60);
+  canvas.add(&btnPlus,200,60);
+  canvas.add(&btnMinus,200,120);
   
   //To use the numkey as a pop-up window
   //do not add the numkey to the canvas yet.
@@ -120,6 +135,19 @@ void buttonEventHandler(Button* btn){
   // is added to the canvas, and it is rendered
   // automatically.
   canvas.add(&numkey,195,0);
+}
+
+void btnPlusEventHandler(Button* btn){
+	gauge.setCV(gauge.getCV()+5);
+	dial.setCV(gauge.getCV());
+	disp.setNum(gauge.getCV());
+}
+
+void btnMinusEventHandler(Button* btn){
+	if(gauge.getCV() < 5) return;
+	gauge.setCV(gauge.getCV()-5);
+	dial.setCV(gauge.getCV());
+	disp.setNum(gauge.getCV());
 }
 
 void numkeyEventHandler(Numkey* nk){

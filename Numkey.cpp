@@ -18,6 +18,7 @@ Numkey::~Numkey(){
 }
 
 void Numkey::init(){
+	Button::init();
 	borderWidth = 2;
 	charPos = 0;
 }
