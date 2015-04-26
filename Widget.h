@@ -52,44 +52,13 @@ public:
 	Widget();
 	virtual ~Widget();
 	
-	/*
-	void drawString(char *string,INT16U poX, INT16U poY, INT16U size,INT16U fgcolor);
-	void createChar( INT8U ascii, INT16U poX, INT16U poY,INT16U size, INT16U fgcolor);
-	void fillRect(int x, int y, int w, int h, INT16U color);
-	void drawRect(int x, int y, int w, int h, INT16U color);
-	*/
-	
-	/**
-	 * Background Color
-	 */
 	int bgColor;
-	/**
-	 * Border Color
-	 */
 	int borderColor;
-	/**
-	 * Border width
-	 */
 	int borderWidth;
-	/**
-	 * Foreground Color
-	 */
 	int fgColor;
-	/**
-	 * Height of the widget from the X,Y origin
-	 */
 	int h;
-	/**
-	 * Width of the widget from the X,Y position
-	 */
 	int w;
-	/**
-	 * X position from Top-Left corner of the screen
-	 */
 	int x;
-	/**
-	 * Y position from Top-Left corner of the screen
-	 */
 	int y;
 
 	//template <typename T> void update(T* c);
@@ -104,10 +73,7 @@ public:
 	virtual void update() =0;
 	
 private:
-	/**
-	 * Canvas pointer. Used to extract relevant information about the canvas
-	 */
-	//Canvas c;
+
 	
 };
 #endif // WIDGET_H

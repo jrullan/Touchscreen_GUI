@@ -20,7 +20,7 @@ void Canvas::init(){
 	Tft.TFTinit();
 	//Serial.println("Tft.TFTinit() called");
 	lastMillis = millis();
-	debounceTime = 400;
+	debounceTime = DEBOUNCE;
 }
 
 void Canvas::init(int mode){

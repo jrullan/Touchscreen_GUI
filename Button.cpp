@@ -79,7 +79,7 @@ void Button::drawText(){
 void Button::init(){
 	touched = false;
 	borderWidth = 2;
-	debounceTime = 400;
+	debounceTime = DEBOUNCE;
 	lastMillis = millis();	
 }
 

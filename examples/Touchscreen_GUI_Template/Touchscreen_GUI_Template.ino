@@ -33,18 +33,18 @@
 
 // TouchscreenGUI includes
 #include <Button.h>
-#include <Dial.h>
+#include <NewDial.h>
 #include <Display.h>
-#include <Gauge.h>
+#include <NewGauge.h>
 #include <Numkey.h>
 
 // Create the objects
 //==========================================
 Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Button button = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
-Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
+NewDial dial = NewDial();       // Memory used: (storage/ram: 4,760/64)  11756/355
 Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
-Gauge gauge = Gauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
+NewGauge gauge = NewGauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
 Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
 
 // Global variables
@@ -62,10 +62,10 @@ void setup() {
   //=========================================  
     button.setSize(80,40);
     button.setColors(GRAY1,BLACK,WHITE);
-    button.setText("On");
+    button.setText("Change");
     button.setEventHandler(&buttonEventHandler);
     button.init();
-    button.setDebounce(200);  
+    button.setDebounce(100);  
 
     dial.setSize(50);
     dial.setColors(GRAY2,YELLOW,GRAY1);
@@ -76,7 +76,7 @@ void setup() {
     
     disp.setSize(80,40);
     disp.setColors(BLACK,GREEN,GRAY2);
-    disp.setText("Hello");
+    disp.setText("");
     disp.init();
     
     gauge.setSize(40,100);
@@ -124,8 +124,8 @@ void buttonEventHandler(Button* btn){
 
 void numkeyEventHandler(Numkey* nk){
   disp.setNum(nk->getNum());
-  dial.setHiLimit(nk->getNum(),GREEN);
-  gauge.setHiLimit(nk->getNum(),GREEN);
+  dial.setCV(nk->getNum());
+  gauge.setCV(nk->getNum());
   nk->clear();
   canvas.pop();
 }

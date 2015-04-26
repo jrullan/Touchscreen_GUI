@@ -10,6 +10,7 @@
 #include "Canvas.h"
 
 #define DISPLAY_SIZE 6
+#define DEBOUNCE 200
 
 class Button : public Widget
 {

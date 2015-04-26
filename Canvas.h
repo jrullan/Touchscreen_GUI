@@ -23,6 +23,8 @@
 #include "StackArray.h"
 #include "Widget.h"
 
+#define DEBOUNCE 100
+
 /**
  * This class is a subclass of TFT to represent the Canvas. The canvas is
  * responsible for organizing the widgets and refreshing the contents of the
