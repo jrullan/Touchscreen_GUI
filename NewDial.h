@@ -1,6 +1,12 @@
 ///////////////////////////////////////////////////////////
 //  NewDial.h
 //  Implementation of the Class NewDial
+//	The NewDial class implements the Dial widget but 
+//	inheriting from the Indicator class instead of the Widget. 
+//	The Indicator class is an abstract Widget which serves to
+//  provide common functionality for all indicator widgets
+//	(dial, gauge, etc). 
+//	
 //  Created on:      12-Mar-2015 10:24 PM
 ///////////////////////////////////////////////////////////
 
