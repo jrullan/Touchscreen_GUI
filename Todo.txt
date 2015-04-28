@@ -1,3 +1,7 @@
+Todo 2015-04-28:
+1. Canvas - Refactor the touchWidgets method into the scan method. Don't remember why they are separated.
+
+
 Todo 2015-04-06:
 
 

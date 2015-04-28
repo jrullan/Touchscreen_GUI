@@ -25,18 +25,13 @@
 
 #define DEBOUNCE 0
 
-/**
- * This class is a subclass of TFT to represent the Canvas. The canvas is
- * responsible for organizing the widgets and refreshing the contents of the
- * screen.
- */
+
 class Canvas
 {
 
 public:
 	Canvas();
 	virtual ~Canvas();
-	//Widget *m_Widget;
 
 	void add(Widget* widget, int x, int y);
 	Point getTouchedPoint();
@@ -50,7 +45,6 @@ public:
 	void scan();
 	void setDebounce(unsigned int d);
 	void updateTouch(Point* p);
-	//char getWidgetsQty();
 	void redraw();
 	
 	Point* touchedPoint;
@@ -59,16 +53,9 @@ public:
 private:
 	unsigned long lastMillis;
 	unsigned int debounceTime;
-	/**
-	 * Background Color
-	 */
 	int bgColor;
-	/**
-	 * Collection of widgets in the Canvas
-	 */
-	//std::vector<Widget*> widgets;	
 	StackArray<Widget*> widgets;
-
 };
+
 #endif //CANVAS_H
 #endif // !defined(EA_207A98B8_9829_4028_BF00_047398821F6C__INCLUDED_)
