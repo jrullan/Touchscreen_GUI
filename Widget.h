@@ -37,7 +37,10 @@ extern INT8U simpleFont[][8];
 #include "Point.h"
 #include "SeeedTouchScreen.h"
 //#include "Canvas.h"
-//class Canvas;
+
+// Forward declaration of class Canvas
+class Canvas;
+
 /**
  * A widget represents a button, a field box, a drop-down list, a list, etc. Any
  * GUI element that will be part of the GUI. There are input widgets and display
@@ -63,6 +66,7 @@ public:
 
 	//template <typename T> void update(T* c);
 	void hide();
+	void setCanvas(Canvas* c);
 	void setColors(int bgColor,int fgColor, int borderColor);
 	void setSize(int width, int height);
 	
@@ -72,8 +76,8 @@ public:
 	virtual void show() =0;
 	virtual void update() =0;
 	
-private:
-
+protected:
+	Canvas* myCanvas;
 	
 };
 #endif // WIDGET_H

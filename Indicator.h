@@ -20,6 +20,7 @@
 #define BUF_SIZE 8
 
 #include "Canvas.h"
+#include "Widget.h"
 
 class Indicator : public Widget{
 	public:

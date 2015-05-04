@@ -6,10 +6,15 @@
 ///////////////////////////////////////////////////////////
 
 #include "Canvas.h"
-#include "Button.h"
+//#include "Button.h"
+
+// Forward declaration of class Widget to solve issue with mutual 
+// includes
+#include "Widget.h"
 
 
 Canvas::Canvas(){
+	//this->init();
 }
 
 Canvas::~Canvas(){
@@ -20,6 +25,7 @@ Canvas::~Canvas(){
 // Last millis is used for the Canvas-wide debounce of touch events.
 void Canvas::init(){
 	Tft.TFTinit();
+	//ts = TouchScreen(XP, YP, XM, YM);
 	lastMillis = millis();
 	debounceTime = DEBOUNCE;
 }
@@ -36,6 +42,7 @@ void Canvas::init(int mode){
 // position of the canvas. The value passed is the address of the widget object.
 void Canvas::add(Widget* widget, int x, int y){
 	widgets.push(widget);
+	widget->setCanvas(this);
 	widget->x = x;
 	widget->y = y;
 	widget->show();
@@ -64,22 +71,24 @@ void Canvas::portrait(){
 // This method is deprecated
 /**
  * Removes a widget from the widgets array and destroys it.
- */
+
 void Canvas::remove(Widget* widget){
-	/*
-	for(int i=widgets.size(); i!=0; i--){
+	
+	for(int i=widgets.count(); i!=0; i--){
 		if(widgets[i] == widget){
-			widgets.erase(widgets.begin()+i);
+			//widgets.erase(widgets.begin()+i);
 		}
 	}
-	*/
+	
 }
-
+ */
+ 
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
   Widget* widget = widgets.pop();
   Tft.fillRectangle(widget->x,widget->y,widget->w,widget->h,this->bgColor);
   redraw();
+  //delete widget;
 	return widget;
 }
 

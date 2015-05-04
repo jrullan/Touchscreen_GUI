@@ -114,11 +114,16 @@ void setup() {
   canvas.add(&btnPlus,200,60);
   canvas.add(&btnMinus,200,120);
   
-  //To use the numkey as a pop-up window
-  //do not add the numkey to the canvas yet.
-  //Do it when some button is pressed. See
-  //buttonEventHandler below for an example.
-  //canvas.add(&numkey,198,50);
+  //Numkey Notes:
+  //The numkey widget is meant to be a pop-up
+  //kind of widget. So it is added to the canvas 
+  //when it is required. Upon pressing the = sign
+  //it will call it's event handler and after that
+  //it will automatically be removed from the canvas.
+  //To prevent this behavior then set
+  //	numkey.isPopUp = false; (By default = true)
+	//See buttonEventHandler below for an example.
+
 }
 
 
@@ -151,9 +156,10 @@ void btnMinusEventHandler(Button* btn){
 }
 
 void numkeyEventHandler(Numkey* nk){
-  disp.setNum(nk->getNum());
-  dial.setCV(nk->getNum());
-  gauge.setCV(nk->getNum());
-  nk->clear();
-  canvas.pop();
+	if(nk->getTextSize()>0){
+		disp.setNum(nk->getNum());
+		dial.setCV(nk->getNum());
+		gauge.setCV(nk->getNum());
+		nk->clear();
+  }
 }

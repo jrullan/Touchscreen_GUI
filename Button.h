@@ -8,6 +8,7 @@
 #define EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_
 
 #include "Canvas.h"
+#include "Widget.h"
 
 #define DISPLAY_SIZE 6
 #define DEBOUNCE 200

@@ -14,7 +14,7 @@ Numkey::Numkey(unsigned int width, unsigned int height, int backgroundColor, int
 }
 
 Numkey::~Numkey(){
-
+	if(text) free(text);
 }
 
 void Numkey::init(){
@@ -261,6 +261,11 @@ bool Numkey::checkTouch(Point* p){
 							append(".");
 						}else if(num==12){
 							eventHandler(this);		// <<<------ Event handler called when = signed is pressed
+							if(isPopUp){
+								if(myCanvas->widgets.peek() == this){ // check if top widget is this numkey
+									myCanvas->pop();						// Remove this numkey from the canvas...
+								}
+							}
 						}else{
 							appendNum(char(num));//setNum(num);
 						}

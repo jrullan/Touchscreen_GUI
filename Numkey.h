@@ -47,6 +47,8 @@ public:
 	virtual void show();
 	virtual void update();
 	
+	bool isPopUp = true;	//Forces autoremove from Canvas when = is pressed.
+	
 private:
 	//String text;
 	char* text; 

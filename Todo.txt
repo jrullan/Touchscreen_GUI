@@ -1,6 +1,41 @@
 Todo 2015-04-28:
 1. Canvas - Refactor the touchWidgets method into the scan method. Don't remember why they are separated.
 
+===DONE===
+2. Fix the mutual includes issue between Canvas and Widget to include a pointer to the Canvas inside every Widget
+so that a Widget may call a Canvas method. For example the Numkey might call Canvas to remove it if it finished.
+	1- Forward declarations fixed the includes issues
+	2- Calling eventhandler() in Numkey and then calling canvas->pop() afterwards crashes the program and it restarts from
+		the beginning.
+			i) Ahhjaaaa! - If I delete the numkey object, no one is recreating the object since initialization code only occurs
+				once in the lifetime of the program in the setup() routine.
+			ii) AHHHHJAAAA!!!! - It was crashing because I forgot to set the Widget's myCanvas variable in the canvas.add method.
+
+===DONE===
+3. Widgets collection - Reimplement based on a linked list or array list to be able to remove any item, to support
+	the Numkey pop-up functionality.
+	1- Need to update the following methods
+		Canvas::add()
+		Canvas::remove()
+		Canvas::pop()
+		Canvas::touchWidgets()
+		Canvas::redraw()
+		
+		Note: Decided to stay with StackArray because the linked list is innefficient when accesing the last element pushed in
+		according to the documentation from IvanSeigel LinkedList library. Since most of the time, the pop-up element will be 
+		added at the end during runtime, it will be the last element. The stack pops up the last element first, so it is 
+		much more efficient finding the last element. 
+		Maybe I just need to find a way to handle several pop-up's or to force pop() before pushing any new "pop-up-able" 
+		element during runtime. Hmmm...
+		
+		Another note: Since the widgets are declared and defined during setup(), they shouldn't really be deleted during runtime.
+		This simplifies handling them.
+		
+===DONE===		
+4. Numkey - Add a bool variable to set the mode of operation:
+	Mode Pop-Up: call myCanvas.remove() to remove it from the collection
+	Mode Normal: don't call myCanvas.remove()
+	
 
 Todo 2015-04-06:
 

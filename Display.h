@@ -16,6 +16,7 @@
 #define DISPLAY_SIZE 8
 
 #include "Canvas.h"
+#include "Widget.h"
 
 class Display : public Widget
 {

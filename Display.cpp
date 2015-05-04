@@ -14,7 +14,7 @@ Display::Display(unsigned int width, unsigned int height, int backgroundColor, i
 }
 
 Display::~Display(){
-
+	if(text) free(text);
 }
 
 void Display::init(){
