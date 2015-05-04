@@ -11,35 +11,9 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#define SEEEDUINO
-#include <Arduino.h>
-#else
-#include <WProgram.h>
-#endif
-#include <avr/pgmspace.h>
-#include <TFTv2.h>
-
-
-#ifndef INT8U
-#define INT8U unsigned char
-#endif
-
-#ifndef INT16U
-#define INT16U unsigned short
-#endif
-
-extern INT8U simpleFont[][8];
-//extern TFT Tft;
-
-//#include "./SeeedTouchScreen/SeeedTouchScreen.h"
-//#include <SeeedTouchScreen.h>
-#include "Point.h"
-#include "SeeedTouchScreen.h"
-//#include "Canvas.h"
-
-// Forward declaration of class Canvas
+// Forward declarations
 class Canvas;
+class Point;
 
 /**
  * A widget represents a button, a field box, a drop-down list, a list, etc. Any

@@ -19,7 +19,7 @@
 #endif
 #include <avr/pgmspace.h>
 
-// Required includes: StackArray for container
+// Required includes:
 #include "StackArray.h"
 #include "Point.h"
 #include "SeeedTouchScreen.h"
@@ -27,7 +27,6 @@
 
 #define DEBOUNCE 0
 
-//#include "Widget.h"
 // Forward declaration of class Widget to solve issue with mutual 
 // includes
 class Widget;
