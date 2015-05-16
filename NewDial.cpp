@@ -62,9 +62,9 @@ void NewDial::drawFace(){
 	// Draw border  
   drawBorder();
 
-	int X1,Y1,X2,Y2;  
+	int X1,Y1,X2,Y2;
+	  
   // Draw ticks
-  
   if(showTicks){
 	  for(int i=maxDegree; i<=minDegree; i+=tickDegree)
 	  {
@@ -90,6 +90,7 @@ void NewDial::drawFace(){
     Tft.drawLine(X1,Y1,X2,Y2,borderColor);	
 	}
 	
+	// Draw Setpoint line
   if(setpoint){
   	int i = map(setpoint,scaleMin,scaleMax,minDegree,maxDegree);
     X1 = getX(x,i,radius-tickSize);
@@ -98,7 +99,8 @@ void NewDial::drawFace(){
     Y2 = getY(y,i,radius-borderWidth);    
     Tft.drawLine(X1,Y1,X2,Y2,fgColor);
 	} 
-	  
+	
+	// Draw High limit line
   if(hiLimit < scaleMax){
   	int i = map(hiLimit,scaleMin,scaleMax,minDegree,maxDegree);
     X1 = getX(x,i,radius-tickSize);
@@ -108,6 +110,7 @@ void NewDial::drawFace(){
     Tft.drawLine(X1,Y1,X2,Y2,hiLimitColor);
 	}  	
 	
+	// Draw Low Limit line
   if(lowLimit > scaleMin){
   	int i = map(lowLimit,scaleMin,scaleMax,minDegree,maxDegree);
     X1 = getX(x,i,radius-tickSize);
@@ -116,6 +119,14 @@ void NewDial::drawFace(){
     Y2 = getY(y,i,radius-borderWidth);    
     Tft.drawLine(X1,Y1,X2,Y2,lowLimitColor);
 	}  	  
+	
+	// Draw min value
+	setNum(scaleMin);
+  Tft.drawString(buf,x-radius+FONT_SPACE,y+radius-FONT_Y,1,borderColor);
+
+	// Draw max value
+	setNum(scaleMax);
+	Tft.drawString(buf,getX(x,maxDegree,radius-tickSize),y+radius-FONT_Y,1,borderColor);
 
 }
 
