@@ -109,7 +109,7 @@ void setup() {
 
     // Password protect the application
     numkey.setNumkeyEventHandler(&numkeyPassEventHandler);
-    numkey.isPopUp = false;    
+    numkey.autoremove = false;    
     canvas.add(&numkey,100,0);
     while(passLock){
       canvas.scan();
@@ -178,7 +178,7 @@ void numkeyPassEventHandler(Numkey* nk){
   if(nk->getTextSize()>0){
     if(nk->getNum() == 123){ //Correct Password
       passLock = false;
-      nk->isPopUp = true;    //Set to autoremove
+      nk->autoremove = true;    //Set to autoremove
     }
     nk->clear();
   }
