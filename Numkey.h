@@ -37,7 +37,6 @@ public:
 	
 	void setNum(int num);
 	void setNumkeyEventHandler(void (*functionPointer)(Numkey*));
-  //void setText(char* _text);
   void deleteChar();
   void clear();
   
@@ -47,14 +46,12 @@ public:
 	virtual void show();
 	virtual void update();
 	
-	bool isPopUp = true;	//Forces autoremove from Canvas when = is pressed.
+	bool autoremove; //Forces autoremove from Canvas when = is pressed.
 	
 private:
 	//String text;
 	char* text; 
-	//char text[DISPLAY_SIZE];
 	char charPos;
-	//byte maxSize = 6;
 	byte getTextLength(char* c);
 	void (*eventHandler)(Numkey*);
 

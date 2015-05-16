@@ -19,9 +19,8 @@
  Foundation, Inc.,51 Franklin St,Fifth Floor, Boston, MA 02110-1301 USA
 
 */
-
-#include <TFTv2.h>
 #include <SPI.h>
+#include "TFTv2.h"
 #define FONT_SPACE 6
 #define FONT_X 8
 #define FONT_Y 8

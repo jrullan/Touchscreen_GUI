@@ -21,6 +21,7 @@ void Numkey::init(){
 	Button::init();
 	borderWidth = 2;
 	charPos = 0;
+	autoremove = true;
 }
 
 void Numkey::drawFrame(){
@@ -261,7 +262,7 @@ bool Numkey::checkTouch(Point* p){
 							append(".");
 						}else if(num==12){
 							eventHandler(this);		// <<<------ Event handler called when = signed is pressed
-							if(isPopUp){
+							if(autoremove){
 								if(myCanvas->widgets.peek() == this){ // check if top widget is this numkey
 									myCanvas->pop();						// Remove this numkey from the canvas...
 								}

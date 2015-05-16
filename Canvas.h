@@ -27,9 +27,13 @@
 
 #define DEBOUNCE 0
 
+
 // Forward declaration of class Widget to solve issue with mutual 
 // includes
 class Widget;
+
+// Declaration of static TouchScreen object
+static TouchScreen ts = TouchScreen(XP,YP,XM,YM);
 
 class Canvas
 {
@@ -42,7 +46,6 @@ public:
 	Point getTouchedPoint();
 	void init();
 	void init(int mode);
-	//void remove(Widget* widget);
 	void portrait();
 	Widget* pop();
 	void landscape();
@@ -53,7 +56,6 @@ public:
 	void redraw();
 	
 	Point* touchedPoint;
-	TouchScreen ts = TouchScreen(XP, YP, XM, YM);
 	StackArray<Widget*> widgets;
 
 private:

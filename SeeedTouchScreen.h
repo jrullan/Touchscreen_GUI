@@ -11,6 +11,9 @@
 #define __PRESURE 10
 
 class TouchScreen {
+	
+	  //TouchScreen(unsigned char xp, unsigned char yp, unsigned char xm, unsigned char ym);
+    
     private:
     unsigned char _yp, _ym, _xm, _xp;
 

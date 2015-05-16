@@ -14,7 +14,7 @@
 
 
 Canvas::Canvas(){
-	//this->init();
+
 }
 
 Canvas::~Canvas(){
@@ -25,7 +25,6 @@ Canvas::~Canvas(){
 // Last millis is used for the Canvas-wide debounce of touch events.
 void Canvas::init(){
 	Tft.TFTinit();
-	//ts = TouchScreen(XP, YP, XM, YM);
 	lastMillis = millis();
 	debounceTime = DEBOUNCE;
 }
