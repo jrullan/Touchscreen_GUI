@@ -42,9 +42,9 @@
 //==========================================
 Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Button button = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
-NewDial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
+Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
 Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
-NewGauge gauge = Gauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
+Gauge gauge = Gauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
 Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
 Button btnPlus = Button(20,GRAY1,BLACK,WHITE);	//Initialization version for round buttons
 Button btnMinus = Button(20,GRAY1,BLACK,WHITE); //Initialization version for round buttons
