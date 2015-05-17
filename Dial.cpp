@@ -17,9 +17,7 @@ Dial::~Dial(){}
 
 //Methods
 void Dial::init(){
-	x=0;
-	y=0;
-	borderWidth=3;
+	Indicator::init();
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
 	this->currentValue = setpoint;
@@ -37,58 +35,6 @@ void Dial::clear(){
 	{
 			buf[i] = 0;
 	}
-}
-
-unsigned int Dial::getCV(){
-	return currentValue;
-}
-
-void Dial::setLimits(unsigned int min, unsigned int sp, unsigned int max){
-	this->scaleMin = min;
-	this->setpoint = sp;
-	this->scaleMax = max;
-}
-
-void Dial::setHiLimit(unsigned int h, int color){
-	//Serial.print("Hi limit set to : ");Serial.println(h);
-	this->hiLimit = h;
-	this->hiLimitColor = color;
-}
-
-void Dial::setLowLimit(unsigned int l, int color){
-	this->lowLimit = l;
-	this->lowLimitColor = color;
-}
-
-void Dial::setCV(int cv){
-	//Serial.print("CV: ");Serial.println(cv);
-	previousValue = currentValue;
-	currentValue = constrain(cv,scaleMin,scaleMax);
-	update();
-}
-
-void Dial::setNum(int num){
-	clear();
-	char numChar[BUF_SIZE];
-	char chars = 0;
-	
-	// Extract characters representing the powers of ten
-	while(num >= 10)
-	{
-		numChar[chars++] = num%10;
-		num /= 10;
-		//Serial.print("num ");Serial.println(num);
-	}
-	
-	numChar[chars++] = num;
-	
-	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
-	{
-		buf[chars-1-j] = '0'+numChar[j];
-		//Serial.print("buf[i] ");Serial.println(buf[j]);
-	}
-	
-	buf[chars]=0;
 }
 
 void Dial::setSize(int radius){
@@ -116,9 +62,9 @@ void Dial::drawFace(){
 	// Draw border  
   drawBorder();
 
-	int X1,Y1,X2,Y2;  
+	int X1,Y1,X2,Y2;
+	  
   // Draw ticks
-  
   if(showTicks){
 	  for(int i=maxDegree; i<=minDegree; i+=tickDegree)
 	  {
@@ -144,6 +90,7 @@ void Dial::drawFace(){
     Tft.drawLine(X1,Y1,X2,Y2,borderColor);	
 	}
 	
+	// Draw Setpoint line
   if(setpoint){
   	int i = map(setpoint,scaleMin,scaleMax,minDegree,maxDegree);
     X1 = getX(x,i,radius-tickSize);
@@ -152,7 +99,8 @@ void Dial::drawFace(){
     Y2 = getY(y,i,radius-borderWidth);    
     Tft.drawLine(X1,Y1,X2,Y2,fgColor);
 	} 
-	  
+	
+	// Draw High limit line
   if(hiLimit < scaleMax){
   	int i = map(hiLimit,scaleMin,scaleMax,minDegree,maxDegree);
     X1 = getX(x,i,radius-tickSize);
@@ -162,6 +110,7 @@ void Dial::drawFace(){
     Tft.drawLine(X1,Y1,X2,Y2,hiLimitColor);
 	}  	
 	
+	// Draw Low Limit line
   if(lowLimit > scaleMin){
   	int i = map(lowLimit,scaleMin,scaleMax,minDegree,maxDegree);
     X1 = getX(x,i,radius-tickSize);
@@ -170,6 +119,14 @@ void Dial::drawFace(){
     Y2 = getY(y,i,radius-borderWidth);    
     Tft.drawLine(X1,Y1,X2,Y2,lowLimitColor);
 	}  	  
+	
+	// Draw min value
+	setNum(scaleMin);
+  Tft.drawString(buf,x-radius+FONT_SPACE,y+radius-FONT_Y,1,borderColor);
+
+	// Draw max value
+	setNum(scaleMax);
+	Tft.drawString(buf,getX(x,maxDegree,radius-tickSize),y+radius-FONT_Y,1,borderColor);
 
 }
 
@@ -213,74 +170,10 @@ int Dial::getY(int cY, int deg, int radius){
 
 
 //Overriden virtual methods
-
-bool Dial::checkTouch(Point* p){
-	return true;
-}
-
-bool Dial::isButton(){
-	return false;
-}
-
 void Dial::show(){
 	// Draw face
 	drawFace();
 	update();
-
-/*
-	//Serial.print("Show");Serial.println();
-	unsigned int val;
-  int xPos = x;	
-  int width = w;
-  byte yPos = y;
-  byte height = h;
-	
-	//Draw SCALE
-	int textWidth = 4 * FONT_SPACE;
-	
-	setNum(scaleMax);
-	Tft.drawString(buf,x,y,1,borderColor);
-	Tft.drawHorizontalLine(x+textWidth,y+borderWidth,10,borderColor);
-	
-	setNum(setpoint);
-	val = map(setpoint,scaleMin,scaleMax,h-borderWidth,borderWidth);
-	Tft.drawString(buf,x+FONT_SPACE,y+(val)-(FONT_Y>>1)-borderWidth,1,fgColor);
-	Tft.drawHorizontalLine(x+textWidth,y+(val)-borderWidth,10,fgColor);
-		
-	setNum(scaleMin);
-	Tft.drawString(buf,x+2*FONT_SPACE,y+h-(FONT_Y),1,borderColor);
-	Tft.drawHorizontalLine(x+textWidth,y+(h)-borderWidth,10,borderColor);
-
-  if(hiLimit != scaleMax && currentValue > lowLimit){
-	  val = map(hiLimit,scaleMin,scaleMax,h-borderWidth,borderWidth);
-		Tft.drawHorizontalLine(x+textWidth,y+val,10,hiLimitColor);
-  	//Tft.drawHorizontalLine(x+borderWidth+textWidth,y+val,w-(2*borderWidth),hiLimitColor);
-  }
-  if(lowLimit != scaleMin && currentValue < hiLimit){
-	  val = map(lowLimit,scaleMin,scaleMax,h-borderWidth,borderWidth);
-		Tft.drawHorizontalLine(x+textWidth,y+val,10,lowLimitColor);
-  	//Tft.drawHorizontalLine(x+borderWidth+textWidth,y+val,w-(2*borderWidth),lowLimitColor);
-  }
-  
-  
-  //Draw the Vertical Bar
-	textWidth += 10;
-	xPos = x + textWidth;
-  //--border
-  for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
-    width--;
-    height--;
-  }
-  val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
-	//--background fill
-	Tft.fillRectangle(x+borderWidth+textWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
-	//--bar fill
-	int color=fgColor;
-	if(currentValue >= this->hiLimit) color = hiLimitColor;
-	if(currentValue <= this->lowLimit) color = lowLimitColor;
-  Tft.fillRectangle(x+borderWidth+textWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);
-  */
 }
 
 void Dial::update(){

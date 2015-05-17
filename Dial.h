@@ -1,6 +1,12 @@
 ///////////////////////////////////////////////////////////
 //  Dial.h
 //  Implementation of the Class Dial
+//	The Dial class implements the Dial widget 
+//	inheriting from the Indicator class instead of the Widget. 
+//	The Indicator class is an abstract Widget which serves to
+//  provide common functionality for all indicator widgets
+//	(dial, gauge, etc). 
+//	
 //  Created on:      12-Mar-2015 10:24 PM
 ///////////////////////////////////////////////////////////
 
@@ -16,9 +22,9 @@
 #define BUF_SIZE 8
 
 #include "Canvas.h"
-#include "Widget.h"
+#include "Indicator.h"
 
-class Dial : public Widget{
+class Dial : public Indicator{
 	public:
 		//Constructor
 		Dial();
@@ -28,31 +34,14 @@ class Dial : public Widget{
 		//Methods
 		void init();
 		void clear();
-		unsigned int getCV();
-		void setCV(int cv);
-		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
-		void setHiLimit(unsigned int h, int color);
-		void setLowLimit(unsigned int l, int color);
 		void setSize(int radius);
-		
-		//Overriden methods
-		bool checkTouch(Point* p);
-		bool isButton();
 		void show();
 		void update();
 		
 		//Attributes
-		unsigned int currentValue,previousValue;
 		unsigned char gap;
-		unsigned int hiLimit;
-		unsigned int lowLimit;
-		int hiLimitColor;
-		int lowLimitColor;
 		int minDegree,maxDegree;
 		unsigned char radius;
-		unsigned int scaleMin;//minLimit;
-		unsigned int scaleMax;//maxLimit;
-		unsigned int setpoint;
 		unsigned char tickDegree;
 		unsigned char tickSize;
 		bool showVal;
@@ -60,7 +49,6 @@ class Dial : public Widget{
 		
 	private:
 		//Methods
-		void setNum(int num);
 		void drawBorder();
 		void drawFace();
 		void drawNeedle(int cX, int cY, int degree, int radius, int color);
@@ -68,7 +56,6 @@ class Dial : public Widget{
 		int getY(int cY, int deg, int radius);
 		
 		//Attributes
-		char* buf;
 };
 
 #endif // DIAL_H

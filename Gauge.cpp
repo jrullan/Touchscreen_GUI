@@ -17,8 +17,7 @@ Gauge::~Gauge(){}
 
 //Methods
 void Gauge::init(){
-	x=0;
-	y=0;
+	Indicator::init();
 	borderWidth=2;
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
@@ -34,7 +33,6 @@ void Gauge::clear(){
 
 void Gauge::drawLimits(){
 }
-
 
 void Gauge::drawScale(){
 	unsigned int val;
@@ -69,71 +67,11 @@ void Gauge::drawScale(){
 	//drawLimits();
 }
 
-unsigned int Gauge::getCV(){
-	return currentValue;
-}
-
-void Gauge::setLimits(unsigned int min, unsigned int sp, unsigned int max){
-	this->scaleMin = min;
-	this->setpoint = sp;
-	this->scaleMax = max;
-}
-
-void Gauge::setHiLimit(unsigned int h, int color){
-	//Serial.print("Hi limit set to : ");Serial.println(h);
-	this->hiLimit = h;
-	this->hiLimitColor = color;
-}
-
-void Gauge::setLowLimit(unsigned int l, int color){
-	this->lowLimit = l;
-	this->lowLimitColor = color;
-}
-
-void Gauge::setCV(int cv){
-	currentValue = constrain(cv,scaleMin,scaleMax);
-	update();
-}
-
-void Gauge::setNum(int num){
-	clear();
-	char numChar[BUF_SIZE];
-	char chars = 0;
-	
-	// Extract characters representing the powers of ten
-	while(num >= 10)
-	{
-		numChar[chars++] = num%10;
-		num /= 10;
-		//Serial.print("num ");Serial.println(num);
-	}
-	
-	numChar[chars++] = num;
-	
-	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
-	{
-		buf[chars-1-j] = '0'+numChar[j];
-		//Serial.print("buf[i] ");Serial.println(buf[j]);
-	}
-	
-	buf[chars]=0;
-}
-
-
 //Overriden virtual methods
-
-bool Gauge::checkTouch(Point* p){
-	return true;
-}
-
-bool Gauge::isButton(){
-	return false;
-}
-
 void Gauge::show(){
 	//Serial.print("Show");Serial.println();
-  drawScale();
-  update();
+  this->drawScale();
+  this->update();
 }
 
 void Gauge::update(){

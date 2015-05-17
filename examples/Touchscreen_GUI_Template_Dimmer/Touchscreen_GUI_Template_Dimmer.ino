@@ -33,18 +33,18 @@
 
 // TouchscreenGUI includes
 #include <Button.h>
-#include <NewDial.h>
+#include <Dial.h>
 #include <Display.h>
-#include <NewGauge.h>
+#include <Gauge.h>
 #include <Numkey.h>
 
 // Create the objects
 //==========================================
 Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Button button = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
-NewDial dial = NewDial();       // Memory used: (storage/ram: 4,760/64)  11756/355
+NewDial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
 Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
-NewGauge gauge = NewGauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
+NewGauge gauge = Gauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
 Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
 Button btnPlus = Button(20,GRAY1,BLACK,WHITE);	//Initialization version for round buttons
 Button btnMinus = Button(20,GRAY1,BLACK,WHITE); //Initialization version for round buttons
