@@ -75,6 +75,7 @@ void Gauge::show(){
 }
 
 void Gauge::update(){
+	if(previousValue == currentValue) return;
 	int textWidth = 4 * FONT_SPACE + 10;
 	int xPos = x + textWidth;
 	int width = w;
