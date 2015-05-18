@@ -1,3 +1,6 @@
+Todo 2015-05-17:
+1. Check if Numkey can use same setEventHandler instead of setNumkeyEventHandler
+
 Todo 2015-04-28:
 1. Canvas - Refactor the touchWidgets method into the scan method. Don't remember why they are separated.
 

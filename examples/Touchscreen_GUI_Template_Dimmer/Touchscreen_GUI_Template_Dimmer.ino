@@ -66,56 +66,52 @@ void setup() {
 
   //Configure the widgets
   //=========================================  
-    button.setSize(80,40);
-    button.setColors(GRAY1,BLACK,WHITE);
-    button.setText("Change");
-    button.setEventHandler(&buttonEventHandler);
-    button.init();
-    button.setDebounce(100);  
+	button.setSize(80,40);
+	button.setColors(GRAY1,BLACK,WHITE);
+	button.setText("Change");
+	button.setEventHandler(&buttonEventHandler);
+	button.init();
+	button.setDebounce(100);  
 
-    btnPlus.setText("+");
-    btnPlus.setEventHandler(&btnPlusEventHandler);
-    btnPlus.init();
-    btnPlus.setDebounce(10);  
+	btnPlus.setText("+");
+	btnPlus.setEventHandler(&btnPlusEventHandler);
+	btnPlus.init();
+	btnPlus.setDebounce(10);  
 
-    btnMinus.setText("-");
-    btnMinus.setEventHandler(&btnMinusEventHandler);
-    btnMinus.init();
-    btnMinus.setDebounce(10);  
+	btnMinus.setText("-");
+	btnMinus.setEventHandler(&btnMinusEventHandler);
+	btnMinus.init();
+	btnMinus.setDebounce(10);  
 
-    dial.setSize(50);
-    dial.setColors(GRAY2,YELLOW,GRAY1);
-    dial.setLimits(0,50,100);
-    dial.init();
-    dial.setHiLimit(75,GREEN);
-    dial.setLowLimit(25,RED);
-    
-    disp.setSize(80,40);
-    disp.setColors(BLACK,GREEN,GRAY2);
-    disp.setText("");
-    disp.init();
-    
-    gauge.setSize(40,100);
-    gauge.setColors(GRAY2,YELLOW,WHITE);
-    gauge.setLimits(0,50,100);
-    gauge.init();
-    gauge.setHiLimit(75,GREEN);
-    gauge.setLowLimit(25,RED);
-    
-    numkey.setSize(120,180);
-    numkey.setColors(GRAY1,BLACK,WHITE);
-    numkey.init();
-    numkey.setDebounce(200);
+	dial.setSize(50);
+	dial.setColors(GRAY2,YELLOW,GRAY1);
+	dial.setLimits(0,50,100);
+	dial.init();
+	dial.setHiLimit(75,GREEN);
+	dial.setLowLimit(25,RED);
+	
+	disp.setSize(80,40);
+	disp.setColors(BLACK,GREEN,GRAY2);
+	disp.setText("");
+	disp.init();
+	
+	gauge.setSize(40,100);
+	gauge.setColors(GRAY2,YELLOW,WHITE);
+	gauge.setLimits(0,50,100);
+	gauge.init();
+	gauge.setHiLimit(75,GREEN);
+	gauge.setLowLimit(25,RED);
+	
+	numkey.setSize(120,180);
+	numkey.setColors(GRAY1,BLACK,WHITE);
+	numkey.init();
+	numkey.setDebounce(200);
 
-    // Password protect the application
-    numkey.setNumkeyEventHandler(&numkeyPassEventHandler);
-    numkey.autoremove = false;    
-    canvas.add(&numkey,100,0);
-    while(passLock){
-      canvas.scan();
-    }
-    // If password is Ok, redirect numkey event  handler    
-    numkey.setNumkeyEventHandler(&numkeyEventHandler);
+	// Password protect the application
+	checkPassword();
+	
+	// If password is Ok, redirect numkey event  handler    
+	numkey.setNumkeyEventHandler(&numkeyEventHandler);
     
   // Add widgets to canvas
   // (Use layout template for coordinates)
@@ -138,6 +134,20 @@ void setup() {
 void loop() {
   canvas.scan();
   pwmRightPin(dial.getCV()*2.5); //PWM range is 0-255
+}
+
+
+// This function sets the numkey to act as a 
+// password lock keypad. The event is set to check for the correct
+// password and autoremove is turned Off so the numkey
+// stays on the screen after each wrong password entry.
+void checkPassword(){
+  numkey.setNumkeyEventHandler(&numkeyPassEventHandler);
+  numkey.autoremove = false;    
+  canvas.add(&numkey,100,0);
+  while(passLock){
+    canvas.scan();
+  }  
 }
 
 

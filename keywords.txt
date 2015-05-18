@@ -1,0 +1,30 @@
+// Classes
+Canvas	KEYWORD1
+Button	KEYWORD1
+Dial	KEYWORD1
+Gauge	KEYWORD1
+Numkey	KEYWORD1
+Display	KEYWORD1
+
+// Methods
+scan	KEYWORD2
+init	KEYWORD2
+clear	KEYWORD2
+add	KEYWORD2
+setSize	KEYWORD2
+setColors	KEYWORD2
+setText	KEYWORD2
+setEventHandler	KEYWORD2
+setDebounce	KEYWORD2
+setLimits	KEYWORD2
+setHiLimit	KEYWORD2
+setLowLimit	KEYWORD2
+setCV	KEYWORD2
+setNum	KEYWORD2
+getCV	KEYWORD2
+getNum	KEYWORD2
+autoremove	KEYWORD2
+setNumkeyEventHandler	KEYWORD2
+getTextSize	KEYWORD2
+
+
