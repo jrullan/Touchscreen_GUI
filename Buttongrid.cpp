@@ -4,10 +4,25 @@ Buttongrid::Buttongrid(){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 }
 
-Buttongrid::Buttongrid(unsigned char gridSize){
+Buttongrid::Buttongrid(unsigned char size){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
-	columns = gridSize;
-	rows = gridSize;
+	columns = size;
+	rows = size;
+	gridSize = size;
+	
+	//Allocate memory for labels
+	if(gridSize!=NULL){
+		if(labels = (unsigned char**)malloc(gridSize * sizeof(unsigned char*))){
+			for(int i=0; i<gridSize; i++)
+			{
+				if(labels[i] = (unsigned char*)malloc(gridSize)){
+					memset(labels[i],0,gridSize);
+				}
+			}
+		}
+	}
+	
+	this->init();
 }
 
 Buttongrid::Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
@@ -27,7 +42,15 @@ void Buttongrid::init(){
 	Button::init();
 	borderWidth = 2;
 	charPos = 0;
-	//autoremove = true;
+	
+	// Initialize labels with position ID
+	for(byte r=1; r<=gridSize; r++)
+	{
+		for(byte c=1; c<=gridSize; c++)
+		{
+			labels[r-1][c-1] = c+gridSize*(r-1);
+		}
+	}
 }
 
 void Buttongrid::drawGrid(){
@@ -69,42 +92,42 @@ void Buttongrid::drawGrid(){
   }
 
   //-- draw contents  
+
   byte colIndex=0;
   byte rowIndex=0;
+  /*
   for(byte number=1; number<=(columns*rows); number++)
   {
-	  setNum(number);
-	/*
-	byte digits = Tft.Get_Digits(number);
-	
-	//Calculates initial position of text inside the btnWidth
-	//considering the number's width and font size.
-	xPos = btnWidth/2 - (digits*FONT_X*font_size)/2;//btnWidth/(2) - 6*digits -2;
-	yPos = btnHeight/(2) - 8;
-	
-	//Calculates position of the text considering
-	//its column or row and the btnWidth.
-  	xPos = x+(colIndex*btnWidth)+xPos+borderWidth;
-  	yPos = y+yPos+(rowIndex*btnHeight);
-  	
-  	//Draw contents function
-  	Tft.drawNumber(number,xPos,yPos,font_size,BLACK);	
-  	
-  	colIndex++;
-  	if(number%columns == 0 ){
-  		rowIndex++;
-  		colIndex = 0;
-  	}*/
+	  //setNum(number);
+  }*/
+  //Serial.println("Setting Labels=======");
+  for(byte i=1; i<=rows; i++)
+  {
+	  for(byte j=1; j<=columns; j++)
+	  {
+		  byte num = j+rows*(i-1);
+		  
+		  //Serial.print("num: ");
+		  //Serial.print(num);
+		  //Serial.print(" label: ");
+		  //Serial.print(labels[i-1][j-1]);
+		  //Serial.print(",");
+		  
+		  setLabel(num,labels[i-1][j-1]);
+	  }
+	  //Serial.println();
   }
+  
 }
 
 void Buttongrid::setEventHandler(void (*functionPointer)(Buttongrid *, unsigned char)){
 	eventHandler = functionPointer;
 }
 
-void Buttongrid::configure(byte c, byte r, byte f){
-	columns = c;
-	rows = r;
+void Buttongrid::configure(byte size, byte f){
+	columns = size;
+	rows = size;
+	gridSize = size;
 	font_size = f;
 	show();
 }
@@ -146,11 +169,33 @@ void Buttongrid::setNum(unsigned char num){
   	Tft.drawNumber(num,xPos,yPos,font_size,BLACK);
 }
 
+void Buttongrid::setLabel(unsigned char num, unsigned char label){
+	int boundX1, boundX2, boundY1, boundY2;
+	int btnWidth = w/columns;
+	int btnHeight = h/rows;
+	unsigned char colIndex = getColumn(num)-1;
+	unsigned char rowIndex = getRow(num)-1;
+	unsigned char digits = Tft.Get_Digits(label);
+	
+	//Calculates initial position of text inside the btnWidth
+	//considering the number's width and font size.
+	int xPos = btnWidth/2 - (digits*FONT_X*font_size)/2;//btnWidth/(2) - 6*digits -2;
+	int yPos = btnHeight/(2) - 8;
+	
+	//Calculates position of the text considering
+	//its column or row and the btnWidth.
+  	xPos = x+(colIndex*btnWidth)+xPos+borderWidth;
+  	yPos = y+yPos+(rowIndex*btnHeight);
+  	
+  	//Draw contents function
+  	Tft.drawNumber(label,xPos,yPos,font_size,BLACK);	
+}
+
 void Buttongrid::clear(){
 	drawGrid();
 	lastPressed = 0;
 }
-
+ 
 //Overriden virtual methods
 
 bool Buttongrid::checkTouch(Point* p){
@@ -178,13 +223,15 @@ bool Buttongrid::checkTouch(Point* p){
 						if(lastPressed != 0){
 							int lastX = x + (btnWidth)*(getColumn(lastPressed)-1) + borderWidth;
 							int lastY = y+(btnHeight)*(getRow(lastPressed)-1)+borderWidth;
-							Tft.fillRectangle(lastX,lastY,btnWidth-borderWidth-1,btnHeight-borderWidth-1,bgColor);
-							setNum(lastPressed);
+							//Tft.fillRectangle(lastX,lastY,btnWidth-borderWidth-1,btnHeight-borderWidth-1,bgColor);
+							setLabel(lastPressed,labels[getRow(lastPressed)-1][getColumn(lastPressed)-1]);
 						}
 						
 						// Highlight currently pressed button
 						Tft.fillRectangle(boundX1,boundY1,btnWidth-borderWidth-1,btnHeight-borderWidth-1,YELLOW);
-						setNum(num);
+						//setNum(num);
+						setLabel(num,labels[r-1][c-1]);
+						
 						
 						// Call event handler with pressed button id
 						eventHandler(this,num);

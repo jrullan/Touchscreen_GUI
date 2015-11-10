@@ -41,8 +41,9 @@ public:
 	// This is a modified declaration for setting the event handler function
 	// See comment below in the eventHandler declaration.
 	void setEventHandler(void (*functionPointer)(Buttongrid*, unsigned char));
-	void configure(byte cols, byte rows, byte fontSize);
+	void configure(byte gridSize, byte fontSize);
 	void setNum(unsigned char num);
+	void setLabel(unsigned char num, unsigned char label);
 	void clear();
     unsigned char getColumn(unsigned char number);
     unsigned char getRow(unsigned char number);
@@ -55,11 +56,13 @@ public:
 	virtual void update();
 	
 	// Attributes
-	bool autoremove; //Forces autoremove from Canvas when = is pressed.
-	byte columns = 2;
-	byte rows = 2;
+	//bool autoremove; //Forces autoremove from Canvas when = is pressed.
+	byte gridSize = 2;
+	byte columns;
+	byte rows;
 	byte font_size = 2;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
+	unsigned char** labels = 0;
 	
 private:
 	//String text;
