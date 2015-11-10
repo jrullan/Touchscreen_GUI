@@ -500,13 +500,17 @@ INT8U TFT::drawNumber(long long_num,INT16U poX, INT16U poY,INT16U size,INT16U fg
     INT8U char_buffer[10] = "";
     INT8U i = 0;
     INT8U f = 0;
+    
+    // Added modified MAX to consider Landscape maximum
+    INT16U MAX = MAX_X;
+    if(layoutMode == TFT_LANDSCAPE) MAX = MAX_Y;
 
     if (long_num < 0)
     {
         f=1;
         drawChar('-',poX, poY, size, fgcolor);
         long_num = -long_num;
-        if(poX < MAX_X)
+        if(poX < MAX)
         {
             poX += FONT_SPACE*size;                                     /* Move cursor right            */
         }
@@ -516,7 +520,7 @@ INT8U TFT::drawNumber(long long_num,INT16U poX, INT16U poY,INT16U size,INT16U fg
         f=1;
         drawChar('0',poX, poY, size, fgcolor);
         return f;
-        if(poX < MAX_X)
+        if(poX < MAX)
         {
             poX += FONT_SPACE*size;                                     /* Move cursor right            */
         }
@@ -533,7 +537,13 @@ INT8U TFT::drawNumber(long long_num,INT16U poX, INT16U poY,INT16U size,INT16U fg
     for(; i > 0; i--)
     {
         drawChar('0'+ char_buffer[i - 1],poX, poY, size, fgcolor);
-        if(poX < MAX_X)
+        
+        //Serial.print(" ");
+        //Serial.print(poX);
+        //Serial.print(" of ");
+        //Serial.print(MAX);
+        
+        if(poX < MAX)
         {
             poX+=FONT_SPACE*size;                                       /* Move cursor right            */
         }

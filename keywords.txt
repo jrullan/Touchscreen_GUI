@@ -4,12 +4,14 @@ Button	KEYWORD1
 Dial	KEYWORD1
 Gauge	KEYWORD1
 Numkey	KEYWORD1
+Buttongrid	KEYWORD1
 Display	KEYWORD1
 
 // Methods
 scan	KEYWORD2
 init	KEYWORD2
 clear	KEYWORD2
+configure 	KEYWORD2
 add	KEYWORD2
 setSize	KEYWORD2
 setColors	KEYWORD2
@@ -25,6 +27,7 @@ getCV	KEYWORD2
 getNum	KEYWORD2
 autoremove	KEYWORD2
 setNumkeyEventHandler	KEYWORD2
+setButtongridEventHandler	KEYWORD2
 getTextSize	KEYWORD2
 
 

@@ -47,8 +47,6 @@ public:
 	//Overriden methods
 	bool checkTouch(Point* p);
 	bool isButton();
-	
-	
 	bool touched;
 	unsigned long lastMillis;
 	
