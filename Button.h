@@ -48,6 +48,7 @@ public:
 	bool checkTouch(Point* p);
 	bool isButton();
 	bool touched;
+	bool block = false;
 	unsigned long lastMillis;
 	
 protected:	

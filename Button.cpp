@@ -193,7 +193,9 @@ bool Button::checkTouch(Point* p){
 			//Serial.print("Button ");Serial.print(text);Serial.println(" pressed");
 		}
 	}
-	return true;
+	// if block is true return false, so canvas will not continue to 
+	// process the event.
+	return !block; 
 }
 
 /*

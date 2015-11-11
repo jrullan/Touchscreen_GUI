@@ -205,36 +205,36 @@ public:
 	void setCol(INT16U StartCol,INT16U EndCol);
 	void setPage(INT16U StartPage,INT16U EndPage);
 	void setXY(INT16U poX, INT16U poY);
-  void setPixel(INT16U poX, INT16U poY,INT16U color);
+	void setPixel(INT16U poX, INT16U poY,INT16U color);
 	
 	void fillScreen(INT16U XL,INT16U XR,INT16U YU,INT16U YD,INT16U color);
 	void fillScreen(void);
 	INT8U readID(void);
 	
 	void drawChar(INT8U ascii,INT16U poX, INT16U poY,INT16U size, INT16U fgcolor);
-  void drawString(char *string,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
-  void drawString(const char *string,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor)
-  {
+	void drawString(char *string,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
+	void drawString(const char *string,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor)
+	{
       drawString((char*)string, poX, poY, size, fgcolor);
-  }
+	}
     
 	void fillRectangle(INT16U poX, INT16U poY, INT16U length, INT16U width, INT16U color);
 	
 	void drawLine(INT16U x0,INT16U y0,INT16U x1,INT16U y1,INT16U color);
-  void drawVerticalLine(INT16U poX, INT16U poY,INT16U length,INT16U color);
-  void drawHorizontalLine(INT16U poX, INT16U poY,INT16U length,INT16U color);
-  void drawRectangle(INT16U poX, INT16U poY, INT16U length,INT16U width,INT16U color);
+	void drawVerticalLine(INT16U poX, INT16U poY,INT16U length,INT16U color);
+	void drawHorizontalLine(INT16U poX, INT16U poY,INT16U length,INT16U color);
+	void drawRectangle(INT16U poX, INT16U poY, INT16U length,INT16U width,INT16U color);
 	
 	void drawCircle(int poX, int poY, int r,INT16U color);
-  void fillCircle(int poX, int poY, int r,INT16U color);
+	void fillCircle(int poX, int poY, int r,INT16U color);
 	
 	void drawTriangle(int poX1, int poY1, int poX2, int poY2, int poX3, int poY3, INT16U color);
-  INT8U drawNumber(long long_num,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
-  INT8U drawFloat(float floatNumber,INT8U decimal,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
-  INT8U drawFloat(float floatNumber,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
+	INT8U drawNumber(long long_num,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
+	INT8U drawFloat(float floatNumber,INT8U decimal,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
+	INT8U drawFloat(float floatNumber,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
     
   //Added Landscape convenience functions:
-  INT8U layoutMode;
+	INT8U layoutMode;
   /*
   void setLayoutMode(INT8U mode);
   
