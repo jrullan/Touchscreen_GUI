@@ -44,7 +44,7 @@ void Canvas::add(Widget* widget, int x, int y){
 	widget->setCanvas(this);
 	widget->x = x;
 	widget->y = y;
-	widget->show();
+	if(widget->visible) widget->show();
 }
 
 // This method calculates the x,y coordinates of the touched point
@@ -114,7 +114,8 @@ void Canvas::setDebounce(unsigned int d){
 void Canvas::touchWidgets(Point* p){
 	byte cnt = widgets.count();
 	for(int i=1; i<=cnt; i++){
-		if(widgets[cnt-i]->isButton()){
+		// Only send touch event to visible Buttons
+		if(widgets[cnt-i]->isButton() && widgets[cnt-i]->visible){
 			if(!widgets[cnt-i]->checkTouch(p)) break;  //Break if widget blocks event after handling it.
 		}
 	}
@@ -128,6 +129,6 @@ void Canvas::updateTouch(Point* p){
 // This method calls every widget's show method to force them to redraw.
 void Canvas::redraw(){
 	for(int i=0; i<widgets.count(); i++){
-		widgets[i]->show();
+		if(widgets[i]->visible) widgets[i]->show();
 	}
 }

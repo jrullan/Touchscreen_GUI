@@ -37,6 +37,7 @@ public:
 	int w;
 	int x;
 	int y;
+	bool visible = true;
 
 	//template <typename T> void update(T* c);
 	void hide();
