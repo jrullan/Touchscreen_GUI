@@ -42,6 +42,7 @@ Display rowDisplay = Display(); // Memory used: (storage/ram: 484/37)    12,240/
 Display colDisplay = Display();
 Display numberDisplay = Display();
 Button btnClear = Button();
+Button btnWon = Button();
 Buttongrid buttonGrid = Buttongrid(5); // Memory used: (storage/ram: 2,370/59)  16,080/503
 
 // Global variables
@@ -52,6 +53,23 @@ unsigned char I[5];
 unsigned char N[5];
 unsigned char G[5];
 unsigned char O[5];
+
+unsigned char diagonal[][5] = {
+  {1,0,0,0,0},
+  {0,1,0,0,0},
+  {0,0,1,0,0},
+  {0,0,0,1,0},
+  {0,0,0,0,1}
+};
+
+unsigned char result[][5] = {
+  {0,0,0,0,0},
+  {0,0,0,0,0},
+  {0,0,1,0,0},
+  {0,0,0,0,0},
+  {0,0,0,0,0}
+};
+
 
 void setup() {
   Serial.begin(9600);
@@ -80,6 +98,15 @@ void setup() {
     btnClear.setEventHandler(&buttonEventHandler);
     btnClear.init();
     btnClear.setDebounce(100);
+
+    btnWon.setSize(200,100);
+    btnWon.setColors(GREEN,BLACK,GRAY2);
+    btnWon.setText("WON");
+    btnWon.setEventHandler(&wonEventHandler);
+    btnWon.init();
+    btnWon.setDebounce(100);
+    btnWon.visible = false;
+    btnWon.block = true;
     
     buttonGrid.setSize(220 ,240);
     buttonGrid.setColors(GRAY1,BLACK,WHITE);
@@ -91,13 +118,13 @@ void setup() {
   // (Use layout template for coordinates)
   //=========================================
 
-  //setBingoLabels();
+  setBingoLabels();
   canvas.add(&rowDisplay,5,0);
   canvas.add(&colDisplay,5,50);  
   canvas.add(&numberDisplay,5,100);  
   canvas.add(&btnClear,5,150);
   canvas.add(&buttonGrid,100,0);
-  
+  canvas.add(&btnWon,110,70);
   delay(1000);
 }
 
@@ -127,20 +154,67 @@ void buttonGridEventHandler(Buttongrid* bg, INT8U val){
   colDisplay.setNum(bg->getColumn(val));
   numberDisplay.setNum(val);
 
-  //bg->configure(gridSize,gridSize,bg->font_size);
+  boolean won = false;
+  signed char v = checkHorizontal(val);
+  if(v >= 0){
+    Serial.println("=============");
+    Serial.print("WON: Horizontal Made on Row ");
+    Serial.println(v);
+    won = true;
+  }  
+  v = checkVertical(val);
+  if(v >= 0){
+    Serial.println("=============");
+    Serial.print("WON: Vertical Made on Row ");
+    Serial.println(v);
+    won=true;
+  }    
+  if(checkDownDiagonal(val)){
+    Serial.println("=============");
+    Serial.println("WON: Down Diagonal Made!!!");
+    won=true;
+  }
+  if(checkUpDiagonal(val)){
+    Serial.println("=============");
+    Serial.println("WON: Up Diagonal Made!!!");
+    won=true;
+  }
+  showResult();
 
+  if(won){ 
+    displayWon();
+  }
 }
+
 
 void buttonEventHandler(Button* btn){
   Serial.println("Clear pressed");
-  //setBingoLabels();
-
+  setBingoLabels();
   buttonGrid.clear();
   rowDisplay.clear();
   colDisplay.clear();
-  
   numberDisplay.clear();
+  clearResult();
+  showResult();
 }
+
+
+void displayWon(){
+    //canvas.pop();
+    btnWon.visible = true;
+    buttonGrid.visible = false;
+    clearResult();
+    canvas.redraw();
+}
+
+
+void wonEventHandler(Button* btn){
+  setBingoLabels();
+  btn->visible = false;
+  buttonGrid.visible = true;
+  canvas.redraw();
+}
+
 
 // Generates elements amount of unique random numbers
 // in the range from-to and store them in array
@@ -173,6 +247,7 @@ void getRandom(unsigned char elements, unsigned char from, unsigned char to, uns
   Serial.println();
 }
 
+
 // Generates bingo labels and store then in 
 // displayGrid array
 void setBingoLabels(){
@@ -197,3 +272,76 @@ void setBingoLabels(){
   }
 }
 
+
+void setPosition(unsigned char num){
+  result[buttonGrid.getRow(num)-1][buttonGrid.getColumn(num)-1] = 1;
+}
+
+
+boolean checkDownDiagonal(unsigned char num){
+  Serial.print("Num value: ");Serial.println(num);
+  setPosition(num);  
+  if((result[0][0]==1)&&(result[1][1]==1)&&(result[3][3]==1)&&(result[4][4]==1)){
+    return true;
+  }
+  return false;
+}
+
+
+boolean checkUpDiagonal(unsigned char num){
+  Serial.print("Num value: ");Serial.println(num);
+  setPosition(num);
+  if((result[4][0]==1)&&(result[3][1]==1)&&(result[1][3]==1)&&(result[0][4]==1)){
+    return true;
+  }
+  return false;
+}
+
+
+signed char checkHorizontal(unsigned char num){
+  setPosition(num);
+  for(byte r=0; r<5; r++)
+  {
+      if((result[r][0]==1)&&(result[r][1]==1)&&(result[r][2]==1)&&(result[r][3]==1)&&(result[r][4]==1)){
+        return r;
+      }
+  }
+  return -1;
+}
+
+
+signed char checkVertical(unsigned char num){
+  setPosition(num);
+  for(byte c=0; c<5; c++)
+  {
+      if((result[0][c]==1)&&(result[1][c]==1)&&(result[2][c]==1)&&(result[3][c]==1)&&(result[4][c]==1)){
+        return c;
+      }
+  }
+  return -1;
+}
+
+
+void showResult(){
+  Serial.println("Results");
+  for(byte r=0; r<5; r++)
+  {
+    for(byte c=0; c<5; c++)
+    {
+      Serial.print(result[r][c]);
+      Serial.print(",");
+    }
+    Serial.println();
+  }
+}
+
+
+void clearResult(){
+  for(byte r=0; r<5; r++)
+  {
+    for(byte c=0; c<5; c++)
+    {
+      result[r][c] = (r==2 && c==2) ? 1 : 0;
+    }
+  }  
+}
