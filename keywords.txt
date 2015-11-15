@@ -6,6 +6,7 @@ Gauge	KEYWORD1
 Numkey	KEYWORD1
 Buttongrid	KEYWORD1
 Display	KEYWORD1
+Popup	KEYWORD1
 
 // Methods
 scan	KEYWORD2
@@ -29,5 +30,5 @@ autoremove	KEYWORD2
 setNumkeyEventHandler	KEYWORD2
 setButtongridEventHandler	KEYWORD2
 getTextSize	KEYWORD2
-
+draw	KEYWORD2
 

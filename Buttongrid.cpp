@@ -258,22 +258,4 @@ void Buttongrid::show(){
 
 void Buttongrid::update(){
 	return;
-  /*	
-  int btnWidth = w / columns;
-  int btnHeight = h / rows;
-  //Tft.fillRectangle(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
-  //Count characters to center on the button - Nice trick from the Tft2 library
-  if(*text){
-    char* chars = text;
-    int size = 0;
-    while(*chars){
-      *chars++;
-      size++;
-    }
-    //Calculate centered position of the text
-    int stringX = x+(btnWidth*2-size*FONT_SPACE*borderWidth)/2;
-    int stringY = y+(btnHeight-FONT_Y*borderWidth)/2;
-    //Tft.drawString(text,stringX,stringY,borderWidth,GREEN);
-  }	
-  */
 }

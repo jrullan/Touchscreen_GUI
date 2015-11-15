@@ -11,6 +11,17 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+#ifndef FONT_SPACE
+#define FONT_SPACE 6
+#endif
+#ifndef FONT_X
+#define FONT_X 8
+#endif
+#ifndef FONT_Y
+#define FONT_Y 8
+#endif
+#define DISPLAY_SIZE 6
+
 // Forward declarations
 class Canvas;
 class Point;
@@ -38,6 +49,7 @@ public:
 	int x;
 	int y;
 	bool visible = true;
+	unsigned char fontSize = 2;
 
 	//template <typename T> void update(T* c);
 	void hide();
