@@ -7,18 +7,17 @@ Popup::Popup(){
 Popup::Popup(unsigned char type, char* message){
 	unsigned char text_length = getTextLength(message);
 	if(text = (char *)malloc(text_length+1)) memset(text,0,text_length+1); //Had to add one more, to avoid some bug
-	
-	if(this->getTextSize() > text_length){
-		this->setText("Err");
-	}else{
-		this->setText(message);
-	}
+	if(btn1Text = (char *)malloc(DISPLAY_SIZE+1)) memset(btn1Text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(btn2Text = (char *)malloc(DISPLAY_SIZE+1)) memset(btn2Text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	
 	this->init();
 }
 
 Popup::~Popup(){
 	if(text) free(text);
+	if(btn1Text) free(btn1Text);
+	if(btn2Text) free(btn2Text);
+	
 }
 
 void Popup::init(){
@@ -52,38 +51,28 @@ void Popup::draw(){
 		btnPoX = x+w/2-(getBtnWidth()*2+10)/2;
 		//Button 1
 		drawFrame(btnPoX, btnPoY, getBtnWidth(), getBtnHeight());
-		Tft.fillRectangle(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GRAY1);
-		drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),"Ok");
+		Tft.fillRectangle(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GREEN);
+		drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),btn1Text);
 			
 		//Button 2
 		drawFrame(btnPoX+getBtnWidth()+10,btnPoY,getBtnWidth(),getBtnHeight());
-		Tft.fillRectangle(btnPoX+borderWidth+getBtnWidth()+10,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GRAY1);
-		drawText(btnPoX+getBtnWidth()+10,btnPoY,getBtnWidth(),getBtnHeight(),"Cancel");
+		Tft.fillRectangle(btnPoX+borderWidth+getBtnWidth()+10,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0xf888); //Redish
+		drawText(btnPoX+getBtnWidth()+10,btnPoY,getBtnWidth(),getBtnHeight(),btn2Text);
 	
 	}else{ // One button
 		btnPoX = x+w/2-(getBtnWidth())/2;		
 		//Button 1
 		drawFrame(btnPoX,btnPoY,getBtnWidth(),getBtnHeight());
-		Tft.fillRectangle(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GRAY1);
+		Tft.fillRectangle(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0x551f); // 0x001f Bluish
 			// Btn1 Message
-			drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),"Ok");
+			drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),btn1Text);
 	}
 	
 
 }
 
 void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
-	//Calculate centered position of the text
-	//int textSize = (getTextLength(t)*FONT_SPACE*fontSize);
-	//int offset = (wW - textSize)/2;
-	/*Serial.print("pX,wW: ");
-	Serial.print(pX);Serial.print(",");Serial.print(wW);
-	Serial.print(" Text: ");
-	Serial.print(t);
-	Serial.print(" size,textSize,offset: ");
-	Serial.print(getTextLength(t));Serial.print(",");Serial.print(textSize);
-	Serial.print(",");Serial.println(offset);
-	*/
+	if(!t) return;
 	int stringX = pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
 	int stringY = pY+hH/2-(FONT_Y*fontSize)/2;
 	Tft.drawString(t,stringX,stringY,fontSize,fgColor);
@@ -101,8 +90,17 @@ void Popup::setEventHandler(void (*functionPointer)(Popup*,unsigned char)){
 	eventHandler = functionPointer;
 } 
 
-void Popup::setText(char* _text){
+void Popup::setText(char* _text, char* _btn1, char* _btn2){
   text = _text;
+  btn1Text = _btn1;
+  btn2Text = _btn2;
+}
+
+void Popup::processEvent(unsigned char btnNo){
+	//process event
+	this->visible = false; // Make widget not visible
+	Tft.fillScreen(); // Erase screen (Black out)
+	eventHandler(this,btnNo); // Call event handler	& pass button number	
 }
 
 // Overrides
@@ -117,12 +115,40 @@ bool Popup::checkTouch(Point* p){
 	if(lastMillis + debounceTime < millis()){ 
 		//Serial.println("Popup received touch event");
 		if((p->x > x+borderWidth) && (p->x < x+w-borderWidth) && (p->y > y+borderWidth) && (p->y < y+h-borderWidth)){
-			Serial.println("Popup Touched!");
-			this->visible = false; // Make widget not visible
-			Tft.fillScreen(); // Erase screen (Black out)
-			eventHandler(this,1); // Call event handler
-
-			return false; // Return false to stop event from bubbling up.
+						
+			// Check which button receives the event
+			if(type==POPUP_TWO_BUTTONS){
+				//Button 1 event
+				boundX1 = x+(w-(getBtnWidth()*2+10))/2;
+				boundX2 = boundX1 + getBtnWidth();
+				boundY1 = y+h-getBtnHeight()-10;
+				boundY2 = boundY1 + h;
+				if((p->x > boundX1)&&(p->x < boundX2) && (p->y > boundY1)&&(p->y < boundY2)){
+					processEvent(1);
+					return false;
+				}
+				
+				//Button 2 event
+				boundX1 = boundX1 + getBtnWidth() + 10;//x+(w-(getBtnWidth()*2+10))/2;
+				boundX2 = boundX1 + getBtnWidth();
+				//boundY1 = y+h-getBtnHeight()-10;
+				//boundY2 = boundY1 + h;
+				if((p->x > boundX1)&&(p->x < boundX2) && (p->y > boundY1)&&(p->y < boundY2)){
+					processEvent(2);
+					return false;
+				}				
+			
+			}else{
+				boundX1 = x+(w-getBtnWidth())/2;
+				boundX2 = boundX1 + w;
+				boundY1 = y+h-getBtnHeight()-10;
+				boundY2 = boundY1 + h;
+				if((p->x > boundX1)&&(p->x < boundX2) && (p->y > boundY1)&&(p->y < boundY2)){
+					processEvent(1);
+					return false;
+				}
+			}
+			//return false; // Return false to stop event from bubbling up.
 		}// -- if touch within widget area
 		touched = !touched;
 		lastMillis = millis();		

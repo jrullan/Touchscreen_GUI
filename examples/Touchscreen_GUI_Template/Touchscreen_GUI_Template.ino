@@ -57,7 +57,8 @@ Button btnMinus = Button(20,GRAY1,BLACK,WHITE); //Initialization version for rou
 
 void setup() {
   Serial.begin(9600);
-  
+  pinMode(7,OUTPUT);
+  digitalWrite(7,HIGH);
   canvas.init(TFT_LANDSCAPE);
 
   //Configure the widgets

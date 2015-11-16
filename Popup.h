@@ -30,8 +30,9 @@ public:
 	void drawFrame(int pX, int pY, int wW, int hH);
 	void drawText(int pX, int pY, int wW, int hH, char* t);
 	void draw();
+	void processEvent(unsigned char btnNo);
 	void setEventHandler(void (*functionPointer)(Popup*, unsigned char));
-	void setText(char* _text);
+	void setText(char* _text, char* _btn1, char* _btn2 = NULL);
 	
 	int getBtnHeight();
 	int getBtnWidth();
@@ -51,6 +52,8 @@ private:
 	
 	//Attributes
 	char* text; // Holds the message
+	char* btn1Text;
+	char* btn2Text;
 	void (*eventHandler)(Popup*, unsigned char); // Sets address of external function to call upon checkTouch
 };
 
