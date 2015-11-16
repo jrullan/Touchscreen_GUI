@@ -20,11 +20,11 @@ public:
 	//Button();
 	/*Button(unsigned int _x, unsigned int _y, unsigned int _w, unsigned int _h,
     int bgColor, int textColor, int borderColor);*/
-  Button();
+	Button();
 	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	Button(unsigned int radius, int backgroundColor, int textColor, int borderColor);
 	virtual ~Button();
-
+	
 	void setEventHandler(void (*functionPointer)(Button *));
 	virtual void show();
 	virtual void update();
@@ -46,7 +46,6 @@ public:
   
 	//Overriden methods
 	bool checkTouch(Point* p);
-	bool isButton();
 	bool touched;
 	bool block = false;
 	unsigned long lastMillis;

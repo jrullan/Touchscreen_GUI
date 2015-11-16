@@ -42,7 +42,6 @@ public:
   
 	//Overriden methods
 	virtual bool checkTouch(Point* p);
-	virtual bool isButton();
 	virtual void show();
 	virtual void update();
 	

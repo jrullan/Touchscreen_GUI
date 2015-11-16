@@ -247,9 +247,6 @@ bool Buttongrid::checkTouch(Point* p){
 	return true; // <--- False means block further event checking.
 }
 
-bool Buttongrid::isButton(){
-	return true;
-}
 
 void Buttongrid::show(){
 	drawGrid();

@@ -49,6 +49,7 @@ public:
 	int x;
 	int y;
 	bool visible = true;
+	bool isButton = false;
 	unsigned char fontSize = 2;
 
 	//template <typename T> void update(T* c);
@@ -59,7 +60,7 @@ public:
 	
 	//Pure Virtual methods
 	virtual bool checkTouch(Point* p)=0;
-	virtual bool isButton() =0;
+	//virtual bool isButton() =0;
 	virtual void show() =0;
 	virtual void update() =0;
 	

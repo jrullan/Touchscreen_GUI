@@ -12,9 +12,9 @@ void setup() {
 
   popup.setSize(220,100);
   popup.setColors(GRAY1,BLACK,WHITE);
-  popup.setText("Do you like it?","Yes","No");
+  popup.setText("Do you like it?");
   popup.setEventHandler(&popupEventHandler);
-  popup.type = 1;
+  popup.type = POPUP_YES_NO;
   popup.init();
   popup.visible = true;
   //popup.setDebounce(100);
@@ -29,17 +29,23 @@ void loop() {
 void popupEventHandler(Popup* pup, unsigned char val){
   Serial.print("Button ");Serial.print(val);
   Serial.println(" pressed");
-  if(pup->type){
-    pup->type = 0;
+
+  if(pup->type == POPUP_YES_NO){
+    
     if(val==1){
-      pup->setText("Nothing to do","Ok");
+      pup->setText("Nothing to do");
     }else{
-      pup->setText("Should've said Yes","Ok");
-    }
-  }else{
-    pup->type = 1;
-    pup->setText("Do you like it?","Yes","No");
+      pup->setText("Should've said Yes");
+    } 
+    pup->type = POPUP_OK;
+    
+  }else if(pup->type == POPUP_OK){
+    
+    pup->setText("Do you like it?");
+    pup->type = POPUP_YES_NO;
+    
   }
+  
   pup->visible = true;
   canvas.redraw();
 }

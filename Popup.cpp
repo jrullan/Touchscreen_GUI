@@ -21,6 +21,7 @@ Popup::~Popup(){
 }
 
 void Popup::init(){
+	Button::init();
 	this->borderWidth = 2;
 	this->fontSize = 2;
 	this->visible = false; // This widget should not be visible by default
@@ -34,9 +35,21 @@ void Popup::drawFrame(int pX, int pY, int wW, int hH){
 }
 
 void Popup::draw(){
-	if(!this->visible)return;
 	int btnPoX, btnPoY;
 	
+	if(type==POPUP_OK){
+		btn1Text = "Ok";
+		btn2Text = 0;
+	}
+	if(type==POPUP_YES_NO){
+		btn1Text = "Yes";
+		btn2Text = "No";
+	}
+	if(type==POPUP_OK_CANCEL){
+		btn1Text = "Ok";
+		btn2Text = "Cancel";
+	}
+		
 	// Draw enclosing frame and background
 	drawFrame(x,y,w,h);
 	Tft.fillRectangle(x+borderWidth,y+borderWidth,w-borderWidth*2,h-borderWidth*2,bgColor);
@@ -47,7 +60,7 @@ void Popup::draw(){
 	
 	// Draw buttons (One or Two based on type)
 	btnPoY = y+h-getBtnHeight()-10;
-	if(type == POPUP_TWO_BUTTONS){ // Two buttons
+	if(type > POPUP_OK){ // Two buttons
 		btnPoX = x+w/2-(getBtnWidth()*2+10)/2;
 		//Button 1
 		drawFrame(btnPoX, btnPoY, getBtnWidth(), getBtnHeight());
@@ -90,11 +103,17 @@ void Popup::setEventHandler(void (*functionPointer)(Popup*,unsigned char)){
 	eventHandler = functionPointer;
 } 
 
+
+void Popup::setText(char* _text){
+	text = _text;
+}
+/*
 void Popup::setText(char* _text, char* _btn1, char* _btn2){
   text = _text;
   btn1Text = _btn1;
   btn2Text = _btn2;
 }
+*/
 
 void Popup::processEvent(unsigned char btnNo){
 	//process event
@@ -117,7 +136,7 @@ bool Popup::checkTouch(Point* p){
 		if((p->x > x+borderWidth) && (p->x < x+w-borderWidth) && (p->y > y+borderWidth) && (p->y < y+h-borderWidth)){
 						
 			// Check which button receives the event
-			if(type==POPUP_TWO_BUTTONS){
+			if(type > POPUP_OK){
 				//Button 1 event
 				boundX1 = x+(w-(getBtnWidth()*2+10))/2;
 				boundX2 = boundX1 + getBtnWidth();
@@ -156,9 +175,6 @@ bool Popup::checkTouch(Point* p){
 	return true; // <--- False means block further event checking.
 }
 
-bool Popup::isButton(){
-	return true;
-}
 
 void Popup::show(){
 	draw();

@@ -31,6 +31,17 @@ Button::~Button(){
 
 }
 
+/*
+ * Initialization of several common parameters
+ */
+void Button::init(){
+	isButton = true;
+	touched = false;
+	borderWidth = 2;
+	debounceTime = DEBOUNCE;
+	lastMillis = millis();	
+}
+
 void Button::drawBackground(int color){
 	//Fill background
 	if(!isRound){
@@ -73,15 +84,7 @@ void Button::drawText(){
 		Tft.drawString(text,stringX,stringY,borderWidth,fgColor);
 	}
 }
-/*
- * Initialization of several common parameters
- */
-void Button::init(){
-	touched = false;
-	borderWidth = 2;
-	debounceTime = DEBOUNCE;
-	lastMillis = millis();	
-}
+
 
 void Button::clear(){
 	byte textSize = getTextSize();
@@ -170,13 +173,6 @@ void Button::fitToText(){
     h = 8 * borderWidth + 8;
     //drawString(text,x+5,y+5,2,textColor);
   }
-}
-
-/*
- * Returns true to check if this Widget is a button
- */
-bool Button::isButton(){
-	return true;
 }
 
 //Overriden methods

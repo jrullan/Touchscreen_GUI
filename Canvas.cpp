@@ -114,8 +114,10 @@ void Canvas::setDebounce(unsigned int d){
 void Canvas::touchWidgets(Point* p){
 	byte cnt = widgets.count();
 	for(int i=1; i<=cnt; i++){
+		//Serial.print("Widget ");Serial.print(cnt-i);Serial.print(" isButton"); Serial.println(widgets[cnt-i]->isButton);
+		//widgets[cnt-i]->isButton ? Serial.println(" true") : Serial.println(" false");
 		// Only send touch event to visible Buttons
-		if(widgets[cnt-i]->isButton() && widgets[cnt-i]->visible){
+		if(widgets[cnt-i]->isButton && widgets[cnt-i]->visible){
 			if(!widgets[cnt-i]->checkTouch(p)) break;  //Break if widget blocks event after handling it.
 		}
 	}

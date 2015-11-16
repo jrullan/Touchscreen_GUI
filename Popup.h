@@ -13,14 +13,18 @@
 #ifndef POPUP_H
 #define POPUP_H
 
-#define POPUP_ONE_BUTTON 0
-#define POPUP_TWO_BUTTONS 1
-
 #include "Canvas.h"
 #include "Button.h"
 
+#define POPUP_OK 0
+#define POPUP_YES_NO 1
+#define POPUP_OK_CANCEL 2
+
 class Popup : public Button
 {
+
+	//#define POPUP_OTHER 3
+	
 public:
 	//Methods
 	Popup();
@@ -32,14 +36,14 @@ public:
 	void draw();
 	void processEvent(unsigned char btnNo);
 	void setEventHandler(void (*functionPointer)(Popup*, unsigned char));
-	void setText(char* _text, char* _btn1, char* _btn2 = NULL);
+	//void setText(char* _text, char* _btn1, char* _btn2 = NULL);
+	void setText(char* _text);
 	
 	int getBtnHeight();
 	int getBtnWidth();
 	
 		//Overriden
 		virtual bool checkTouch(Point* p);
-		virtual bool isButton();
 		virtual void show();
 		virtual void update();	
 	

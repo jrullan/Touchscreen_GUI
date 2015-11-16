@@ -281,9 +281,6 @@ bool Numkey::checkTouch(Point* p){
 	return false;
 }
 
-bool Numkey::isButton(){
-	return true;
-}
 
 void Numkey::show(){
 	drawFrame();
