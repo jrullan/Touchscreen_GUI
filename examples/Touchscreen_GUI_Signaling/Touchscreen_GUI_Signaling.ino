@@ -32,9 +32,16 @@ Button btnLeft = Button(80,40,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 
 Button btnRight = Button(80,40,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button btnHazard = Button(80,40,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 
+Button btnPlus = Button(40,40,GRAY1,BLACK,GRAY2);
+Button btnMinus = Button(40,40,GRAY1,BLACK,GRAY2);
+
+
+#define MAX_RATE 500
+#define MIN_RATE 100
+
 // Global variables
-const int leftPin = 22;
-const int rightPin = 24;
+const int leftPin = 3;
+const int rightPin = 2;
 bool leftActive = false;
 bool rightActive = false;
 bool hazardActive = false;
@@ -46,6 +53,8 @@ void setup() {
   Serial.begin(9600);
   pinMode(leftPin,OUTPUT);
   pinMode(rightPin,OUTPUT);
+  pinMode(7,OUTPUT);
+  digitalWrite(7,HIGH);
   
   canvas.init(TFT_LANDSCAPE);
 
@@ -68,6 +77,13 @@ void setup() {
     btnHazard.setEventHandler(&btnHazardEventHandler);
     btnHazard.init();
 
+    btnPlus.setText("+");
+    btnPlus.setEventHandler(&btnPlusEventHandler);
+    btnPlus.init();
+
+    btnMinus.setText("-");
+    btnMinus.setEventHandler(&btnMinusEventHandler);
+    btnMinus.init();
 
   // Add widgets to canvas
   // (Use layout template for coordinates)
@@ -76,6 +92,8 @@ void setup() {
   canvas.add(&btnLeft,55,50);
   canvas.add(&btnRight,185,50);
   canvas.add(&btnHazard,120,150);
+  canvas.add(&btnPlus,220,100);
+  canvas.add(&btnMinus,20,100);
   
   lastTime = millis();
 }
@@ -157,6 +175,14 @@ void btnHazardEventHandler(Button* btn){
   setBackground(&btnRight,GRAY1);
 }
 
+void btnPlusEventHandler(Button* btn){
+  blinkSpeed = (blinkSpeed >= MIN_RATE + 5) ? (blinkSpeed-5) : MIN_RATE;
+}
+
+void btnMinusEventHandler(Button* btn){
+  blinkSpeed = (blinkSpeed <= MAX_RATE - 5) ? (blinkSpeed+5) : MAX_RATE;
+}
+
 // Helper routines
 //==========================================
 void blinkSignal(bool* signal, int pin){
@@ -184,6 +210,7 @@ void blinkHazard(bool* signal, int pin1, int pin2){
     lastTime = millis();
   }
 }
+
 
 void setBackground(Button* btn, int color){
   btn->setColors(color,btn->fgColor,btn->borderColor);
