@@ -25,6 +25,28 @@ Buttongrid::Buttongrid(unsigned char size){
 	this->init();
 }
 
+Buttongrid::Buttongrid(unsigned char rows, unsigned char columns){
+	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	columns = columns;
+	rows = rows;
+	//gridSize = size;
+	
+	//Allocate memory for labels
+	if(rows!=NULL){
+		if(labels = (unsigned char**)malloc(rows * sizeof(unsigned char*))){
+			for(int i=0; i<gridSize; i++)
+			{
+				if(labels[i] = (unsigned char*)malloc(columns)){
+					memset(labels[i],0,columns);
+				}
+			}
+		}
+	}
+	
+	this->init();
+
+}
+
 Buttongrid::Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	x = 0;

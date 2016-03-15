@@ -32,6 +32,7 @@ class Buttongrid : public Button
 
 public:
 	Buttongrid();
+	Buttongrid(unsigned char rows, unsigned char columns);
 	Buttongrid(unsigned char gridSize);
 	Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	virtual ~Buttongrid();
@@ -45,9 +46,9 @@ public:
 	void setNum(unsigned char num);
 	void setLabel(unsigned char num, unsigned char label);
 	void clear();
-    unsigned char getColumn(unsigned char number);
-    unsigned char getRow(unsigned char number);
-    unsigned char getNumber(unsigned char row, unsigned char col);
+	unsigned char getColumn(unsigned char number);
+	unsigned char getRow(unsigned char number);
+	unsigned char getNumber(unsigned char row, unsigned char col);
     
 	//Overriden methods
 	virtual bool checkTouch(Point* p);
