@@ -20,5 +20,5 @@ License: MIT
 
 Classes:
 
--Canvas
--Widget
+- Canvas
+- Widget
