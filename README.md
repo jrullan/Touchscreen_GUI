@@ -24,3 +24,7 @@ Classes:
 - Widget
     - Button
         - Buttongrid
+    - Indicator
+        - Gauge
+        - Dial
+    - Display
