@@ -23,6 +23,8 @@ Classes:
 - Canvas
 - Widget
     - Button
+        - Popup
+        - Numkey
         - Buttongrid
     - Indicator
         - Gauge
