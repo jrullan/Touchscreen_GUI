@@ -18,15 +18,15 @@ Release Version: 0.1 beta
 License: MIT
 
 
-<H2>The main objects</H2>
-<code>Canvas canvas = Canvas();</code>
+Classes:
 
-<code>Button button = Button();</code>
-
-<code>Dial dial = Dial();</code>
-
-<code>Display disp = Display();</code>
-
-<code>Gauge gauge = Gauge();</code>
-
-<code>Numkey numkey = Numkey();</code>
+- Canvas
+- Widget
+    - Button
+        - Popup
+        - Numkey
+        - Buttongrid
+    - Indicator
+        - Gauge
+        - Dial
+    - Display
