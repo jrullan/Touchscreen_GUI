@@ -81,7 +81,6 @@ void Numkey::drawFrame(){
   Tft.drawString(".",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),2,BLACK);  
   Tft.drawNumber(0,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),2,BLACK);
   Tft.drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),2,BLACK);
-
 }
 
 void Numkey::append(char* c){
@@ -182,7 +181,7 @@ void Numkey::setNum(int num){
 		//Serial.print("text[i] ");Serial.println(text[j]);
 	}
 	text[chars]=0;
-	update();
+	//update();
 }
 
 void Numkey::setNumkeyEventHandler(void (*functionPointer)(Numkey *)){
@@ -280,7 +279,6 @@ bool Numkey::checkTouch(Point* p){
 	}// -- debounce
 	return false;
 }
-
 
 void Numkey::show(){
 	drawFrame();

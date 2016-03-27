@@ -23,6 +23,7 @@
 #define FONT_Y 8
 #endif
 #define DISPLAY_SIZE 6
+#define HIGHLIGHT 1
 
 #include "Canvas.h"
 #include "Button.h"
@@ -32,7 +33,7 @@ class Buttongrid : public Button
 
 public:
 	Buttongrid();
-	Buttongrid(unsigned char rows, unsigned char columns);
+	Buttongrid(unsigned char r, unsigned char c);
 	Buttongrid(unsigned char gridSize);
 	Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	virtual ~Buttongrid();
@@ -44,7 +45,13 @@ public:
 	void setEventHandler(void (*functionPointer)(Buttongrid*, unsigned char));
 	void configure(byte gridSize, byte fontSize);
 	void setNum(unsigned char num);
-	void setLabel(unsigned char num, unsigned char label);
+	
+	void setLabel(unsigned char id, unsigned char label);
+	//void printLabel(unsigned char num);
+	
+	void setName(unsigned char id, const char name[8]);
+	void setName(unsigned char id, char num);
+	void printName(unsigned char id);
 	void clear();
 	unsigned char getColumn(unsigned char number);
 	unsigned char getRow(unsigned char number);
@@ -63,6 +70,7 @@ public:
 	byte font_size = 2;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
 	unsigned char** labels = 0;
+	const char** names;
 	
 private:
 	//String text;
