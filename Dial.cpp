@@ -177,7 +177,11 @@ void Dial::show(){
 }
 
 void Dial::update(){
-	if(previousValue == currentValue) return;
+	if(!forcedUpdate){	
+		if(!visible) return;
+		if(previousValue == currentValue) return;
+	}
+	
 	int color = fgColor;
 	
 	// Limit crossing forces border to redraw

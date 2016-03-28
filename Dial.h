@@ -37,6 +37,11 @@ class Dial : public Indicator{
 		void setSize(int radius);
 		void show();
 		void update();
+		void forceUpdate(){
+			forcedUpdate = true;
+			update();
+			forcedUpdate = false;
+		}
 		
 		//Attributes
 		unsigned char gap;
@@ -46,6 +51,7 @@ class Dial : public Indicator{
 		unsigned char tickSize;
 		bool showVal;
 		bool showTicks;
+		bool forcedUpdate = false;
 		
 	private:
 		//Methods

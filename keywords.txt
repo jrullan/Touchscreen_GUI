@@ -31,4 +31,11 @@ setNumkeyEventHandler	KEYWORD2
 setButtongridEventHandler	KEYWORD2
 getTextSize	KEYWORD2
 draw	KEYWORD2
-
+setName	KEYWORD2
+forceUpdate	KEYWORD2
+update	KEYWORD2
+visible	KEYWORD2
+hiLimit	KEYWORD2
+setpoint	KEYWORD2
+lowLimit	KEYWORD2
+lastPressed	KEYWORD2
