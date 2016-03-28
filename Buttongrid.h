@@ -68,6 +68,8 @@ public:
 	byte columns;
 	byte rows;
 	byte font_size = 2;
+	byte hGap = 1;
+	byte vGap = 1;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
 	unsigned char** labels = 0;
 	const char** names;

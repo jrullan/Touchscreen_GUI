@@ -57,11 +57,12 @@ public:
 	
 	Point* touchedPoint;
 	StackArray<Widget*> widgets;
+	int bgColor;
 
 private:
 	unsigned long lastMillis;
 	unsigned int debounceTime;
-	int bgColor;
+
 };
 
 #endif //CANVAS_H

@@ -102,6 +102,7 @@ void Buttongrid::drawGrid(){
   
   //--nums background rectangle
   Tft.fillRectangle(xPos,yPos,width,height,bgColor);
+  
 	//-- outer border
   for(byte i=borderWidth; i!=0;i--){
     Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
@@ -110,39 +111,44 @@ void Buttongrid::drawGrid(){
   }
   
   //-- horizontal lines
-  for(byte j=0;j<rows;j++)
+  for(byte j=1;j<rows;j++)
   {
-	// draw # horizontal lines depending on borderWidth
+	  // draw # horizontal lines depending on borderWidth
   	for(byte i=0; i<borderWidth;i++){
-    	Tft.drawHorizontalLine(x,y+btnHeight*j+i,width+borderWidth,borderColor);
+    	Tft.drawHorizontalLine(x,y+btnHeight*j+i-vGap,width+borderWidth,borderColor);
   	}
+  	
+		//Only draw gaps in between edges
+		if(vGap>0){  	
+			//Tft.fillRectangle(xPos,y-vGap+btnHeight*j+1,width,btnHeight-1,BLACK);
+			for(byte i=0; i<borderWidth;i++){
+				Tft.drawHorizontalLine(x,y+btnHeight*j+i+borderWidth+vGap,width+borderWidth,borderColor);
+			}
+		}		
+
   }
   
   //-- vertical lines
-  for(byte j=0;j<columns;j++)
+  for(byte j=1;j<columns;j++)
   {
 	// draw # of vertical lines depending on borderWidth
   	for(byte i=0; i<borderWidth;i++){
-    	Tft.drawVerticalLine(x+btnWidth*j+i,y+borderWidth,height+borderWidth,borderColor);
+    	Tft.drawVerticalLine(x+btnWidth*j+i-hGap,y+borderWidth,height+borderWidth,borderColor);
   	}
+  	
+		//Only draw gaps in between edges
+		if(hGap>0){  	
+			//Tft.fillRectangle(xPos,y-vGap+btnHeight*j+1,width,btnHeight-1,BLACK);
+			for(byte i=0; i<borderWidth;i++){
+				Tft.drawVerticalLine(x+btnWidth*j+i+borderWidth+hGap,y+borderWidth,height+borderWidth,borderColor);
+			}
+		}		  	
+  	
   }
 
   //-- draw contents  
-
   byte colIndex=0;
   byte rowIndex=0;
-  /*
-  for(byte number=1; number<=(columns*rows); number++)
-  {
-	  //setNum(number);
-  }*/
-  //Serial.println("Setting Labels=======");
-  
-  //Serial.print("Rows: ");
-  //Serial.print(rows);
-  //Serial.print(" Cols: ");
-  //Serial.println(columns);
-  
   for(byte r=1; r<=rows; r++)
   {
 	  for(byte c=1; c<=columns; c++)
@@ -164,6 +170,17 @@ void Buttongrid::drawGrid(){
 	  //Serial.println();
   }
   
+  //-- Gaps fill
+  if(hGap > 0){
+		for(byte j=1;j<columns;j++){
+			Tft.fillRectangle(x+j*btnWidth+borderWidth-hGap,y,hGap*2,h,myCanvas->bgColor);
+		}
+  }
+  if(vGap > 0){
+		for(byte j=1;j<rows;j++){
+			Tft.fillRectangle(x,y+j*btnHeight+borderWidth-vGap,w,vGap*2,myCanvas->bgColor);
+		}
+  }  
 }
 
 void Buttongrid::setEventHandler(void (*functionPointer)(Buttongrid *, unsigned char)){
