@@ -1,3 +1,7 @@
+Todo 2016-03-28:
+1. Refactor into Indicator the forceUpdate behavior for all subclasses
+
+
 Todo 2015-05-17:
 1. Check if Numkey can use same setEventHandler instead of setNumkeyEventHandler
 

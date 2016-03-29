@@ -24,6 +24,7 @@
 #include <Gauge.h>
 #include <Numkey.h>
 #include <Buttongrid.h>
+#include <Trend.h>
 
 // Create the objects
 //==========================================
@@ -31,6 +32,8 @@ Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
 Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
 Buttongrid grid = Buttongrid(3,1);
+Buttongrid grid2 = Buttongrid(1,3);
+Trend trend = Trend();
 
 // Global variables
 // If you need global variables in your program put them here,
@@ -40,9 +43,10 @@ Buttongrid grid = Buttongrid(3,1);
 
 #define TMP_PIN A4
 #define tempUpdate 1000
+#define trendUpdate 5000
 
 float tempF;
-long lastUpdate;
+long lastUpdate,lastTrendUpdate;
 
 void setup() {
   Serial.begin(9600);
@@ -55,7 +59,12 @@ void setup() {
   delay(1000);
   //Configure the widgets
   //=========================================  
-
+    trend.setSize(100,50);
+    trend.setColors(GRAY2,GREEN,GRAY1);
+    trend.setLimits(60,80,100);
+    trend.setHiLimit(85,RED);
+    trend.setLowLimit(75,BLUE);
+    trend.init();
     
     dial.setSize(50);
     dial.setColors(GRAY2,YELLOW,GRAY1);
@@ -72,6 +81,11 @@ void setup() {
     grid.setName(3,"Low");
     grid.init();
     
+    grid2.setSize(120,40);
+    grid2.setColors(GRAY2,BLACK,GRAY1);
+    grid2.setEventHandler(&gridEventHandler);
+    grid2.init();
+    
     numkey.setSize(120,180);
     numkey.setColors(GRAY1,BLACK,WHITE);
     numkey.init();
@@ -83,6 +97,11 @@ void setup() {
   //=========================================
   canvas.add(&dial,75,100);
   canvas.add(&grid,200,50);
+  //canvas.add(&grid2,25,190);
+  canvas.add(&trend,20,180);
+
+  //while(1);
+
   
   //Numkey Notes:
   //The numkey widget is meant to be a pop-up
@@ -100,12 +119,19 @@ void setup() {
 
 
 void loop() {
-  float lastTemp = tempF;
+  int lastTemp = (int)tempF;
   tempF = getTempF(TMP_PIN);
-  if(tempF != lastTemp){
+
+  if(millis() - lastTrendUpdate > trendUpdate){
+    trend.addValue((uint8_t) tempF);
+    lastTrendUpdate = millis();
+  }
+  
+  if((int)tempF != lastTemp){
     if(millis()-lastUpdate > tempUpdate){
       
       dial.setCV((int) tempF);
+      
       
       if((unsigned int)tempF > dial.hiLimit){
         digitalWrite(LED2,HIGH);

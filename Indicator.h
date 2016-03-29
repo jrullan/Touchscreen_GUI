@@ -37,6 +37,7 @@ class Indicator : public Widget{
 		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
 		void setLowLimit(unsigned int l, int color);
 		void setNum(int num);
+
 		
 		//Overriden methods
 		bool checkTouch(Point* p);
@@ -52,7 +53,7 @@ class Indicator : public Widget{
 		int lowLimitColor;
 		unsigned int scaleMax;
 		unsigned int scaleMin;
-		unsigned int setpoint;
+		unsigned int setpoint;	
 		//bool isButton = false;
 
 	protected:
