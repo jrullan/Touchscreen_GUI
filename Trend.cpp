@@ -88,16 +88,24 @@ void Trend::drawValues(){
 	byte x1, y1, x2, y2;
 	byte radius = 2;
 	
-	//-- loop through all values and plot them left to right (right == 0)
+	//-- loop through all values and plot them left to right (starting with values[7])
 	for(int i = MAX_TREND_VALUES; i!=0; i--){
 		int j = i-1;
 		val = constrain(values[j],scaleMin,scaleMax);
 		val = map(val,scaleMin,scaleMax,h-borderWidth,borderWidth);
 		yBase = y + val;
-
-		x1 = xBase + (w - borderWidth - j*(w/MAX_TREND_VALUES) - radius);
+		
+		//-- previous values[j] coordinates
+		x2 = x1;
+		y2 = y1;
+		
+		//-- current values[j] coordinates
+		byte effWidth = w - 2*borderWidth;
+		byte inc = j*(effWidth)/(MAX_TREND_VALUES-1);
+		x1 = xBase + effWidth - inc;
 		y1 = yBase;
-				
+		
+		if(j<MAX_TREND_VALUES-1) Tft.drawLine(x2,y2,x1,y1,this->fgColor);
 		Tft.fillCircle(x1, y1, radius, this->fgColor);
 	}
 }

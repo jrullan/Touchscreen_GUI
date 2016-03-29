@@ -43,7 +43,7 @@ Trend trend = Trend();
 
 #define TMP_PIN A4
 #define tempUpdate 1000
-#define trendUpdate 5000
+#define trendUpdate 30000
 
 float tempF;
 long lastUpdate,lastTrendUpdate;
@@ -61,7 +61,7 @@ void setup() {
   //=========================================  
     trend.setSize(100,50);
     trend.setColors(GRAY2,GREEN,GRAY1);
-    trend.setLimits(60,80,100);
+    trend.setLimits(75,85,95);
     trend.setHiLimit(85,RED);
     trend.setLowLimit(75,BLUE);
     trend.init();
@@ -74,7 +74,7 @@ void setup() {
     dial.setLowLimit(75,BLUE);
 
     grid.setSize(80,90);
-    grid.setColors(GRAY2,BLACK,GRAY1);
+    grid.setColors(GRAY2,WHITE,GRAY1);
     grid.setEventHandler(&gridEventHandler);
     grid.setName(1,"HI");
     grid.setName(2,"SP");
