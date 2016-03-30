@@ -3,6 +3,7 @@ Canvas	KEYWORD1
 Button	KEYWORD1
 Dial	KEYWORD1
 Gauge	KEYWORD1
+Trend	KEYWORD1
 Numkey	KEYWORD1
 Buttongrid	KEYWORD1
 Display	KEYWORD1
@@ -39,3 +40,7 @@ hiLimit	KEYWORD2
 setpoint	KEYWORD2
 lowLimit	KEYWORD2
 lastPressed	KEYWORD2
+scaleMax	KEYWORD2
+scaleMin	KEYWORD2
+enableAutoFit	KEYWORD2
+

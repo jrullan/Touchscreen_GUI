@@ -23,7 +23,7 @@
 #define BUF_SIZE 8
 
 #ifndef MAX_TREND_VALUES
-#define MAX_TREND_VALUES 8
+#define MAX_TREND_VALUES 16
 #endif
 
 #include "Canvas.h"
@@ -45,6 +45,11 @@ class Trend : public Indicator{
 			update();
 			forcedUpdate = false;
 		}
+		int getXVal(int value,int index);
+		int getYVal(int value);
+		int getMin();
+		int getMax();
+		void autoFit();
 		
 		//Overriden methods
 		void show();
@@ -54,8 +59,12 @@ class Trend : public Indicator{
 		uint8_t* values;  // Array of values to plot
 		uint8_t vals;			// number of values in the array
 		bool forcedUpdate = false;
-
+		bool enableAutoFit = true;
+		
 	private:
+		//Attributes
+		byte updates = 0;
+		
 		//Methods
 		void drawScale();
 		void drawValues();
