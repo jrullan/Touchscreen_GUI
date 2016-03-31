@@ -32,7 +32,6 @@ Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
 Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
 Buttongrid grid = Buttongrid(3,1);
-Buttongrid grid2 = Buttongrid(1,3);
 Trend trend = Trend();
 
 // Global variables
@@ -40,51 +39,51 @@ Trend trend = Trend();
 // before the setup() routine.
 #define LED1 10
 #define LED2 2
+#define BACKLIGHT 7
 
 #define TMP_PIN A4
 #define tempUpdate 1000
-#define trendUpdate 30000
+#define trendUpdate 300000
+#define backLightOffDelay 100
 
 float tempF;
-long lastUpdate,lastTrendUpdate;
+long lastUpdate,lastTrendUpdate, backLightOffUpdate;
 
 void setup() {
   Serial.begin(9600);
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
-  pinMode(7,OUTPUT);
-  digitalWrite(7,HIGH);
+  pinMode(BACKLIGHT,OUTPUT);
+  digitalWrite(BACKLIGHT,HIGH);
+  backLightOffUpdate = backLightOffDelay;
   canvas.init(TFT_LANDSCAPE);
 
   delay(1000);
   //Configure the widgets
   //=========================================  
-    trend.setSize(100,50);
-    trend.setColors(GRAY2,GREEN,GRAY1);
-    trend.setLimits(75,85,95);
+    trend.setSize(220,100);
+    trend.setColors(BLACK,GREEN,GRAY1);
+    trend.setLimits(70,80,90);
+    trend.init();
     trend.setHiLimit(85,RED);
     trend.setLowLimit(75,BLUE);
-    trend.init();
+    trend.enableAutoFit = false;
+
     
     dial.setSize(50);
-    dial.setColors(GRAY2,YELLOW,GRAY1);
+    dial.setColors(BLACK,YELLOW,GRAY1);
     dial.setLimits(60,80,100);
     dial.init();
-    dial.setHiLimit(90,RED);
+    dial.setHiLimit(85,RED);
     dial.setLowLimit(75,BLUE);
 
     grid.setSize(80,90);
-    grid.setColors(GRAY2,WHITE,GRAY1);
+    grid.setColors(GRAY2,WHITE,WHITE);
     grid.setEventHandler(&gridEventHandler);
     grid.setName(1,"HI");
     grid.setName(2,"SP");
     grid.setName(3,"Low");
     grid.init();
-    
-    grid2.setSize(120,40);
-    grid2.setColors(GRAY2,BLACK,GRAY1);
-    grid2.setEventHandler(&gridEventHandler);
-    grid2.init();
     
     numkey.setSize(120,180);
     numkey.setColors(GRAY1,BLACK,WHITE);
@@ -95,12 +94,9 @@ void setup() {
   // Add widgets to canvas
   // (Use layout template for coordinates)
   //=========================================
-  canvas.add(&dial,75,100);
-  canvas.add(&grid,200,50);
-  //canvas.add(&grid2,25,190);
-  canvas.add(&trend,20,180);
-
-  //while(1);
+  canvas.add(&trend,10,10);
+  canvas.add(&dial,75,180);
+  canvas.add(&grid,200,130);
 
   
   //Numkey Notes:
@@ -115,6 +111,7 @@ void setup() {
   
   tempF = getTempF(TMP_PIN);
   dial.setCV((int) tempF);
+  trend.addValue((uint8_t) tempF);
 }
 
 
@@ -148,15 +145,33 @@ void loop() {
       lastUpdate = millis();
     }
   }
-  canvas.scan();
+
+  //Modified scan to return a boolean indicating if a valid
+  //touch event happened
+  //Now the backlight will turn off after a time delay until a touch event
+  //is detected.
+  if(canvas.scan()){
+    digitalWrite(BACKLIGHT,HIGH);
+    backLightOffUpdate=backLightOffDelay;
+    //Serial.print("Touched ");Serial.println(millis());
+  }else{
+    if(backLightOffUpdate-- <= 0) digitalWrite(BACKLIGHT,LOW);
+    //Serial.println(backLightOffUpdate);
+    delay(200);  
+  }
+  
 }
 
 
 // Event Handler Functions for buttons
 //==========================================
 void gridEventHandler(Buttongrid* grid, unsigned char num){
-  Serial.print("Button grid number pressed: ");
-  Serial.println(num);
+  
+  dial.visible = false; // do not redraw dial while numkey is shown
+  trend.visible = false;
+  
+  //Serial.print("Button grid number pressed: ");
+  //Serial.println(num);
   switch(num){
     case 1:
       numkey.setNum(dial.hiLimit);
@@ -171,7 +186,7 @@ void gridEventHandler(Buttongrid* grid, unsigned char num){
       break;
   }
   canvas.add(&numkey, 80,0);
-  dial.visible = false; // do not redraw dial while numkey is shown
+
   return;
 }
 
@@ -179,13 +194,18 @@ void numkeyEventHandler(Numkey* nk){
 	if(nk->getTextSize()>0){
     switch(grid.lastPressed){
       case 1:
-        dial.hiLimit = nk->getNum();
+        dial.scaleMax = nk->getNum();
+        trend.scaleMax = nk->getNum();
+        //trend.hiLimit = trend.scaleMax;
         break;
       case 2:
         dial.setpoint = nk->getNum();
+        trend.setpoint = nk->getNum();
         break;
       case 3:
-        dial.lowLimit = nk->getNum();
+        dial.scaleMin = nk->getNum();
+        trend.scaleMin = nk->getNum();
+        //trend.lowLimit = trend.scaleMin;
         break;
       default:
         break;
@@ -193,6 +213,8 @@ void numkeyEventHandler(Numkey* nk){
   }
 
   dial.visible = true; // allow dial to redraw again
+  trend.hide();  
+  trend.visible = true;
   
   //Manually pop-up the numkey and force a Dial update
   //Required because normal "autoremove" behavior of numkey occurs "after" this
