@@ -94,12 +94,22 @@ Widget* Canvas::pop(){
 // This method scans the touchscreen for touch events.
 // If an event is detected, all registered widgets are notified of the event by
 // calling its event handler function.
-void Canvas::scan(){
+bool Canvas::scan(){
 	if(millis()>lastMillis + debounceTime){ //Debouncing of the touchscreen resistance
     Point tP = getTouchedPoint();
+    //Serial.print("Touched x = ");
+    //Serial.print(tP.x);
+    //Serial.print(" Touched y = ");
+    //Serial.println(tP.y);
+    if(Tft.layoutMode == TFT_LANDSCAPE){
+    	if(tP.x > 319 || tP.y > 239) return false;
+    }else{
+    	if(tP.x > 239 || tP.y > 319) return false;
+    }
     touchWidgets(&tP); //Update all buttons on Canvas :)
     lastMillis=millis();
   }
+  return true;
 }
 
 // This method sets the canvas debouncing time to a value. By default it is 0.

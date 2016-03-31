@@ -50,7 +50,7 @@ public:
 	Widget* pop();
 	void landscape();
 	void touchWidgets(Point* p);
-	void scan();
+	bool scan();
 	void setDebounce(unsigned int d);
 	void updateTouch(Point* p);
 	void redraw();
