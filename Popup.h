@@ -22,8 +22,6 @@
 
 class Popup : public Button
 {
-
-	//#define POPUP_OTHER 3
 	
 public:
 	//Methods

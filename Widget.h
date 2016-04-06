@@ -20,6 +20,7 @@
 #ifndef FONT_Y
 #define FONT_Y 8
 #endif
+
 #define DISPLAY_SIZE 6
 
 // Forward declarations

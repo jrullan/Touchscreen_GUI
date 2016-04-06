@@ -7,12 +7,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#ifndef FONT_SPACE
-#define FONT_SPACE 6
-#endif
-#ifndef FONT_Y
-#define FONT_Y 8
-#endif
+
 #define DISPLAY_SIZE 8
 
 #include "Canvas.h"

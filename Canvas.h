@@ -43,6 +43,7 @@ public:
 	virtual ~Canvas();
 
 	void add(Widget* widget, int x, int y);
+	
 	Point getTouchedPoint();
 	void init();
 	void init(int mode);

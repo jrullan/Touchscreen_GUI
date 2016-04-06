@@ -7,14 +7,6 @@
 #ifndef NUMKEY_H
 #define NUMKEY_H
 
-#ifndef FONT_SPACE
-#define FONT_SPACE 6
-#endif
-#ifndef FONT_Y
-#define FONT_Y 8
-#endif
-#define DISPLAY_SIZE 6
-
 #include "Canvas.h"
 #include "Button.h"
 

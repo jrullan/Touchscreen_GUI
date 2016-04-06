@@ -26,17 +26,7 @@
 #include <Buttongrid.h>
 #include <Trend.h>
 
-// Create the objects
-//==========================================
-Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
-Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
-Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
-Buttongrid grid = Buttongrid(3,1);
-Trend trend = Trend();
-
-// Global variables
-// If you need global variables in your program put them here,
-// before the setup() routine.
+// --Constants
 #define LED1 10
 #define LED2 2
 #define BACKLIGHT 7
@@ -45,6 +35,12 @@ Trend trend = Trend();
 #define tempUpdate 1000
 #define trendUpdate 300000
 #define backLightOffDelay 100
+
+Canvas canvas;
+Dial dial;
+Numkey numkey;
+Buttongrid grid = Buttongrid(3,1);
+Trend trend;
 
 float tempF;
 long lastUpdate,lastTrendUpdate, backLightOffUpdate;
@@ -68,7 +64,6 @@ void setup() {
     trend.setHiLimit(85,RED);
     trend.setLowLimit(75,BLUE);
     trend.enableAutoFit = false;
-
     
     dial.setSize(50);
     dial.setColors(BLACK,YELLOW,GRAY1);
@@ -97,17 +92,7 @@ void setup() {
   canvas.add(&trend,10,10);
   canvas.add(&dial,75,180);
   canvas.add(&grid,200,130);
-
-  
-  //Numkey Notes:
-  //The numkey widget is meant to be a pop-up
-  //kind of widget. So it is added to the canvas 
-  //when it is required. Upon pressing the = sign
-  //it will call it's event handler and after that
-  //it will automatically be removed from the canvas.
-  //To prevent this behavior then set
-  //	numkey.isPopUp = false; (By default = true)
-	//See buttonEventHandler below for an example.
+  //numkey not added here (it is a pop-up)
   
   tempF = getTempF(TMP_PIN);
   dial.setCV((int) tempF);

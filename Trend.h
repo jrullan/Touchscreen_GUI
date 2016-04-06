@@ -13,17 +13,8 @@
 #ifndef TREND_H
 #define TREND_H
 
-#ifndef FONT_SPACE
-#define FONT_SPACE 6
-#endif
-#ifndef FONT_Y
-#define FONT_Y 8
-#endif
-
-#define BUF_SIZE 8
-
 #ifndef MAX_TREND_VALUES
-#define MAX_TREND_VALUES 16
+#define MAX_TREND_VALUES 32
 #endif
 
 #include "Canvas.h"
@@ -67,7 +58,7 @@ class Trend : public Indicator{
 		
 		//Methods
 		void drawScale();
-		void drawValues();
+		void drawValues(INT16U color);
 };
 
 #endif // TREND_H

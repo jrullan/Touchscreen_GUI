@@ -46,9 +46,9 @@ void Trend::drawScale(){
 	//Draw SCALE
 	int textWidth = 4 * FONT_SPACE;
 	
-	
 	// Draw background
-	Tft.fillRectangle(x+textWidth,y+borderWidth,10,h,BLACK);
+	//Tft.fillRectangle(x+textWidth,y+borderWidth,10,h,BLACK);
+	Tft.fillRectangle(x+borderWidth,y+borderWidth,textWidth+10,h,BLACK);
 	
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
@@ -59,7 +59,6 @@ void Trend::drawScale(){
 	setNum(setpoint); // Sets buf with setpoint value
 	val = map(setpoint,scaleMin,scaleMax,h-borderWidth,borderWidth);
 	Tft.drawString(buf,x,y+(val)-(FONT_Y>>1)-borderWidth,1,fgColor);
-	//Tft.drawHorizontalLine(x+textWidth,y+(val)-borderWidth,10,fgColor);
 	Tft.drawHorizontalLine(x+textWidth,getYVal(setpoint),10,fgColor);
 	
 	// Draw Min value and line
@@ -67,96 +66,56 @@ void Trend::drawScale(){
 	Tft.drawString(buf,x,y+h-(FONT_Y),1,borderColor);
 	Tft.drawHorizontalLine(x+textWidth,y+(h)-borderWidth,10,borderColor);
 
-	
-  if(hiLimit < scaleMax){// && currentValue > lowLimit){
-	  //val = map(hiLimit,scaleMin,scaleMax,h-borderWidth,borderWidth);
+	// Draw HI and LOW limits values and lines
+  if(hiLimit < scaleMax){
 	  setNum(hiLimit);
 	  Tft.drawString(buf,x,getYVal(hiLimit)-(FONT_Y/2),1,hiLimitColor);
 		Tft.drawHorizontalLine(x+textWidth,getYVal(hiLimit),10,hiLimitColor);
-		//Tft.drawHorizontalLine(x+textWidth,y+val,10,hiLimitColor);
-  	//Tft.drawHorizontalLine(x+borderWidth+textWidth,y+val,w-(2*borderWidth),hiLimitColor);
   }
-  if(lowLimit > scaleMin){// && currentValue < hiLimit){
-	  //val = map(lowLimit,scaleMin,scaleMax,h-borderWidth,borderWidth);
+  if(lowLimit > scaleMin){
 	  setNum(lowLimit);
 	  Tft.drawString(buf,x,getYVal(lowLimit)-(FONT_Y/2),1,lowLimitColor);
 		Tft.drawHorizontalLine(x+textWidth,getYVal(lowLimit),10,lowLimitColor);
-		//Tft.drawHorizontalLine(x+textWidth,y+val,10,lowLimitColor);
-  	//Tft.drawHorizontalLine(x+borderWidth+textWidth,y+val,w-(2*borderWidth),lowLimitColor);
   }
-	//drawLimits();
+
 }
 
-void Trend::drawValues(){
+void Trend::drawValues(INT16U color){
 	unsigned int val; //= map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
-	int textWidth = 4 * FONT_SPACE + 10;
-	int xBase = x+borderWidth+textWidth;
-	int yBase = y;
 	int x1, y1, x2, y2;
-	int radius = 1;
 	
 	//-- loop through all values and plot them left to right (starting with values[7])
 	for(int i = MAX_TREND_VALUES; i!=0; i--){
 		int j = i-1;
-		//val = constrain(values[j],scaleMin,scaleMax);
-		//val = map(val,scaleMin,scaleMax,h-borderWidth,borderWidth);
-		//yBase = y + val;
 		
 		//-- previous values[j] coordinates 2-previous 1-current
 		x2 = x1;
 		y2 = y1;
 		
-		//-- current values[j] coordinates
-		//int effWidth = w - 2*borderWidth;
-		//int inc = j*(effWidth)/(MAX_TREND_VALUES-1);
-		//x1 = xBase + effWidth - inc;
-		//y1 = yBase;
-		
-		
 		x1 = getXVal(values[j],j);
 		y1 = getYVal(values[j]);
 		
-		
 		if(j<MAX_TREND_VALUES-1){
-			//unsigned int x3,y3,yp;
-			//yp = getYVal(values[j+1],j+1);
-			//x3 = x2+(x1-x2)/3;
-			//y3 = y2+(y1-y2)/3;		
-
-			//if(yp<y2 && y2>y1){ //-- up slope
-			//	y3 = y2 - (y2-y1)/4;
-			//}
-			//if(yp>y2 && y2<y1){
-			//	y3 = y2 + (y1-y2)/4;
-			//}
-			
-			//Serial.print("y3 = ");
-			//Serial.println(y3);
-			
-			//Tft.drawLine(x2,y2,x3,y3,this->fgColor);
-			//Tft.drawLine(x3,y3,x1,y1,this->fgColor);
-			Tft.drawLine(x2,y2-1,x1,y1-1,this->fgColor);
-			Tft.drawLine(x2,y2,x1,y1,this->fgColor);
-			Tft.drawLine(x2,y2+1,x1,y1+1,this->fgColor);
+			Tft.drawLine(x2,y2-1,x1,y1-1,color);
+			Tft.drawLine(x2,y2,x1,y1,color);
+			Tft.drawLine(x2,y2+1,x1,y1+1,color);
 		}
-		
-		//Tft.fillCircle(x1, y1, radius, this->fgColor);
 	}
 }
 
 int Trend::getXVal(int value,int index){
-	int textWidth = 4 * FONT_SPACE + 10;
-	int xBase = x+borderWidth+textWidth;
-	int effWidth = w - 2*borderWidth;
+	int scaleWidth = 4 * FONT_SPACE + 10;
+	int xBase = x+borderWidth+scaleWidth+1;
+	int effWidth = w - scaleWidth - 2*borderWidth;
 	int inc = index*(effWidth)/(MAX_TREND_VALUES-1);
 	return xBase + effWidth - inc;
 }
 
 int Trend::getYVal(int value){
-	int yBase = y;
+	int yBase = y + borderWidth;
 	unsigned int val = constrain(value,scaleMin,scaleMax);
 	val = map(val,scaleMin,scaleMax,h-borderWidth,borderWidth);
-	return y + val;
+	return yBase + val;
 }
 
 int Trend::getMin(){
@@ -179,10 +138,10 @@ void Trend::autoFit(){
 	int min = getMin();
 	int max = getMax();
 	
-	Serial.print("Min = ");
-	Serial.println(min);
-	Serial.print("Max = ");
-	Serial.println(max);
+	//Serial.print("Min = ");
+	//Serial.println(min);
+	//Serial.print("Max = ");
+	//Serial.println(max);
 	
 	if(min <= scaleMin && min != 0){ 
 		scaleMin = min-5;
@@ -204,7 +163,10 @@ void Trend::addValue(uint8_t val){
 	previousValue = currentValue;
 	currentValue = val;
 
-	//-- push value into the array
+	//--delete previous line (bgColor)
+	if(visible) drawValues(this->bgColor);
+
+	//--push value into the array
 	for(int i = MAX_TREND_VALUES; i!=0; i--){
 
 		if(i==1){
@@ -242,33 +204,39 @@ void Trend::update(){
 		}
 	}
 	
-	int textWidth = 4 * FONT_SPACE + 10;
-	int xPos = x + textWidth;
-	int width = w;
-  byte yPos = y;
-  byte height = h;
-  //unsigned int val;
+	int scaleWidth = 4 * FONT_SPACE + 10;
+	int xPos = x + borderWidth + scaleWidth - 1;
+	int width = w-scaleWidth-2*borderWidth;
+  int yPos = y + borderWidth;
+  int height = h;//-yPos;
+  
+  int borderX, borderY, borderW, borderH;
+  borderX = xPos;
+  borderY = yPos;
+  borderW = w-scaleWidth;
+  borderH = height;
   
   //--border
-  for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
-    width--;
-    height--;
+  for(byte i=borderWidth; i!=0; i--){
+    Tft.drawRectangle(borderX,borderY,borderW,borderH,borderColor);
+    borderX++;
+    borderY++;
+    borderW -= 2;
+    borderH -= 2;
   }
-  //val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
   
 	//--background fill
-	Tft.fillRectangle(x+borderWidth+textWidth, y+borderWidth, w-(2*borderWidth), h-(2*borderWidth),bgColor);
+	//Tft.fillRectangle(x+borderWidth+scaleWidth, y+borderWidth, w-(2*borderWidth), h-(2*borderWidth),bgColor);
 	
 	//--threshold lines
 	if(hiLimit < scaleMax){
-		Tft.drawHorizontalLine(x+borderWidth+textWidth,getYVal(hiLimit),w-2*borderWidth,hiLimitColor);
+		Tft.drawHorizontalLine(xPos+1,getYVal(hiLimit),width,hiLimitColor);
 	}
-	Tft.drawHorizontalLine(x+borderWidth+textWidth,getYVal(setpoint),w-2*borderWidth,this->borderColor);
+	Tft.drawHorizontalLine(xPos+1,getYVal(setpoint),width,this->borderColor);
 	if(lowLimit > scaleMin){
-		Tft.drawHorizontalLine(x+borderWidth+textWidth,getYVal(lowLimit),w-2*borderWidth,lowLimitColor);
+		Tft.drawHorizontalLine(xPos+1,getYVal(lowLimit),width,lowLimitColor);
 	}
 
   //-- drawValues
-  this->drawValues();
+  this->drawValues(this->fgColor);
 }
