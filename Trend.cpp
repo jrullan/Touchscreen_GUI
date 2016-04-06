@@ -48,7 +48,7 @@ void Trend::drawScale(){
 	
 	// Draw background
 	//Tft.fillRectangle(x+textWidth,y+borderWidth,10,h,BLACK);
-	Tft.fillRectangle(x+borderWidth,y+borderWidth,textWidth+10,h,BLACK);
+	Tft.fillRectangle(x+borderWidth,y+borderWidth,yScaleWidth,h-xScaleHeight,BLACK);
 	
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
@@ -57,14 +57,14 @@ void Trend::drawScale(){
 	
 	// Draw Setpoint value and line
 	setNum(setpoint); // Sets buf with setpoint value
-	val = map(setpoint,scaleMin,scaleMax,h-borderWidth,borderWidth);
+	val = map(setpoint,scaleMin,scaleMax,h-borderWidth-xScaleHeight,borderWidth);
 	Tft.drawString(buf,x,y+(val)-(FONT_Y>>1)-borderWidth,1,fgColor);
 	Tft.drawHorizontalLine(x+textWidth,getYVal(setpoint),10,fgColor);
 	
 	// Draw Min value and line
 	setNum(scaleMin); // Sets buf with scaleMin value
-	Tft.drawString(buf,x,y+h-(FONT_Y),1,borderColor);
-	Tft.drawHorizontalLine(x+textWidth,y+(h)-borderWidth,10,borderColor);
+	Tft.drawString(buf,x,y+h-xScaleHeight-(FONT_Y),1,borderColor);
+	Tft.drawHorizontalLine(x+textWidth,y+(h-xScaleHeight)-borderWidth,10,borderColor);
 
 	// Draw HI and LOW limits values and lines
   if(hiLimit < scaleMax){
@@ -104,9 +104,9 @@ void Trend::drawValues(INT16U color){
 }
 
 int Trend::getXVal(int value,int index){
-	int scaleWidth = 4 * FONT_SPACE + 10;
-	int xBase = x+borderWidth+scaleWidth+1;
-	int effWidth = w - scaleWidth - 2*borderWidth;
+	//int scaleWidth = 4 * FONT_SPACE + 10;
+	int xBase = x+borderWidth+yScaleWidth+1;
+	int effWidth = w - yScaleWidth - 2*borderWidth;
 	int inc = index*(effWidth)/(MAX_TREND_VALUES-1);
 	return xBase + effWidth - inc;
 }
@@ -114,7 +114,7 @@ int Trend::getXVal(int value,int index){
 int Trend::getYVal(int value){
 	int yBase = y + borderWidth;
 	unsigned int val = constrain(value,scaleMin,scaleMax);
-	val = map(val,scaleMin,scaleMax,h-borderWidth,borderWidth);
+	val = map(val,scaleMin,scaleMax,h-xScaleHeight-borderWidth,borderWidth);
 	return yBase + val;
 }
 
@@ -204,17 +204,17 @@ void Trend::update(){
 		}
 	}
 	
-	int scaleWidth = 4 * FONT_SPACE + 10;
-	int xPos = x + borderWidth + scaleWidth - 1;
-	int width = w-scaleWidth-2*borderWidth;
+	//int scaleWidth = 4 * FONT_SPACE + 10;
+	int xPos = x + borderWidth + yScaleWidth - 1;
+	int width = w-yScaleWidth-2*borderWidth;
   int yPos = y + borderWidth;
   int height = h;//-yPos;
   
   int borderX, borderY, borderW, borderH;
   borderX = xPos;
   borderY = yPos;
-  borderW = w-scaleWidth;
-  borderH = height;
+  borderW = w-yScaleWidth;
+  borderH = height - xScaleHeight;
   
   //--border
   for(byte i=borderWidth; i!=0; i--){

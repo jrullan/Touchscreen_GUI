@@ -55,7 +55,8 @@ class Trend : public Indicator{
 	private:
 		//Attributes
 		byte updates = 0;
-		
+		byte yScaleWidth = 4 * FONT_X + 10; // four characters and a line of 10 pixels
+		byte xScaleHeight = FONT_Y + 10;
 		//Methods
 		void drawScale();
 		void drawValues(INT16U color);
