@@ -43,7 +43,8 @@ void Trend::clear(){
 
 void Trend::drawScale(){
 	unsigned int val;
-	//Draw SCALE
+	
+	//Draw Y SCALE
 	int textWidth = 4 * FONT_SPACE;
 	
 	// Draw background
@@ -78,6 +79,23 @@ void Trend::drawScale(){
 		Tft.drawHorizontalLine(x+textWidth,getYVal(lowLimit),10,lowLimitColor);
   }
 
+
+	//Draw X Scale
+	//--background
+	int xPos = x + yScaleWidth + 1;
+	int yPos = y + h - xScaleHeight;
+	int xWidth = w - yScaleWidth;
+	int xHeight = h - xScaleHeight;
+	Tft.fillRectangle(xPos,yPos,xWidth,xHeight,bgColor);
+	//--right
+	setNum(0);
+	Tft.drawVerticalLine(xPos+xWidth-borderWidth,yPos,10,borderColor);
+	Tft.drawString(buf,xPos+xWidth-FONT_X,yPos+10+FONT_Y,1,borderColor);
+	buf = "t-last";
+	buf[6] = 0;
+	Tft.drawVerticalLine(xPos+borderWidth,yPos,10,borderColor);
+	Tft.drawString(buf,xPos,yPos+10+FONT_Y,1,borderColor);
+	
 }
 
 void Trend::drawValues(INT16U color){
