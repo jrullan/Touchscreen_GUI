@@ -14,7 +14,7 @@
 #define TREND_H
 
 #ifndef MAX_TREND_VALUES
-#define MAX_TREND_VALUES 32
+#define MAX_TREND_VALUES 16
 #endif
 
 #include "Canvas.h"
@@ -40,6 +40,7 @@ class Trend : public Indicator{
 		int getYVal(int value);
 		int getMin();
 		int getMax();
+		void setMaxX(int maxX);
 		void autoFit();
 		
 		//Overriden methods
@@ -57,6 +58,7 @@ class Trend : public Indicator{
 		byte updates = 0;
 		byte yScaleWidth = 4 * FONT_X + 10; // four characters and a line of 10 pixels
 		byte xScaleHeight = FONT_Y + 10;
+		int maxX = MAX_TREND_VALUES;
 		//Methods
 		void drawScale();
 		void drawValues(INT16U color);

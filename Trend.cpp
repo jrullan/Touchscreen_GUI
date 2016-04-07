@@ -87,15 +87,34 @@ void Trend::drawScale(){
 	int xWidth = w - yScaleWidth;
 	int xHeight = h - xScaleHeight;
 	Tft.fillRectangle(xPos,yPos,xWidth,xHeight,bgColor);
+	yPos += borderWidth;
+
 	//--right
 	setNum(0);
-	Tft.drawVerticalLine(xPos+xWidth-borderWidth,yPos,10,borderColor);
 	Tft.drawString(buf,xPos+xWidth-FONT_X,yPos+10+FONT_Y,1,borderColor);
-	buf = "t-last";
-	buf[6] = 0;
-	Tft.drawVerticalLine(xPos+borderWidth,yPos,10,borderColor);
-	Tft.drawString(buf,xPos,yPos+10+FONT_Y,1,borderColor);
+
+	xWidth -= borderWidth;
+	int xp = xPos + xWidth;
 	
+	for(int i = 0; i < MAX_TREND_VALUES+1; i++){
+		xp = xPos + xWidth - i*xWidth/(MAX_TREND_VALUES);
+		Tft.drawVerticalLine(xp,yPos,10,borderColor);	
+		//draw alternating numbers
+		if(i>0 && !(i%2)){
+			setNum(map(i,0,MAX_TREND_VALUES,0,maxX));
+			Tft.drawString(buf,xp - FONT_X/2,yPos+10+FONT_Y,1,borderColor);	
+		}
+	}
+	
+}
+
+void Trend::setMaxX(int m){
+	int interval = m/MAX_TREND_VALUES;
+	if(interval*2 >= 60){ //-- auto adjust for minutes interval if too many seconds.
+		maxX = m/60;
+	}else{
+		maxX = m;
+	}
 }
 
 void Trend::drawValues(INT16U color){

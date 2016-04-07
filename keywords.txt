@@ -43,4 +43,7 @@ lastPressed	KEYWORD2
 scaleMax	KEYWORD2
 scaleMin	KEYWORD2
 enableAutoFit	KEYWORD2
-
+addValue	KEYWORD2
+hide	KEYWORD2
+show	KEYWORD2
+setMaxX	KEYWORD2
