@@ -41,7 +41,7 @@ class Trend : public Indicator{
 		int getMin();
 		int getMax();
 		void setMaxX(int maxX);
-		void autoFit();
+		void autoFit(bool scale);
 		
 		//Overriden methods
 		void show();
@@ -51,7 +51,7 @@ class Trend : public Indicator{
 		uint8_t* values;  // Array of values to plot
 		uint8_t vals;			// number of values in the array
 		bool forcedUpdate = false;
-		bool enableAutoFit = true;
+		bool enableAutoFit = false;
 		
 	private:
 		//Attributes

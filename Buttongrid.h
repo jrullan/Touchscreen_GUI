@@ -63,6 +63,7 @@ public:
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
 	unsigned char** labels = 0;
 	const char** names;
+	int highlightColor = YELLOW;
 	
 private:
 	//String text;

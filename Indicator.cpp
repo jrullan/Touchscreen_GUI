@@ -37,9 +37,9 @@ void Indicator::setHiLimit(unsigned int h, int color){
 }
 
 void Indicator::setLimits(unsigned int min, unsigned int sp, unsigned int max){
-	this->hiLimit = max;
-	this->lowLimit = min;
-	this->currentValue = sp;
+	//this->hiLimit = max;
+	//this->lowLimit = min;
+	//this->currentValue = sp;
 	
 	this->scaleMax = max;
 	this->scaleMin = min;

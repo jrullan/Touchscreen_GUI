@@ -211,21 +211,33 @@ int Trend::getMax(){
 	return val;
 }
 
-void Trend::autoFit(){
-	int min = getMin();
-	int max = getMax();
+void Trend::autoFit(bool scale){
+	this->drawValues(this->bgColor);	//erase original line
+	this->drawThresholdLines(false); //erase threshold lines	
 	
-	if(min <= scaleMin && min != 0){ 
-		scaleMin = min-5;
-	}else{
-		if(min-scaleMin > 5) scaleMin = min - 5;
+	if(scale){
+		int inc = 2;
+		int min = getMin();
+		int max = getMax();
+		
+		if(min <= scaleMin && min != 0){ 
+			scaleMin = min-inc;
+		}else{
+			if(min-scaleMin > inc) scaleMin = min - inc;
+		}
+		
+		if(max >= scaleMax){
+			scaleMax = max+inc;
+		}else{
+			if(scaleMax-max > inc) scaleMax = max + inc;
+		}
 	}
 	
-	if(max >= scaleMax){
-		scaleMax = max+5;
-	}else{
-		if(scaleMax-max > 5) scaleMax = max + 5;
-	}
+	drawYScale();
+	
+	this->drawThresholdLines(true);	
+  
+  this->drawValues(this->fgColor);	
 }
 
 // Adds a new value to the trend
@@ -268,16 +280,18 @@ void Trend::update(){
 	}
 	
 	if(enableAutoFit){
-		if(updates++ > MAX_TREND_VALUES){
-			this->drawThresholdLines(false); //erase threshold lines
-			autoFit();
-			drawYScale();
-			updates = 0;
+		if(values[0] >= scaleMax - 2 || values[0] <= scaleMin - 2){
+			autoFit(true);
+			return;
 		}
+		/*
+		 *if(updates++ > MAX_TREND_VALUES){
+			autoFit();
+			updates = 0;
+			return;
+		}*/
 	}
 	
 	this->drawThresholdLines(true);
-  
-  //-- drawValues
-  this->drawValues(this->fgColor);
+	this->drawValues(this->fgColor);	
 }

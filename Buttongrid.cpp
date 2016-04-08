@@ -299,19 +299,19 @@ void Buttongrid::setName(unsigned char id, char number){
 void Buttongrid::printName(unsigned char id){
 	const char* name = names[id];	
 	// Calculate characters in name
-	int i;
-	for(i=0;i<8;i++){
-		if(name[i] == 0) break;
+	int n;
+	for(n=0;n<8;n++){
+		if(name[n] == 0) break;
 	}
 
-	Serial.print(i);
+	Serial.print(n);
 	Serial.print(" characters for id: ");
 	Serial.print(id);
 	Serial.print(" ");
 	Serial.println(names[id]);
 
 	// If name is empty draw the id, else draw the name
-	if(i==0){
+	if(n==0){
 		setNum(id);
 	}else{
 		//i++;
@@ -321,11 +321,10 @@ void Buttongrid::printName(unsigned char id){
 		unsigned char colIndex = getColumn(id)-1;
 		unsigned char rowIndex = getRow(id)-1;
 	
-		// If there are no characters in the name then print the id and exit.	
-		int xPos = btnWidth/2 - (i*FONT_X*font_size)/2;//btnWidth/(2) - 6*digits -2;
+		int xPos = btnWidth/2 - (n*FONT_X*font_size)/2;
 		int yPos = btnHeight/(2) - 8;	
 	
-		xPos = x+(colIndex*btnWidth)+xPos+borderWidth;
+		xPos = x+(colIndex*btnWidth)+xPos+3*borderWidth;
 		yPos = y+yPos+(rowIndex*btnHeight);	
 	
 		Tft.drawString((char*)names[id],xPos, yPos, font_size, fgColor);
@@ -375,7 +374,7 @@ bool Buttongrid::checkTouch(Point* p){
 						
 						// Highlight currently pressed button
 						if(HIGHLIGHT == 1){
-							Tft.fillRectangle(boundX1,boundY1,btnWidth-borderWidth-1,btnHeight-borderWidth-1,YELLOW);
+							Tft.fillRectangle(boundX1,boundY1,btnWidth-borderWidth-1,btnHeight-borderWidth-1,highlightColor);
 						}
 						//setNum(num);
 						//setLabel(num,labels[r-1][c-1]);
