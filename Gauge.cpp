@@ -47,8 +47,8 @@ void Gauge::drawScale(){
 	
 	setNum(setpoint);
 	val = map(setpoint,scaleMin,scaleMax,h-borderWidth,borderWidth);
-	Tft.drawString(buf,x+FONT_SPACE,y+(val)-(FONT_Y>>1)-borderWidth,1,fgColor);
-	Tft.drawHorizontalLine(x+textWidth,y+(val)-borderWidth,10,fgColor);
+	Tft.drawString(buf,x+FONT_SPACE,y+(val)-(FONT_Y>>1)-borderWidth,1,setpointColor);
+	Tft.drawHorizontalLine(x+textWidth,y+(val)-borderWidth,10,setpointColor);
 		
 	setNum(scaleMin);
 	Tft.drawString(buf,x+2*FONT_SPACE,y+h-(FONT_Y),1,borderColor);

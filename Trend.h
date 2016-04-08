@@ -36,7 +36,7 @@ class Trend : public Indicator{
 			update();
 			forcedUpdate = false;
 		}
-		int getXVal(int value,int index);
+		int getXVal(int index);
 		int getYVal(int value);
 		int getMin();
 		int getMax();
@@ -60,7 +60,10 @@ class Trend : public Indicator{
 		byte xScaleHeight = FONT_Y + 10;
 		int maxX = MAX_TREND_VALUES;
 		//Methods
-		void drawScale();
+		void drawYScale();
+		void drawXScale();
+		void drawBorder();
+		void drawThresholdLines(bool colors);
 		void drawValues(INT16U color);
 };
 

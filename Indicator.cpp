@@ -51,6 +51,12 @@ void Indicator::setLowLimit(unsigned int l, int color){
 	this->lowLimitColor = color;
 }
 
+void Indicator::setSP(unsigned int sp, int color){
+	this->setpoint = sp;
+	this->setpointColor = color;
+}
+
+
 void Indicator::setNum(int num){
 	clear();
 	char numChar[BUF_SIZE];
@@ -74,6 +80,19 @@ void Indicator::setNum(int num){
 	
 	buf[chars]=0;
 }
+
+unsigned char Indicator::getTextLength(char* c){
+	char size = 0;
+	if(*c){
+    char* chars = c;
+    while(*chars){
+      *chars++;
+      size++;
+    }
+  }
+  return size;
+}
+
 
 //Overriden Methods
 

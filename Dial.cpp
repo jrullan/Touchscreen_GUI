@@ -97,7 +97,7 @@ void Dial::drawFace(){
     Y1 = getY(y,i,radius-tickSize);
     X2 = getX(x,i,radius-borderWidth);
     Y2 = getY(y,i,radius-borderWidth);    
-    Tft.drawLine(X1,Y1,X2,Y2,fgColor);
+    Tft.drawLine(X1,Y1,X2,Y2,setpointColor);
 	} 
 	
 	// Draw High limit line

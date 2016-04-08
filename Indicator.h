@@ -30,7 +30,9 @@ class Indicator : public Widget{
 		void setHiLimit(unsigned int h, int color);		
 		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
 		void setLowLimit(unsigned int l, int color);
+		void setSP(unsigned int sp, int color);
 		void setNum(int num);
+		unsigned char getTextLength(char* c);
 
 		
 		//Overriden methods
@@ -47,7 +49,8 @@ class Indicator : public Widget{
 		int lowLimitColor;
 		unsigned int scaleMax;
 		unsigned int scaleMin;
-		unsigned int setpoint;	
+		unsigned int setpoint;
+		int setpointColor;	
 		//bool isButton = false;
 
 	protected:
