@@ -41,37 +41,53 @@ void Trend::clear(){
 	}
 }
 
+/*
+int Trend::limit(int val, int min, int max){
+	if(val > max) val = max;
+	if(val < min) val = min;
+	return val;
+}
+*/
+
 void Trend::drawYScale(){
 	//Draw Y SCALE
 	int textWidth = 4 * FONT_X;
 	int lineX = x + textWidth - 1; //to separate from border
-	
+	//int textY;
+	//int minY = getYVal(scaleMax);	
+	//int maxY = getYVal(scaleMin + FONT_Y/2);
+
 	// Draw background
 	Tft.fillRectangle(x,y,yScaleWidth-borderWidth+1,h-xScaleHeight+borderWidth,bgColor);
 	
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
+	//textY = getYVal(scaleMax);
 	Tft.drawString(buf,x,getYVal(scaleMax),1,borderColor);
 	Tft.drawHorizontalLine(lineX,getYVal(scaleMax),10,borderColor);
 	
 	// Draw Setpoint value and line
 	setNum(setpoint); // Sets buf with setpoint value
+	//textY = getYVal(setpoint)-(FONT_Y/2);
 	Tft.drawString(buf,x,getYVal(setpoint)-(FONT_Y/2),1,setpointColor);
 	Tft.drawHorizontalLine(lineX,getYVal(setpoint),10,setpointColor);
 	
 	// Draw Min value and line
 	setNum(scaleMin); // Sets buf with scaleMin value
+	//textY = getYVal(scaleMin)-(FONT_Y);
 	Tft.drawString(buf,x,getYVal(scaleMin)-(FONT_Y),1,borderColor);
 	Tft.drawHorizontalLine(lineX,getYVal(scaleMin),10,borderColor);
 
 	// Draw HI and LOW limits values and lines
   if(hiLimit < scaleMax){
 	  setNum(hiLimit);
+	  //textY = getYVal(hiLimit)-(FONT_Y/2);
 	  Tft.drawString(buf,x,getYVal(hiLimit)-(FONT_Y/2),1,hiLimitColor);
 		Tft.drawHorizontalLine(lineX,getYVal(hiLimit),10,hiLimitColor);
   }
   if(lowLimit > scaleMin){
 	  setNum(lowLimit);
+	  //textY = getYVal(lowLimit)-(FONT_Y/2);
 	  Tft.drawString(buf,x,getYVal(lowLimit)-(FONT_Y/2),1,lowLimitColor);
 		Tft.drawHorizontalLine(lineX,getYVal(lowLimit),10,lowLimitColor);
   }
