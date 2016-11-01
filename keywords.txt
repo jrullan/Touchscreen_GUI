@@ -1,13 +1,17 @@
 // Classes
 Canvas	KEYWORD1
 Button	KEYWORD1
-Dial	KEYWORD1
-Gauge	KEYWORD1
-Trend	KEYWORD1
-Numkey	KEYWORD1
 Buttongrid	KEYWORD1
+Dial	KEYWORD1
 Display	KEYWORD1
+Gauge	KEYWORD1
+Indicator KEYWORD1
+Numkey	KEYWORD1
+Point	KEYWORD1
 Popup	KEYWORD1
+StackArray	KEYWORD1
+Trend	KEYWORD1
+Widget	KEYWORD1
 
 // Methods
 scan	KEYWORD2
