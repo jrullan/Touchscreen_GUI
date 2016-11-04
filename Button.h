@@ -33,6 +33,7 @@ public:
 	void drawText();
 	
 	char* getText();
+	long getNum();
 	void init();
 	void clear();
 	byte getTextLength(char* c);

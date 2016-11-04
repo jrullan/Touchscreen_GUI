@@ -11,6 +11,7 @@
 // Forward declaration of class Widget to solve issue with mutual 
 // includes
 #include "Widget.h"
+#include "Screen.h" 
 
 
 Canvas::Canvas(){
@@ -47,14 +48,72 @@ void Canvas::add(Widget* widget, int x, int y){
 	if(widget->visible) widget->show();
 }
 
+void Canvas::registerScreen(Screen* screen){
+	byte cnt = screen->widgets.count();
+	for(byte i=0;i<cnt;i++){
+		widgets.push(screen->widgets[i]);
+		if(screen->widgets[i]->visible) screen->widgets[i]->show();
+	}
+	//Serial.println("Registered screen");
+}
+
 // This method calculates the x,y coordinates of the touched point
 // according to the currently set orientation mode.
-Point Canvas::getTouchedPoint(){
+Point* Canvas::getTouchedPoint(){
   Point p = ts.getPoint();
-  p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
-  p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);
-  if(Tft.layoutMode == TFT_LANDSCAPE) p.toLandscape();
-  return p;
+  Point* ap;
+	//if(p.x != previousPoint.x || p.y != previousPoint.y){
+		if(millis() > touchSampling + TOUCH_SAMPLING_TIME){ //Debouncing of the touchscreen resistance
+
+			p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
+			p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);			
+			if(Tft.layoutMode == TFT_LANDSCAPE){
+				p.toLandscape();
+			}
+
+			touchSampling = millis();
+			
+			touchedPoint.x = p.x;
+			touchedPoint.y = p.y;
+						
+			// If using average, wait until buffer is full to return
+			// an average point, otherwise return the touched Point.
+			if(useAverage){
+				
+				if((touchBufferIndex == TOUCH_BUFFER_SIZE)){
+					touchBufferIndex = 0;
+					//ap = getAveragePoint();			
+					
+					//-----average the buffer values--------------------
+					for(int i=0; i<TOUCH_BUFFER_SIZE; i++){
+						averagePoint.x += xTouchBuffer[i];
+						averagePoint.y += yTouchBuffer[i];
+					}
+					averagePoint.x = averagePoint.x / TOUCH_BUFFER_SIZE;
+					averagePoint.y = averagePoint.y / TOUCH_BUFFER_SIZE;
+					//--------------------------------------------------
+					
+					xTouchBuffer[touchBufferIndex] = p.x;
+					yTouchBuffer[touchBufferIndex] = p.y;
+					touchBufferIndex++;
+								
+					return &averagePoint;
+				}else{
+					xTouchBuffer[touchBufferIndex] = p.x;
+					yTouchBuffer[touchBufferIndex] = p.y;
+					touchBufferIndex++;
+					
+					return NULL;
+				}
+			}else{
+				return &touchedPoint;
+			}
+			
+		}
+	//}
+
+	return NULL;
+
 }
 
 // This method sets the TFT orientation mode to landscape.
@@ -84,10 +143,10 @@ void Canvas::remove(Widget* widget){
  
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
-  Widget* widget = widgets.pop();
-  Tft.fillRectangle(widget->x,widget->y,widget->w,widget->h,this->bgColor);
-  redraw();
-  //delete widget;
+	Widget* widget = widgets.pop();
+	Tft.fillRectangle(widget->x,widget->y,widget->w,widget->h,this->bgColor);
+	redraw();
+	//delete widget;
 	return widget;
 }
 
@@ -95,22 +154,46 @@ Widget* Canvas::pop(){
 // If an event is detected, all registered widgets are notified of the event by
 // calling its event handler function.
 bool Canvas::scan(){
+
 	if(millis()>lastMillis + debounceTime){ //Debouncing of the touchscreen resistance
-    Point tP = getTouchedPoint();
-    //Serial.print("Touched x = ");
-    //Serial.print(tP.x);
-    //Serial.print(" Touched y = ");
-    //Serial.println(tP.y);
-    if(Tft.layoutMode == TFT_LANDSCAPE){
-    	if(tP.x > 319 || tP.y > 239) return false;
-    }else{
-    	if(tP.x > 239 || tP.y > 319) return false;
-    }
-    touchWidgets(&tP); //Update all buttons on Canvas :)
-    lastMillis=millis();
-  }
+		Point* tP = getTouchedPoint();
+
+		//Early exits
+		if(tP == NULL) return false;
+		if(!inBounds(tP)){
+			/*if(useAverage){
+				averagePoint.x = 1000;
+				averagePoint.y = 1000;
+			}*/
+			return false;
+		}	
+		
+		/*
+		Serial.print("Touched x = ");
+		Serial.print(x);
+		Serial.print(" Touched y = ");
+		Serial.println(y);
+		*/
+		
+		touchWidgets(tP); //Update all buttons on Canvas :)
+		lastMillis=millis();
+	}else{
+		return false;
+	}
   return true;
 }
+
+
+bool Canvas::inBounds(Point* tP){
+	if(Tft.layoutMode == TFT_LANDSCAPE){
+		if(tP->x > 319 || tP->y > 239) return false;
+	}else{
+		if(tP->x > 239 || tP->y > 319) return false;
+	}
+	return true;
+}
+
+
 
 // This method sets the canvas debouncing time to a value. By default it is 0.
 void Canvas::setDebounce(unsigned int d){
@@ -134,9 +217,11 @@ void Canvas::touchWidgets(Point* p){
 }
 
 // This method updates the touchedPoint attribute of the canvas.
-void Canvas::updateTouch(Point* p){
+/*
+ * void Canvas::updateTouch(Point* p){
 	this->touchedPoint = p;
 }
+*/
 
 // This method calls every widget's show method to force them to redraw.
 void Canvas::redraw(){

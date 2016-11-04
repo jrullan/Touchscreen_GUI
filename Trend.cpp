@@ -284,10 +284,12 @@ void Trend::addValue(uint8_t val){
 //Overriden virtual methods
 void Trend::show(){
 	//Serial.print("Show");Serial.println();
-  this->drawYScale();
-  this->drawXScale();
-  this->drawBorder();
-  this->update();
+	if(this->visible){
+	  this->drawYScale();
+	  this->drawXScale();
+	  this->drawBorder();
+	  this->update();
+	}
 }
 
 void Trend::update(){

@@ -26,14 +26,17 @@
 #include "TFTv2.h"
 
 #define DEBOUNCE 0
-
+#define TOUCH_SAMPLING_TIME 100
+#define TOUCH_BUFFER_SIZE 5
 
 // Forward declaration of class Widget to solve issue with mutual 
 // includes
 class Widget;
+class Screen;
 
 // Declaration of static TouchScreen object
 static TouchScreen ts = TouchScreen(XP,YP,XM,YM);
+
 
 class Canvas
 {
@@ -43,8 +46,9 @@ public:
 	virtual ~Canvas();
 
 	void add(Widget* widget, int x, int y);
+	void registerScreen(Screen* screen);
 	
-	Point getTouchedPoint();
+	Point* getTouchedPoint();
 	void init();
 	void init(int mode);
 	void portrait();
@@ -55,13 +59,21 @@ public:
 	void setDebounce(unsigned int d);
 	void updateTouch(Point* p);
 	void redraw();
+	bool inBounds(Point* p);
 	
-	Point* touchedPoint;
+	int touchBufferIndex = 0;
+	int xTouchBuffer[TOUCH_BUFFER_SIZE];
+	int yTouchBuffer[TOUCH_BUFFER_SIZE];
+	
+	bool useAverage = false;
+	Point averagePoint;
+	Point touchedPoint;	
 	StackArray<Widget*> widgets;
 	int bgColor;
 
 private:
 	unsigned long lastMillis;
+	unsigned long touchSampling;
 	unsigned int debounceTime;
 
 };

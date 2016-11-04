@@ -12,6 +12,7 @@ Popup	KEYWORD1
 StackArray	KEYWORD1
 Trend	KEYWORD1
 Widget	KEYWORD1
+Screen	KEYWORD1
 
 // Methods
 scan	KEYWORD2
@@ -53,3 +54,4 @@ show	KEYWORD2
 setMaxX	KEYWORD2
 setSP	KEYWORD2
 hide	KEYWORD2
+getText	KEYWORD2

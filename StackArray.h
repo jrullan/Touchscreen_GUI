@@ -58,6 +58,8 @@ class StackArray {
   public:
     // init the stack (constructor).
     StackArray ();
+    
+    StackArray(int size);
 
     // clear the stack (destructor).
     ~StackArray ();
@@ -96,7 +98,7 @@ class StackArray {
     void blink () const;
 
     // the initial size of the stack.
-    static const int initialSize = 2;
+    static const int initialSize = 20;
 
     // the pin number of the on-board led.
     static const int ledPin = 13;
@@ -124,6 +126,27 @@ StackArray<T>::StackArray () {
   // set the initial size of the stack.
   size = initialSize;
 }
+
+
+// init the stack (constructor).
+template<typename T>
+StackArray<T>::StackArray (int s) {
+  size = 0;       // set the size of stack to zero.
+  top = 0;        // set the initial top index of the stack.
+  printer = NULL; // set the printer of stack to point nowhere.
+
+  // allocate enough memory for the array.
+  contents = (T *) malloc (sizeof (T) * s);
+
+  // if there is a memory allocation error.
+  if (contents == NULL)
+    exit ("STACK: insufficient memory to initialize stack.");
+
+  // set the initial size of the stack.
+  size = s;
+}
+
+
 
 // clear the stack (destructor).
 template<typename T>
@@ -177,9 +200,9 @@ T StackArray<T>::pop () {
   T item = contents[--top];
 
   // shrink size of array if necessary.
-  if (!isEmpty () && (top <= size / 4))
+  /*if (!isEmpty () && (top <= size / 4))
     resize (size / 2);
-
+*/
   // return the top item from the array.
   return item;
 }

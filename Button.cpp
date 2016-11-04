@@ -161,6 +161,16 @@ char* Button::getText(){
   return text;
 }
 
+long Button::getNum(){
+	char size = getTextSize();
+	long result = 0;
+	for(int i = 0; i<size; i++){
+		if(text[i] == '.') break;  // Only process integer side
+		result = result * 10 + text[i]-'0';
+	}
+	return result;
+}
+
 void Button::fitToText(){
   if(*text){
     char* chars = text;
