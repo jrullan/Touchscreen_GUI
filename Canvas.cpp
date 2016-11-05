@@ -48,13 +48,17 @@ void Canvas::add(Widget* widget, int x, int y){
 	if(widget->visible) widget->show();
 }
 
-void Canvas::registerScreen(Screen* screen){
+void Canvas::setScreen(Screen* screen){
+	currentScreen->hide();
 	currentScreen = screen;
+	currentScreen->show();
+	/*
 	byte cnt = screen->widgets.count();
 	for(byte i=0;i<cnt;i++){
 		widgets.push(screen->widgets[i]);
 		if(screen->widgets[i]->visible) screen->widgets[i]->show();
 	}
+	*/
 	//Serial.println("Registered screen");
 }
 
@@ -229,7 +233,11 @@ void Canvas::touchWidgets(Point* p){
 
 // This method calls every widget's show method to force them to redraw.
 void Canvas::redraw(){
-	for(int i=0; i<widgets.count(); i++){
-		if(widgets[i]->visible) widgets[i]->show();
+	if(currentScreen != NULL){
+		currentScreen->show();
+	}else{
+		for(int i=0; i<widgets.count(); i++){
+			if(widgets[i]->visible) widgets[i]->show();
+		}
 	}
 }

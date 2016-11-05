@@ -21,17 +21,16 @@ void Screen::add(Widget* w, int x, int y){
 }
 
 void Screen::show(){
-	byte cnt = widgets.count();
+	byte cnt = this->widgets.count();
 	for(int i=0;i<cnt;i++){
-		if(widgets[i]->visible) widgets[i]->show();
+		if(this->widgets[i]->visible) this->widgets[i]->show();
 	}	
 }
 
+
+/* 
+ */
 void Screen::hide(){
-	byte cnt = widgets.count();
-	for(int i=0;i<cnt;i++){
-		widgets[i]->visible = false;
-	}
 	Tft.fillScreen();
 }
 

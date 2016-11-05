@@ -46,7 +46,7 @@ public:
 	virtual ~Canvas();
 
 	void add(Widget* widget, int x, int y);
-	void registerScreen(Screen* screen);
+	void setScreen(Screen* screen);
 	
 	Point* getTouchedPoint();
 	void init();
