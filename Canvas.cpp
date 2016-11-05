@@ -52,6 +52,7 @@ void Canvas::setScreen(Screen* screen){
 	currentScreen->hide();
 	currentScreen = screen;
 	currentScreen->show();
+	showWidgets();
 	/*
 	byte cnt = screen->widgets.count();
 	for(byte i=0;i<cnt;i++){
@@ -179,8 +180,9 @@ bool Canvas::scan(){
 		Serial.print(" Touched y = ");
 		Serial.println(y);
 		*/
+		touchWidgets(tP);
 		if(currentScreen == NULL){
-			touchWidgets(tP); //Update all buttons on Canvas :)
+			//touchWidgets(tP); //Update all buttons on Canvas :)
 		}else{
 			currentScreen->touchWidgets(tP);
 		}
@@ -235,9 +237,13 @@ void Canvas::touchWidgets(Point* p){
 void Canvas::redraw(){
 	if(currentScreen != NULL){
 		currentScreen->show();
-	}else{
-		for(int i=0; i<widgets.count(); i++){
-			if(widgets[i]->visible) widgets[i]->show();
-		}
+	}
+	
+	showWidgets();
+}
+
+void Canvas::showWidgets(){
+	for(int i=0; i<widgets.count(); i++){
+		if(widgets[i]->visible) widgets[i]->show();
 	}
 }

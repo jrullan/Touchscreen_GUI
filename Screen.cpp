@@ -44,8 +44,8 @@ void Screen::touchWidgets(Point* p){
 	for(int i=1; i<=cnt; i++){
 		j = cnt-i;
 		
-		Serial.print("Sending touch event to ");
-		Serial.println(Widget::getType(widgets[j]));
+		//Serial.print("Sending touch event to ");
+		//Serial.println(Widget::getType(widgets[j]));
 		
 		if(widgets[j]->isButton && widgets[j]->visible){
 			if(!widgets[j]->checkTouch(p)) break;  //Break if widget blocks event after handling it.
