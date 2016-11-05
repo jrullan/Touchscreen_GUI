@@ -26,8 +26,10 @@ class Popup : public Button
 public:
 	//Methods
 	Popup();
-	Popup(unsigned char type,char* message);
+	//Popup(unsigned char type,char* message);
+	Popup(char* message);
 	virtual ~Popup();
+	
 	void init();
 	void drawFrame(int pX, int pY, int wW, int hH);
 	void drawText(int pX, int pY, int wW, int hH, char* t);
@@ -40,13 +42,13 @@ public:
 	int getBtnHeight();
 	int getBtnWidth();
 	
-		//Overriden
-		virtual bool checkTouch(Point* p);
-		virtual void show();
-		virtual void update();	
+	//Overriden
+	virtual bool checkTouch(Point* p);
+	virtual void show();
+	virtual void update();	
 	
 	//Attributes
-	unsigned char type; // Type of Pop-up (One or Two buttons)
+	unsigned char popup_type; // Type of Pop-up (One or Two buttons)
 	unsigned char fontSize = 2;
 
 private:

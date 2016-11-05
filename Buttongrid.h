@@ -27,7 +27,7 @@ public:
 	Buttongrid(unsigned char gridSize);
 	Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	virtual ~Buttongrid();
-
+	
 	void drawGrid();
 	void init();
 	// This is a modified declaration for setting the event handler function

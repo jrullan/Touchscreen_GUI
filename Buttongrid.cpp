@@ -70,6 +70,7 @@ Buttongrid::~Buttongrid(){
 
 void Buttongrid::init(){
 	Button::init();
+	type = 0x31;
 	borderWidth = 2;
 	charPos = 0;
 	

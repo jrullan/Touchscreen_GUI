@@ -18,6 +18,7 @@ Display::~Display(){
 }
 
 void Display::init(){
+	type = 0x10;
 	borderWidth = 2;
 	charPos = 0;
 }

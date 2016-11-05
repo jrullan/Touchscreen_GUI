@@ -20,6 +20,7 @@ unsigned int Indicator::getCV(){
 }
 
 void Indicator::init(){
+	type = 0x20;
 	x=0;
 	y=0;
 	borderWidth=3;

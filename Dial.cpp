@@ -18,6 +18,7 @@ Dial::~Dial(){}
 //Methods
 void Dial::init(){
 	Indicator::init();
+	type = 0x21;
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
 	this->currentValue = setpoint;

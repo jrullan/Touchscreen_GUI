@@ -20,19 +20,19 @@ public:
 	Display();
 	Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	virtual ~Display();
-
+	
 	void append(char* c);
 	void drawFrame();
-  void fitToText();	
-  long getNum();
+	void fitToText();	
+	long getNum();
 	char* getText();
 	unsigned char getTextSize();
 	void init();
 	//void setText(String _text);
 	void setNum(int num);
-  void setText(char* _text);
-  void deleteChar();
-  void clear();
+	void setText(char* _text);
+	void deleteChar();
+	void clear();
   
 	//Overriden methods
 	virtual bool checkTouch(Point* p);

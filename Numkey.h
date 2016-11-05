@@ -21,17 +21,18 @@ public:
 	void append(char* c);
 	void appendNum(unsigned char c);
 	void drawFrame();
-  void fitToText();	
-  long getNum();
+	void fitToText();	
+	long getNum();
 	char* getText();
 	byte getTextSize();
 	void init();
 	
 	void setNum(int num);
 	void setNumkeyEventHandler(void (*functionPointer)(Numkey*));
-  void deleteChar();
-  void clear();
-  
+	void deleteChar();
+	void clear();
+	void hide();
+	
 	//Overriden methods
 	virtual bool checkTouch(Point* p);
 	virtual void show();

@@ -41,8 +41,8 @@ public:
 	void setDebounce(unsigned int d);
 	void setNum(int n);
 	void setText(char* _text);
-  //void setSize(char _size);
-  void fitToText();
+	//void setSize(char _size);
+	void fitToText();
   
 	//Overriden methods
 	bool checkTouch(Point* p);

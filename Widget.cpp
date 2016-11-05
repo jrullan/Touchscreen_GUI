@@ -40,3 +40,27 @@ void Widget::setSize(int width, int height){
 	this->w = width;
 	this->h = height;
 }
+
+static char* Widget::getType(Widget* w){
+	if((w->type & 0xFF) == 0x00){ 
+		return "widget";
+	}else if ((w->type & 0xFF) == 0x10){
+		return "display";
+	}else if ((w->type & 0xFF) == 0x20){
+		return "indicator";
+	}else if ((w->type & 0xFF) == 0x21){
+		return "dial";
+	}else if ((w->type & 0xFF) == 0x22){
+		return "gauge";
+	}else if ((w->type & 0xFF) == 0x23){
+		return "trend";
+	}else if ((w->type & 0xFF) == 0x30){
+		return "button";
+	}else if ((w->type & 0xFF) == 0x31){
+		return "buttongrid";
+	}else if ((w->type & 0xFF) == 0x32){
+		return "numkey";
+	}else if ((w->type & 0xFF) == 0x33){
+		return "popup";
+	}
+}

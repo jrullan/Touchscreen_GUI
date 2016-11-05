@@ -35,6 +35,7 @@ Button::~Button(){
  * Initialization of several common parameters
  */
 void Button::init(){
+	type = 0x30;
 	isButton = true;
 	touched = false;
 	borderWidth = 2;
@@ -190,13 +191,15 @@ void Button::fitToText(){
  * Check if the touched point is within bounds of this widget.
  */
 bool Button::checkTouch(Point* p){
-	//Serial.println("Button checkTouch called");
+	//Serial.print("Checking button ");Serial.println(text);
 	if(lastMillis + debounceTime < millis()){ 
 		if((p->x > x) && (p->x < x + w) && (p->y > y) && (p->y < y+h)){
 			touched = !touched;
 			eventHandler(this);
 			lastMillis = millis();
-			//Serial.print("Button ");Serial.print(text);Serial.println(" pressed");
+			//block = true;
+			Serial.print("Button ");Serial.print(text);Serial.println(" pressed");
+			return false;
 		}
 	}
 	// if block is true return false, so canvas will not continue to 

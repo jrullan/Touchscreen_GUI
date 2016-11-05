@@ -65,9 +65,12 @@ public:
 	int xTouchBuffer[TOUCH_BUFFER_SIZE];
 	int yTouchBuffer[TOUCH_BUFFER_SIZE];
 	
+	// EVALUATE TO DELETE:
 	bool useAverage = false;
 	Point averagePoint;
 	Point touchedPoint;	
+	
+	Screen* currentScreen = NULL;
 	StackArray<Widget*> widgets;
 	int bgColor;
 

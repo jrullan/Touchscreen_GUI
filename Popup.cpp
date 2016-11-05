@@ -4,7 +4,8 @@ Popup::Popup(){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 }
 
-Popup::Popup(unsigned char type, char* message){
+//Popup::Popup(unsigned char type, char* message){
+Popup::Popup(char* message){
 	unsigned char text_length = getTextLength(message);
 	if(text = (char *)malloc(text_length+1)) memset(text,0,text_length+1); //Had to add one more, to avoid some bug
 	if(btn1Text = (char *)malloc(DISPLAY_SIZE+1)) memset(btn1Text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
@@ -22,6 +23,7 @@ Popup::~Popup(){
 
 void Popup::init(){
 	Button::init();
+	type = 0x33;
 	this->borderWidth = 2;
 	this->fontSize = 2;
 	this->visible = false; // This widget should not be visible by default
@@ -37,15 +39,15 @@ void Popup::drawFrame(int pX, int pY, int wW, int hH){
 void Popup::draw(){
 	int btnPoX, btnPoY;
 	
-	if(type==POPUP_OK){
+	if(popup_type==POPUP_OK){
 		btn1Text = "Ok";
 		btn2Text = 0;
 	}
-	if(type==POPUP_YES_NO){
+	if(popup_type==POPUP_YES_NO){
 		btn1Text = "Yes";
 		btn2Text = "No";
 	}
-	if(type==POPUP_OK_CANCEL){
+	if(popup_type==POPUP_OK_CANCEL){
 		btn1Text = "Ok";
 		btn2Text = "Cancel";
 	}
@@ -58,9 +60,9 @@ void Popup::draw(){
 	this->drawText(x,y,w,h-getBtnHeight(),text);
 	//Serial.println(text);
 	
-	// Draw buttons (One or Two based on type)
+	// Draw buttons (One or Two based on popup_type)
 	btnPoY = y+h-getBtnHeight()-10;
-	if(type > POPUP_OK){ // Two buttons
+	if(popup_type > POPUP_OK){ // Two buttons
 		btnPoX = x+w/2-(getBtnWidth()*2+10)/2;
 		//Button 1
 		drawFrame(btnPoX, btnPoY, getBtnWidth(), getBtnHeight());
@@ -136,7 +138,7 @@ bool Popup::checkTouch(Point* p){
 		if((p->x > x+borderWidth) && (p->x < x+w-borderWidth) && (p->y > y+borderWidth) && (p->y < y+h-borderWidth)){
 						
 			// Check which button receives the event
-			if(type > POPUP_OK){
+			if(popup_type > POPUP_OK){
 				//Button 1 event
 				boundX1 = x+(w-(getBtnWidth()*2+10))/2;
 				boundX2 = boundX1 + getBtnWidth();

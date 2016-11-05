@@ -19,7 +19,7 @@ Trend::~Trend(){}
 //Methods
 void Trend::init(){
 	Indicator::init();
-	
+	type = 0x23;
 	// Reserve memory for trend values
 	if(values = (uint8_t *)malloc(MAX_TREND_VALUES)){ 
 		memset(values,0,MAX_TREND_VALUES*sizeof(uint8_t));

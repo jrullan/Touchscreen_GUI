@@ -19,6 +19,7 @@ Numkey::~Numkey(){
 
 void Numkey::init(){
 	Button::init();
+	type = 0x32;
 	borderWidth = 2;
 	charPos = 0;
 	autoremove = true;
@@ -228,6 +229,7 @@ void Numkey::clear(){
 //Overriden virtual methods
 
 bool Numkey::checkTouch(Point* p){
+	Serial.println("Numkey event");
 	int boundX1, boundX2, boundY1, boundY2;
 	int btnWidth = w/3;
 	int btnHeight = h/5;
@@ -263,7 +265,7 @@ bool Numkey::checkTouch(Point* p){
 							eventHandler(this);		// <<<------ Event handler called when = signed is pressed
 							if(autoremove){
 								if(myCanvas->widgets.peek() == this){ // check if top widget is this numkey
-									myCanvas->pop();						// Remove this numkey from the canvas...
+									myCanvas->pop();				  // Remove this numkey from the canvas...
 								}
 							}
 						}else{
@@ -282,7 +284,18 @@ bool Numkey::checkTouch(Point* p){
 
 void Numkey::show(){
 	drawFrame();
-  update();
+	update();
+	if(!visible) visible = true;
+}
+
+/* New method to make it easier to use,
+ * automatically redraw the canvas when hidden.
+ */
+void Numkey::hide(){
+	Widget::hide();
+	visible = false;
+	//Tft.fillRectangle(x,y,w,h,this->canvas->bgColor);
+	this->myCanvas->redraw();
 }
 
 void Numkey::update(){

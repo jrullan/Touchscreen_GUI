@@ -41,6 +41,21 @@ public:
 	Widget();
 	virtual ~Widget();
 	
+	char type = 0x00;
+	/*
+	 * Widgets types:
+	 * 
+	 * Widget - 		0x00
+	 * 	Display - 		0x10
+	 * 	Indicator - 	0x20
+	 * 		Dial -		0x21
+	 * 		Gauge -		0x22
+	 * 		Trend -		0x23
+	 * 	Button -		0x30
+	 * 		Buttongrid-	0x31
+	 * 		Numkey -	0x32
+	 * 		Popup - 	0x33
+	 */ 
 	int bgColor;
 	int borderColor;
 	int borderWidth;
@@ -58,6 +73,7 @@ public:
 	void setCanvas(Canvas* c);
 	void setColors(int bgColor,int fgColor, int borderColor);
 	void setSize(int width, int height);
+	static char* getType(Widget* w);
 	
 	//Pure Virtual methods
 	virtual bool checkTouch(Point* p)=0;

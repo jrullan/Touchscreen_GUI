@@ -49,6 +49,7 @@ void Canvas::add(Widget* widget, int x, int y){
 }
 
 void Canvas::registerScreen(Screen* screen){
+	currentScreen = screen;
 	byte cnt = screen->widgets.count();
 	for(byte i=0;i<cnt;i++){
 		widgets.push(screen->widgets[i]);
@@ -174,8 +175,11 @@ bool Canvas::scan(){
 		Serial.print(" Touched y = ");
 		Serial.println(y);
 		*/
-		
-		touchWidgets(tP); //Update all buttons on Canvas :)
+		if(currentScreen == NULL){
+			touchWidgets(tP); //Update all buttons on Canvas :)
+		}else{
+			currentScreen->touchWidgets(tP);
+		}
 		lastMillis=millis();
 	}else{
 		return false;

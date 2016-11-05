@@ -18,6 +18,7 @@ Gauge::~Gauge(){}
 //Methods
 void Gauge::init(){
 	Indicator::init();
+	type = 0x22;
 	borderWidth=2;
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
