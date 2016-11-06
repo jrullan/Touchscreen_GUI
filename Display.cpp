@@ -1,11 +1,11 @@
 #include "Display.h"
 
 Display::Display(){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
 }
 
 Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
 	x = 0;
 	y = 0;
 	this->setSize(width,height);
@@ -54,13 +54,13 @@ void Display::append(char* c){
 unsigned char Display::getTextLength(char* c){
 	char size = 0;
 	if(*c){
-    char* chars = c;
-    while(*chars){
-      *chars++;
-      size++;
-    }
-  }
-  return size;
+		char* chars = c;
+		while(*chars){
+		  *chars++;
+		  size++;
+		}
+	}
+	return size;
 }
 
 void Display::fitToText(){
@@ -118,11 +118,12 @@ void Display::setNum(int num){
 
 void Display::setText(char* _text){
 	
-	for(int i=0; i<DISPLAY_SIZE-1;i++){
+	for(int i=0; i<8;i++){
 		text[i] = _text[i];
+		Serial.print("char ");Serial.println(text[i]);
 	}
 	update();
-  //Serial.print("Set text to ");Serial.println(text);
+	Serial.print("Set text to ");Serial.println(text);
 }
 
 void Display::deleteChar(){

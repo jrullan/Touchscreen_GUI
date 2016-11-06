@@ -98,7 +98,7 @@ class StackArray {
     void blink () const;
 
     // the initial size of the stack.
-    static const int initialSize = 20;
+    static const int initialSize = 2;
 
     // the pin number of the on-board led.
     static const int ledPin = 13;
