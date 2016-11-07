@@ -39,6 +39,11 @@ public:
 	//void setText(char* _text, char* _btn1, char* _btn2 = NULL);
 	void setText(char* _text);
 	
+	//void show(void (*eH)(Button*),Button*);
+	void show(Button*);
+	void hide();
+	void reset();
+	
 	int getBtnHeight();
 	int getBtnWidth();
 	
@@ -50,7 +55,10 @@ public:
 	//Attributes
 	unsigned char popup_type; // Type of Pop-up (One or Two buttons)
 	unsigned char fontSize = 2;
-
+	void (*targetEventHandler)(Button*); //store a reference to another button's event handler
+	Button* targetButton;
+	char selection = NULL;
+	
 private:
 	//Methods
 	

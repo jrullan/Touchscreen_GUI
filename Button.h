@@ -50,10 +50,11 @@ public:
 	bool block = false;
 	unsigned long lastMillis;
 	
+	void (*eventHandler)(Button*);
 protected:	
 	unsigned int debounceTime;	
 	//A pointer to the event handler function.
-	void (*eventHandler)(Button*);	
+	//void (*eventHandler)(Button*);	
 
 private:
 	bool isRound;

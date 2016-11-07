@@ -180,12 +180,15 @@ bool Canvas::scan(){
 		Serial.print(" Touched y = ");
 		Serial.println(y);
 		*/
-		touchWidgets(tP);
-		if(currentScreen == NULL){
-			//touchWidgets(tP); //Update all buttons on Canvas :)
-		}else{
-			currentScreen->touchWidgets(tP);
+		
+		// Send event to canvas widgets, then to screen widgets
+		// if no canvas widget blocks the event.
+		if(touchWidgets(tP)){
+			if(currentScreen != NULL){
+				currentScreen->touchWidgets(tP);
+			}
 		}
+		
 		lastMillis=millis();
 	}else{
 		return false;
@@ -214,16 +217,17 @@ void Canvas::setDebounce(unsigned int d){
  * Checks for a touch event and notifies all subscribed widgets. The notification
  * involves calling the widget's checkTouch method and passing the touched Point.
  */
-void Canvas::touchWidgets(Point* p){
+bool Canvas::touchWidgets(Point* p){
 	byte cnt = widgets.count();
 	for(int i=1; i<=cnt; i++){
 		//Serial.print("Widget ");Serial.print(cnt-i);Serial.print(" isButton"); Serial.println(widgets[cnt-i]->isButton);
 		//widgets[cnt-i]->isButton ? Serial.println(" true") : Serial.println(" false");
 		// Only send touch event to visible Buttons
 		if(widgets[cnt-i]->isButton && widgets[cnt-i]->visible){
-			if(!widgets[cnt-i]->checkTouch(p)) break;  //Break if widget blocks event after handling it.
+			if(!widgets[cnt-i]->checkTouch(p)) return false;  //Break if widget blocks event after handling it.
 		}
 	}
+	return true;
 }
 
 // This method updates the touchedPoint attribute of the canvas.

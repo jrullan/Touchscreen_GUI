@@ -1,16 +1,16 @@
 #include "Popup.h"
 
 Popup::Popup(){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
 }
 
 //Popup::Popup(unsigned char type, char* message){
 Popup::Popup(char* message){
 	unsigned char text_length = getTextLength(message);
 	if(text = (char *)malloc(text_length+1)) memset(text,0,text_length+1); //Had to add one more, to avoid some bug
-	if(btn1Text = (char *)malloc(DISPLAY_SIZE+1)) memset(btn1Text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
-	if(btn2Text = (char *)malloc(DISPLAY_SIZE+1)) memset(btn2Text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
-	
+	if(btn1Text = (char *)malloc(8+1)) memset(btn1Text,0,8+1); //Had to add one more, to avoid some bug
+	if(btn2Text = (char *)malloc(8+1)) memset(btn2Text,0,8+1); //Had to add one more, to avoid some bug
+	text = message;
 	this->init();
 }
 
@@ -33,8 +33,19 @@ void Popup::drawFrame(int pX, int pY, int wW, int hH){
 	for(unsigned char i=0; i<borderWidth; i++)
 	{
 		Tft.drawRectangle(pX+i,pY+i,wW-i*2,hH-i*2,borderColor);
-	}	
+	}
+	//Serial.println("Drew frame");
 }
+
+
+void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
+	if(!t) return;
+	int stringX = pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
+	int stringY = pY+hH/2-(FONT_Y*fontSize)/2;
+	Tft.drawString(t,stringX,stringY,fontSize,fgColor);
+	//Serial.println("Drew text");
+}
+
 
 void Popup::draw(){
 	int btnPoX, btnPoY;
@@ -82,15 +93,7 @@ void Popup::draw(){
 			// Btn1 Message
 			drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),btn1Text);
 	}
-	
-
-}
-
-void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
-	if(!t) return;
-	int stringX = pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
-	int stringY = pY+hH/2-(FONT_Y*fontSize)/2;
-	Tft.drawString(t,stringX,stringY,fontSize,fgColor);
+	//Serial.println("Drew all");
 }
 
 int Popup::getBtnHeight(){
@@ -117,12 +120,14 @@ void Popup::setText(char* _text, char* _btn1, char* _btn2){
 }
 */
 
+
 void Popup::processEvent(unsigned char btnNo){
 	//process event
-	this->visible = false; // Make widget not visible
-	Tft.fillScreen(); // Erase screen (Black out)
-	eventHandler(this,btnNo); // Call event handler	& pass button number	
+	selection = btnNo;
+	eventHandler(this,btnNo); // Call event handler	& pass button number
+	//Serial.println("Processing Event");	
 }
+
 
 // Overrides
 bool Popup::checkTouch(Point* p){
@@ -134,9 +139,9 @@ bool Popup::checkTouch(Point* p){
 	btnHeight = getBtnHeight();
 	
 	if(lastMillis + debounceTime < millis()){ 
-		//Serial.println("Popup received touch event");
+		
 		if((p->x > x+borderWidth) && (p->x < x+w-borderWidth) && (p->y > y+borderWidth) && (p->y < y+h-borderWidth)){
-						
+			//Serial.println("Popup received touch event");						
 			// Check which button receives the event
 			if(popup_type > POPUP_OK){
 				//Button 1 event
@@ -146,6 +151,7 @@ bool Popup::checkTouch(Point* p){
 				boundY2 = boundY1 + h;
 				if((p->x > boundX1)&&(p->x < boundX2) && (p->y > boundY1)&&(p->y < boundY2)){
 					processEvent(1);
+					//eventHandler(this,1);
 					return false;
 				}
 				
@@ -156,6 +162,7 @@ bool Popup::checkTouch(Point* p){
 				//boundY2 = boundY1 + h;
 				if((p->x > boundX1)&&(p->x < boundX2) && (p->y > boundY1)&&(p->y < boundY2)){
 					processEvent(2);
+					//eventHandler(this,2);
 					return false;
 				}				
 			
@@ -166,6 +173,7 @@ bool Popup::checkTouch(Point* p){
 				boundY2 = boundY1 + h;
 				if((p->x > boundX1)&&(p->x < boundX2) && (p->y > boundY1)&&(p->y < boundY2)){
 					processEvent(1);
+					//eventHandler(this,1);
 					return false;
 				}
 			}
@@ -174,13 +182,30 @@ bool Popup::checkTouch(Point* p){
 		touched = !touched;
 		lastMillis = millis();		
 	}// -- debounce
-	return true; // <--- False means block further event checking.
+	return false; // <--- False means block further event checking.
 }
 
+//void Popup::show(void (*eH)(Button*),Button* btn){
+void Popup::show(Button* btn){
+	targetEventHandler = btn->eventHandler;
+	targetButton = btn;
+	show();
+}
 
 void Popup::show(){
 	draw();
 	update();
+	this->visible = true;
+}
+
+void Popup::hide(){
+	this->visible = false;	
+	Tft.fillRectangle(x,y,w,h,myCanvas->bgColor);
+	myCanvas->redraw();
+}
+
+void Popup::reset(){
+	selection = NULL;
 }
 
 void Popup::update(){

@@ -54,7 +54,7 @@ public:
 	void portrait();
 	Widget* pop();
 	void landscape();
-	void touchWidgets(Point* p);
+	bool touchWidgets(Point* p);
 	void showWidgets();
 	bool scan();
 	void setDebounce(unsigned int d);

@@ -120,10 +120,10 @@ void Display::setText(char* _text){
 	
 	for(int i=0; i<8;i++){
 		text[i] = _text[i];
-		Serial.print("char ");Serial.println(text[i]);
+		//Serial.print("char ");Serial.println(text[i]);
 	}
 	update();
-	Serial.print("Set text to ");Serial.println(text);
+	Serial.print("Display set to ");Serial.println(text);
 }
 
 void Display::deleteChar(){
