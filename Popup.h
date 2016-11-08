@@ -40,6 +40,25 @@ public:
 	void setText(char* _text);
 	
 	//void show(void (*eH)(Button*),Button*);
+	/*
+	 * This version of show takes a pointer to a button
+	 * and uses it to trigger that button's 
+	 * registered event handler if the selection of the popup is 1
+	 * otherwise it will not forward the event. Since this popup is 
+	 * probably shown initially when that button is pressed,
+	 * the decision to continue upon a 1 selection should be done there.
+	 * 
+	 * Example code in the button event's handler:
+	 * 
+	 * void btnEventHandler(Button* btn){ 
+	 * 		if(popup.selection == NULL){
+	 * 			popup.show(btn);
+	 * 		}else{ 
+	 * 			...button code...
+	 * 			popup.reset(); // makes selection NULL again
+	 * 		}
+	 * } 
+	 */
 	void show(Button*);
 	void hide();
 	void reset();

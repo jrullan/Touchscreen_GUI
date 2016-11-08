@@ -133,7 +133,7 @@ void Button::setEventHandler(void (*functionPointer)(Button *)){
 void Button::show(){
 	drawBackground(bgColor);
 	drawText();
-  update();
+	update();
 }
 
 void Button::setNum(int num){
@@ -151,6 +151,8 @@ void Button::setNum(int num){
 		text[chars-1-j] = '0'+numChar[j];
 	}
 	text[chars]=0;
+	
+	drawBackground(bgColor);
 	update();
 }
 
