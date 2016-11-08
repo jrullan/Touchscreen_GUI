@@ -187,7 +187,6 @@ bool Popup::checkTouch(Point* p){
 
 //void Popup::show(void (*eH)(Button*),Button* btn){
 void Popup::show(Button* btn){
-	//targetEventHandler = btn->eventHandler;
 	targetButton = btn;
 	show();
 }

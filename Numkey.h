@@ -61,7 +61,7 @@ public:
 	virtual void update();
 	
 	bool autoremove; //Forces autoremove from Canvas when = is pressed.
-	//void (*targetEventHandler)(Button*); //store a reference to another button's event handler
+
 	Button* targetButton;
 	void targetEventHandler();
 	int entry = NULL;

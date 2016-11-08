@@ -74,7 +74,7 @@ public:
 	//Attributes
 	unsigned char popup_type; // Type of Pop-up (One or Two buttons)
 	unsigned char fontSize = 2;
-	//void (*targetEventHandler)(Button*); //store a reference to another button's event handler
+
 	Button* targetButton;
 	void targetEventHandler();
 	char selection = NULL;

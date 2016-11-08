@@ -290,7 +290,6 @@ void Numkey::show(){
 }
 
 void Numkey::show(Button* btn){
-	//targetEventHandler = btn->eventHandler;
 	targetButton = btn;
 	show();
 }
