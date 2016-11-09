@@ -100,10 +100,10 @@ void Trend::drawXScale(){
 	//Draw X Scale
 	//--background
 	int xPos = x + yScaleWidth + 1;
-	int yPos = y + h - xScaleHeight;
+	int yPos = y + h + borderWidth - xScaleHeight;
 	int xWidth = w - yScaleWidth;
-	int xHeight = h - xScaleHeight;
-	Tft.fillRectangle(xPos,yPos,xWidth,xHeight,bgColor);
+	int xHeight = xScaleHeight;
+	Tft.fillRectangle(xPos-yScaleWidth-1,yPos,w,xHeight+1,bgColor);
 	yPos += borderWidth;
 
 	//--right
@@ -151,20 +151,20 @@ void Trend::drawValues(INT16U color){
 
 void Trend::drawBorder(){
 	int xPos = x + yScaleWidth;
-  int yPos = y + borderWidth;
+	int yPos = y;// + borderWidth;
 	int width = w-yScaleWidth-2*borderWidth;
-  int borderW, borderH;
-  borderW = w - yScaleWidth;
-  borderH = h - xScaleHeight;
-  
-  //--border
-  for(byte i=borderWidth; i!=0; i--){
-    Tft.drawRectangle(xPos,yPos,borderW,borderH,borderColor);
-    xPos++;
-    yPos++;
-    borderW -= 2;
-    borderH -= 2;
-  }	
+	int borderW, borderH;
+	borderW = w - yScaleWidth;
+	borderH = h - xScaleHeight;
+
+	//--border
+	for(byte i=borderWidth; i!=0; i--){
+		Tft.drawRectangle(xPos,yPos,borderW,borderH,borderColor);
+		xPos++;
+		yPos++;
+		borderW -= 2;
+		borderH -= 2;
+	}	
 }
 
 void Trend::drawThresholdLines(bool colors){
@@ -204,7 +204,7 @@ int Trend::getXVal(int index){
 }
 
 int Trend::getYVal(int value){
-	int yBase = y + borderWidth + 1; 	// +1 to account for trend width line
+	int yBase = y ;//+ borderWidth ;//+ 1; 	// +1 to account for trend width line
 	int maxHeight = h-xScaleHeight-borderWidth - 2; // -2 to account for trend line width
 	unsigned int val = constrain(value,scaleMin,scaleMax);
 	val = map(val,scaleMin,scaleMax,maxHeight,borderWidth+1); //-1 to account for trend line width
@@ -285,6 +285,7 @@ void Trend::addValue(uint8_t val){
 void Trend::show(){
 	//Serial.print("Show");Serial.println();
 	if(this->visible){
+	  Tft.fillRectangle(x,y,w,h,bgColor);
 	  this->drawYScale();
 	  this->drawXScale();
 	  this->drawBorder();

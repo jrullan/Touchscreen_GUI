@@ -43,6 +43,7 @@ class Canvas
 
 public:
 	Canvas();
+	Canvas(int mode, int color);
 	virtual ~Canvas();
 
 	void add(Widget* widget, int x, int y);
@@ -50,7 +51,7 @@ public:
 	
 	Point* getTouchedPoint();
 	void init();
-	void init(int mode);
+	//void init(int mode);
 	void portrait();
 	Widget* pop();
 	void landscape();
@@ -66,19 +67,24 @@ public:
 	int xTouchBuffer[TOUCH_BUFFER_SIZE];
 	int yTouchBuffer[TOUCH_BUFFER_SIZE];
 	
-	// EVALUATE TO DELETE:
-	bool useAverage = false;
-	Point averagePoint;
 	Point touchedPoint;	
 	
 	Screen* currentScreen = NULL;
 	StackArray<Widget*> widgets;
+	
+	int x;
+	int y;
+	int w;
+	int h;
 	int bgColor;
 
+	unsigned int _mode;
+	
 private:
 	unsigned long lastMillis;
 	unsigned long touchSampling;
 	unsigned int debounceTime;
+
 
 };
 

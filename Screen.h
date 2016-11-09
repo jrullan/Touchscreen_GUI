@@ -29,12 +29,20 @@ class Screen{
 		void add(Widget* w,int x, int y);
 		void touchWidgets(Point* p);
 		void show();
-		void hide();
 		void setCanvas(Canvas* c);
 		
 		//Attributes
 		StackArray<Widget*> widgets;
 		Canvas* canvas;
+				
+		//int borderWidth;		
+		int bgColor;
+		int fgColor;
+		int borderColor;
+		int x;
+		int y;		
+		int w;
+		int h;
 		
 	private:
 };

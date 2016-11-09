@@ -57,7 +57,7 @@ class Trend : public Indicator{
 		//Attributes
 		byte updates = 0;
 		byte yScaleWidth = 4 * FONT_X + 10; // four characters and a line of 10 pixels
-		byte xScaleHeight = FONT_Y + 10;
+		byte xScaleHeight = 2 * FONT_Y + 10 + borderWidth;
 		int maxX = MAX_TREND_VALUES;
 		//Methods
 		void drawYScale();

@@ -18,6 +18,11 @@ Canvas::Canvas(){
 
 }
 
+Canvas::Canvas(int mode, int color){
+	_mode = mode;
+	bgColor = color;
+}
+
 Canvas::~Canvas(){
 
 }
@@ -28,15 +33,24 @@ void Canvas::init(){
 	Tft.TFTinit();
 	lastMillis = millis();
 	debounceTime = DEBOUNCE;
+	if(_mode = TFT_PORTRAIT) portrait();
+	if(_mode = TFT_LANDSCAPE) landscape();	
 }
 
-// Alternative initialization routine that sets the orientation
-// of the screen. By default the orientation is Portrait.
-void Canvas::init(int mode){
-	this->init();
-	if(mode = TFT_PORTRAIT) portrait();
-	if(mode = TFT_LANDSCAPE) landscape();
+// This method sets the TFT orientation mode to landscape.
+void Canvas::landscape(){
+	Tft.layoutMode = TFT_LANDSCAPE;
+	w=320;
+	h=240;
 }
+
+// This method sets the TFT orientation mode to portrait.
+void Canvas::portrait(){
+	Tft.layoutMode = TFT_PORTRAIT;
+	w=240;
+	h=320;
+}
+
 
 // This method adds a widget to the widgets array and places it in the X,Y
 // position of the canvas. The value passed is the address of the widget object.
@@ -49,18 +63,9 @@ void Canvas::add(Widget* widget, int x, int y){
 }
 
 void Canvas::setScreen(Screen* screen){
-	currentScreen->hide();
 	currentScreen = screen;
 	currentScreen->show();
 	showWidgets();
-	/*
-	byte cnt = screen->widgets.count();
-	for(byte i=0;i<cnt;i++){
-		widgets.push(screen->widgets[i]);
-		if(screen->widgets[i]->visible) screen->widgets[i]->show();
-	}
-	*/
-	//Serial.println("Registered screen");
 }
 
 // This method calculates the x,y coordinates of the touched point
@@ -68,7 +73,7 @@ void Canvas::setScreen(Screen* screen){
 Point* Canvas::getTouchedPoint(){
   Point p = ts.getPoint();
   Point* ap;
-	//if(p.x != previousPoint.x || p.y != previousPoint.y){
+
 		if(millis() > touchSampling + TOUCH_SAMPLING_TIME){ //Debouncing of the touchscreen resistance
 
 			p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
@@ -81,78 +86,19 @@ Point* Canvas::getTouchedPoint(){
 			
 			touchedPoint.x = p.x;
 			touchedPoint.y = p.y;
-						
-			// If using average, wait until buffer is full to return
-			// an average point, otherwise return the touched Point.
-			if(useAverage){
-				
-				if((touchBufferIndex == TOUCH_BUFFER_SIZE)){
-					touchBufferIndex = 0;
-					//ap = getAveragePoint();			
-					
-					//-----average the buffer values--------------------
-					for(int i=0; i<TOUCH_BUFFER_SIZE; i++){
-						averagePoint.x += xTouchBuffer[i];
-						averagePoint.y += yTouchBuffer[i];
-					}
-					averagePoint.x = averagePoint.x / TOUCH_BUFFER_SIZE;
-					averagePoint.y = averagePoint.y / TOUCH_BUFFER_SIZE;
-					//--------------------------------------------------
-					
-					xTouchBuffer[touchBufferIndex] = p.x;
-					yTouchBuffer[touchBufferIndex] = p.y;
-					touchBufferIndex++;
-								
-					return &averagePoint;
-				}else{
-					xTouchBuffer[touchBufferIndex] = p.x;
-					yTouchBuffer[touchBufferIndex] = p.y;
-					touchBufferIndex++;
-					
-					return NULL;
-				}
-			}else{
-				return &touchedPoint;
-			}
-			
+			return &touchedPoint;
 		}
-	//}
+
 
 	return NULL;
 
 }
-
-// This method sets the TFT orientation mode to landscape.
-void Canvas::landscape(){
-	Tft.layoutMode = TFT_LANDSCAPE;
-}
-
-// This method sets the TFT orientation mode to portrait.
-void Canvas::portrait(){
-	Tft.layoutMode = TFT_PORTRAIT;
-}
-
-// This method is deprecated
-/**
- * Removes a widget from the widgets array and destroys it.
-
-void Canvas::remove(Widget* widget){
-	
-	for(int i=widgets.count(); i!=0; i--){
-		if(widgets[i] == widget){
-			//widgets.erase(widgets.begin()+i);
-		}
-	}
-	
-}
- */
  
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
 	Widget* widget = widgets.pop();
 	Tft.fillRectangle(widget->x,widget->y,widget->w,widget->h,this->bgColor);
 	redraw();
-	//delete widget;
 	return widget;
 }
 
@@ -167,19 +113,8 @@ bool Canvas::scan(){
 		//Early exits
 		if(tP == NULL) return false;
 		if(!inBounds(tP)){
-			/*if(useAverage){
-				averagePoint.x = 1000;
-				averagePoint.y = 1000;
-			}*/
 			return false;
-		}	
-		
-		/*
-		Serial.print("Touched x = ");
-		Serial.print(x);
-		Serial.print(" Touched y = ");
-		Serial.println(y);
-		*/
+		}
 		
 		// Send event to canvas widgets, then to screen widgets
 		// if no canvas widget blocks the event.
@@ -220,8 +155,6 @@ void Canvas::setDebounce(unsigned int d){
 bool Canvas::touchWidgets(Point* p){
 	byte cnt = widgets.count();
 	for(int i=1; i<=cnt; i++){
-		//Serial.print("Widget ");Serial.print(cnt-i);Serial.print(" isButton"); Serial.println(widgets[cnt-i]->isButton);
-		//widgets[cnt-i]->isButton ? Serial.println(" true") : Serial.println(" false");
 		// Only send touch event to visible Buttons
 		if(widgets[cnt-i]->isButton && widgets[cnt-i]->visible){
 			if(!widgets[cnt-i]->checkTouch(p)) return false;  //Break if widget blocks event after handling it.
@@ -230,19 +163,11 @@ bool Canvas::touchWidgets(Point* p){
 	return true;
 }
 
-// This method updates the touchedPoint attribute of the canvas.
-/*
- * void Canvas::updateTouch(Point* p){
-	this->touchedPoint = p;
-}
-*/
-
 // This method calls every widget's show method to force them to redraw.
 void Canvas::redraw(){
 	if(currentScreen != NULL){
 		currentScreen->show();
 	}
-	
 	showWidgets();
 }
 

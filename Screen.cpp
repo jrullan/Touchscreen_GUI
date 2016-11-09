@@ -1,15 +1,22 @@
 #include "Screen.h" 
 
-Screen::Screen(){}
+Screen::Screen(){
+	this->init();
+}
 
 Screen::Screen(Canvas* c){
 	canvas = c;
+	this->init();
 }
 
 Screen::~Screen(){}
 
 void Screen::init(){
-	
+	x=0;
+	y=42;
+	w = (canvas->_mode) ? 320 : 240;
+	h = (canvas->_mode) ? 157 : 237;
+	bgColor = canvas->bgColor;
 }
 
 void Screen::add(Widget* w, int x, int y){
@@ -17,21 +24,14 @@ void Screen::add(Widget* w, int x, int y){
 	w->setCanvas(canvas);
 	w->x = x;
 	w->y = y;
-	//Serial.print("Pushed widget type: ");Serial.println(Widget::getType(w->type));
 }
 
 void Screen::show(){
+	Tft.fillRectangle(x,y,w,h,bgColor);
 	byte cnt = this->widgets.count();
 	for(int i=0;i<cnt;i++){
 		if(this->widgets[i]->visible) this->widgets[i]->show();
 	}	
-}
-
-
-/* 
- */
-void Screen::hide(){
-	Tft.fillScreen();
 }
 
 void Screen::setCanvas(Canvas* c){
@@ -43,13 +43,8 @@ void Screen::touchWidgets(Point* p){
 	char j;
 	for(int i=1; i<=cnt; i++){
 		j = cnt-i;
-		
-		//Serial.print("Sending touch event to ");
-		//Serial.println(Widget::getType(widgets[j]));
-		
 		if(widgets[j]->isButton && widgets[j]->visible){
 			if(!widgets[j]->checkTouch(p)) break;  //Break if widget blocks event after handling it.
 		}
 	}
-	//Serial.println("Screen processed the touch event");
 }
