@@ -229,7 +229,7 @@ void Numkey::clear(){
 //Overriden virtual methods
 
 bool Numkey::checkTouch(Point* p){
-	Serial.println("Numkey event");
+	//Serial.println("Numkey event");
 	int boundX1, boundX2, boundY1, boundY2;
 	int btnWidth = w/3;
 	int btnHeight = h/5;

@@ -35,6 +35,27 @@ void Display::drawFrame(){
   }
 }
 
+void Display::drawText(int color){
+	//if(color == NULL) color = fgColor;
+	
+	//Count characters to center on the button - Nice trick from the Tft2 library
+	if(*text){
+		char* chars = text;
+		char size = 0;
+		while(*chars){
+			*chars++;
+			size++;
+		}
+		//Calculate centered position of the text
+		int stringX = x+(w-size*6*borderWidth)/2;
+		//int stringX = x+(w-size*FONT_SPACE*borderWidth)/2;
+		int stringY = y+(h-8*borderWidth)/2;
+		//int stringY = y+(h-FONT_Y*borderWidth)/2;
+		Tft.drawString(text,stringX,stringY,borderWidth,color);
+		//Serial.print("color is ");Serial.println(color);
+	}
+}
+
 void Display::append(char* c){
 	byte cSize = getTextLength(c);
 	byte txtSize = getTextLength(text);//getTextSize();
@@ -92,6 +113,7 @@ long Display::getNum(){
 }
 
 void Display::setNum(int num){
+	drawText(bgColor);
 	clear();
 	char numChar[DISPLAY_SIZE];
 	char chars = 0;
@@ -113,17 +135,19 @@ void Display::setNum(int num){
 	}
 	
 	text[chars]=0;
-	update();
+	//update();
+	drawText(fgColor);
 }
 
 void Display::setText(char* _text){
-	
+	drawText(bgColor);
 	for(int i=0; i<8;i++){
 		text[i] = _text[i];
 		//Serial.print("char ");Serial.println(text[i]);
 	}
-	update();
-	Serial.print("Display set to ");Serial.println(text);
+	drawText(fgColor);
+	//update();
+	//Serial.print("Display set to ");Serial.println(text);
 }
 
 void Display::deleteChar(){
@@ -167,25 +191,10 @@ bool Display::isButton(){
 
 void Display::show(){
 	drawFrame();
-  update();
+	update();
 }
 
 void Display::update(){
-  Tft.fillRectangle(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
-
-  //Count characters to center on the button - Nice trick from the Tft2 library
-  if(*text){
-    char* chars = text;
-    char size = 0;
-    while(*chars){
-      *chars++;
-      size++;
-    }
-    //Calculate centered position of the text
-    int stringX = x+(w-size*6*borderWidth)/2;
-    //int stringX = x+(w-size*FONT_SPACE*borderWidth)/2;
-    int stringY = y+(h-8*borderWidth)/2;
-    //int stringY = y+(h-FONT_Y*borderWidth)/2;
-    Tft.drawString(text,stringX,stringY,borderWidth,fgColor);
-  }	
+	Tft.fillRectangle(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
+	drawText(fgColor);
 }

@@ -23,6 +23,7 @@ public:
 	
 	void append(char* c);
 	void drawFrame();
+	void drawText(int color);
 	void fitToText();	
 	long getNum();
 	char* getText();

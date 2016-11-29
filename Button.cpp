@@ -200,7 +200,7 @@ bool Button::checkTouch(Point* p){
 			eventHandler(this);
 			lastMillis = millis();
 			//block = true;
-			Serial.print("Button ");Serial.print(text);Serial.println(" pressed");
+			//Serial.print("Button ");Serial.print(text);Serial.println(" pressed");
 			return false;
 		}
 	}
