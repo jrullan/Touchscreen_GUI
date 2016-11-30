@@ -26,13 +26,17 @@ class Gauge : public Indicator{
 		//Methods
 		void init();
 		void clear();
+		void drawBorder();
+		void drawFill();
+		int getYVal(int value);
 		
 		//Overriden methods
 		void show();
 		void update();
 		
 		//Attributes
-
+		byte yScaleWidth = 3 * FONT_X + 10; // four characters and a line of 10 pixels
+		
 	private:
 		//Methods
 		void drawLimits();
