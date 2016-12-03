@@ -41,7 +41,7 @@ void Widget::setSize(int width, int height){
 	this->h = height;
 }
 
-static char* Widget::getType(Widget* w){
+char* Widget::getType(Widget* w){
 	if((w->type & 0xFF) == 0x00){ 
 		return "widget";
 	}else if ((w->type & 0xFF) == 0x10){
