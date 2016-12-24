@@ -41,6 +41,8 @@ public:
 	void setDebounce(unsigned int d);
 	void setNum(int n);
 	void setText(char* _text);
+	void setLabel(char* _label);
+	int getLabelSize();
 	//void setSize(char _size);
 	void fitToText();
   
@@ -59,6 +61,7 @@ protected:
 private:
 	bool isRound;
 	char* text;
+	char* label;
 
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)

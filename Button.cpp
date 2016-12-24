@@ -11,6 +11,8 @@ Button::Button(){}
 
 Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
+	
 	x = 0;
 	y = 0;
 	this->setSize(width,height);
@@ -21,6 +23,8 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
 
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
+
 	x = radius;
 	y = radius;
 	this->setSize(2*radius,2*radius);
@@ -32,6 +36,8 @@ Button::Button(unsigned int radius, int backgroundColor, int textColor, int bord
 Button::~Button(){
 
 }
+
+
 
 /*
  * Initialization of several common parameters
@@ -45,18 +51,28 @@ void Button::init(){
 	lastMillis = millis();	
 }
 
+int Button::getLabelSize(){
+	if(*label){
+		return getTextLength(label)*6*borderWidth + 6;
+	}
+	return 0;
+}
+
 void Button::drawBackground(int color){
+	int labelSize = getLabelSize();
 	//Fill background
 	if(!isRound){
-		Tft.fillRectangle(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),color);
+		Tft.fillRectangle(x+borderWidth, y+borderWidth, w+labelSize-(2*borderWidth),h-(2*borderWidth),color);
   }else{
   	int radius = (w>>1)-borderWidth;
-  	Tft.fillCircle(x+radius+borderWidth,y+radius+borderWidth,radius,color);
+  	Tft.fillCircle(x+labelSize+radius+borderWidth,y+radius+borderWidth,radius,color);
   }
 }
 
 void Button::drawBorder(){
-  int xPos = x;	
+  int labelSize = getLabelSize();
+  
+  int xPos = x+labelSize;	
   int width = w;
   byte yPos = y;
   byte height = h;
@@ -73,6 +89,21 @@ void Button::drawBorder(){
 }
 
 void Button::drawText(){
+	int xl=0;
+	int yl=0;
+	int labelSize=getLabelSize();
+	
+	Serial.print("Label: ");Serial.println(label);
+	
+	if(labelSize > 0){
+		xl = x;
+		yl = y+(h-8*borderWidth)/2;
+		
+		Serial.print("label size: ");Serial.println(labelSize);
+		
+		Tft.drawString(label,xl,yl,borderWidth,WHITE);
+	}
+	
 	//Count characters to center on the button - Nice trick from the Tft2 library
 	if(*text){
 		char* chars = text;
@@ -82,7 +113,7 @@ void Button::drawText(){
 			size++;
 		}
 		//Calculate centered position of the text
-		int stringX = x+(w-size*6*borderWidth)/2;
+		int stringX = x+labelSize+(w-size*6*borderWidth)/2;
 		int stringY = y+(h-8*borderWidth)/2;
 		Tft.drawString(text,stringX,stringY,borderWidth,fgColor);
 	}
@@ -168,6 +199,10 @@ void Button::setText(char* _text){
   text = _text;
 }
 
+void Button::setLabel(char* _label){
+  label = _label;
+}
+
 char* Button::getText(){
   return text;
 }
@@ -201,9 +236,11 @@ void Button::fitToText(){
  * Check if the touched point is within bounds of this widget.
  */
 bool Button::checkTouch(Point* p){
+	int labelSize = getLabelSize();
+	
 	//Serial.print("Checking button ");Serial.println(text);
 	if(lastMillis + debounceTime < millis()){ 
-		if((p->x > x) && (p->x < x + w) && (p->y > y) && (p->y < y+h)){
+		if((p->x > x+labelSize) && (p->x < x+labelSize+w) && (p->y > y) && (p->y < y+h)){
 			touched = !touched;
 			eventHandler(this);
 			lastMillis = millis();
