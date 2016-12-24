@@ -10,6 +10,7 @@
 Button::Button(){}
 
 Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
+	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	x = 0;
 	y = 0;
 	this->setSize(width,height);
@@ -19,6 +20,7 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
 }
 
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
+	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	x = radius;
 	y = radius;
 	this->setSize(2*radius,2*radius);
@@ -138,20 +140,26 @@ void Button::show(){
 
 void Button::setNum(int num){
 	clear();
+	//Serial.println("Text cleared in setNum");Serial.print("Num to be processed: ");Serial.println(num);
 	char numChar[DISPLAY_SIZE];
 	char chars = 0;
-	while(num >= 10)	// Extract characters representing the powers of ten
+	
+	
+	while(num > 0)	// Extract characters representing the powers of ten
 	{
-		numChar[chars++] = num%10;
+		numChar[chars++] = '0'+num%10;
 		num /= 10;
+		//Serial.print("Num after loop: ");Serial.println(numChar[chars-1]);
 	}
-	numChar[chars++] = num;
-	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
+
+	// Reverse the order of the characters
+	for(int j = chars-1; j >= 0; j--)//DISPLAY_SIZE; j++)
 	{
-		text[chars-1-j] = '0'+numChar[j];
+		text[j] = numChar[chars-1-j];
 	}
 	text[chars]=0;
 	
+	//Serial.print("Num entered: ");Serial.println(text);
 	drawBackground(bgColor);
 	update();
 }
