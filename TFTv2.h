@@ -61,6 +61,20 @@
 #define TFT_BL_OFF      digitalWrite(7, LOW)
 #define TFT_BL_ON       digitalWrite(7, HIGH)
 
+#elif defined(MQX_CPU) //Added support for Udoo Neo MCU!!!! Yay!!!
+
+#define TFT_DC_LOW      digitalWrite(6, LOW)
+#define TFT_DC_HIGH     digitalWrite(6, HIGH)
+#define TFT_CS_LOW      digitalWrite(5, LOW)
+#define TFT_CS_HIGH     digitalWrite(5, HIGH)
+#define TFT_BL_OFF      digitalWrite(7, LOW)
+#define TFT_BL_ON       digitalWrite(7, HIGH)
+
+#define YP A2   // must be an analog pin, use "An" notation!
+#define XM A1   // must be an analog pin, use "An" notation!
+#define YM A0   // can be a digital pin, this is A0
+#define XP A3   // can be a digital pin, this is A3
+
 #elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
 
 #define TFT_CS_LOW  {DDRE |= 0x08;PORTE &=~ 0x08;}

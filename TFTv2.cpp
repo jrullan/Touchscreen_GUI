@@ -338,7 +338,11 @@ void TFT::drawChar( INT8U ascii, INT16U poX, INT16U poY,INT16U size, INT16U fgco
         ascii = '?';
     }
     for (int i =0; i<FONT_X; i++ ) {
+		#if defined(MQX_CPU)
+        INT8U temp = simpleFont[ascii-0x20][i];
+        #else
         INT8U temp = pgm_read_byte(&simpleFont[ascii-0x20][i]);
+        #endif
         for(INT8U f=0;f<8;f++)
         {
             if((temp>>f)&0x01)
