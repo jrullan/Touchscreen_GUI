@@ -93,13 +93,13 @@ void Button::drawText(){
 	int yl=0;
 	int labelSize=getLabelSize();
 	
-	Serial.print("Label: ");Serial.println(label);
+	//Serial.print("Label: ");Serial.println(label);
 	
 	if(labelSize > 0){
 		xl = x;
 		yl = y+(h-8*borderWidth)/2;
 		
-		Serial.print("label size: ");Serial.println(labelSize);
+		//Serial.print("label size: ");Serial.println(labelSize);
 		
 		Tft.drawString(label,xl,yl,borderWidth,WHITE);
 	}

@@ -41,13 +41,12 @@ public:
 	virtual void show();
 	virtual void update();
 	
+	//Attributes
+	char* text;	
+	
 private:
-	//String text;
-	char* text; 
 	//char text[DISPLAY_SIZE];
 	char charPos;
-	
 	unsigned char getTextLength(char* c);
-
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)

@@ -48,11 +48,15 @@ public:
   
 	//Overriden methods
 	bool checkTouch(Point* p);
+	void (*eventHandler)(Button*);
+	
+	//Attributes
+	char* text;	
+	char* label;
 	bool touched;
 	bool block = false;
 	unsigned long lastMillis;
 	
-	void (*eventHandler)(Button*);
 protected:	
 	unsigned int debounceTime;	
 	//A pointer to the event handler function.
@@ -60,8 +64,5 @@ protected:
 
 private:
 	bool isRound;
-	char* text;
-	char* label;
-
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)
