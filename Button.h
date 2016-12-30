@@ -53,6 +53,7 @@ public:
 	//Attributes
 	char* text;	
 	char* label;
+	char labelPos=0; //label position: 0-left, 1-top, 2-right, 3-bottom
 	bool touched;
 	bool block = false;
 	unsigned long lastMillis;

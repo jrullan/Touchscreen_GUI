@@ -60,22 +60,49 @@ int Button::getLabelSize(){
 
 void Button::drawBackground(int color){
 	int labelSize = getLabelSize();
+	int xl;
+	int wl;
+	if(labelPos == 1){
+	
+	}else if(labelPos == 2){
+		xl = x;// + labelSize;
+		wl = w + labelSize;
+	}else if(labelPos == 3){
+		
+	}else{
+		xl = x + labelSize;
+		wl = w + labelSize;
+	}
 	//Fill background
 	if(!isRound){
-		Tft.fillRectangle(x+borderWidth, y+borderWidth, w+labelSize-(2*borderWidth),h-(2*borderWidth),color);
-  }else{
-  	int radius = (w>>1)-borderWidth;
-  	Tft.fillCircle(x+labelSize+radius+borderWidth,y+radius+borderWidth,radius,color);
-  }
+		Tft.fillRectangle(x+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
+	}else{
+		int radius = (w>>1)-borderWidth;
+		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);
+	}
 }
 
 void Button::drawBorder(){
-  int labelSize = getLabelSize();
+	int labelSize = getLabelSize();
+	int xl;
+	
+	if(labelPos == 1){
+	
+	}else if(labelPos == 2){
+		xl = x;// + labelSize;
+		
+	}else if(labelPos == 3){
+		
+	}else{
+		xl = x + labelSize;
+		
+	}  
+	
+	int xPos = xl;	
+	int width = w;
+	byte yPos = y;
+	byte height = h;
   
-  int xPos = x+labelSize;	
-  int width = w;
-  byte yPos = y;
-  byte height = h;
 	for(byte i=borderWidth; i!=0;i--){
 		if(!isRound){
 			Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
@@ -83,7 +110,7 @@ void Button::drawBorder(){
 			height--;
 		}else{
 			int radius = width>>1;
-			Tft.drawCircle(x+labelSize+radius,y+radius,(radius)-i,borderColor);
+			Tft.drawCircle(xl+radius,y+radius,(radius)-i,borderColor);
 		}
 	}	
 }
@@ -92,13 +119,21 @@ void Button::drawText(){
 	int xl=0;
 	int yl=0;
 	int labelSize=getLabelSize();
-	
+
 	//Serial.print("Label: ");Serial.println(label);
 	
 	if(labelSize > 0){
-		xl = x;
-		yl = y+(h-8*borderWidth)/2;
+		if(labelPos == 1){ // top
 		
+		}else if(labelPos == 2){ // right
+			xl = x + w + FONT_SPACE;
+			yl = y+(h-8*borderWidth)/2;
+		}else if(labelPos == 3){ // bottom
+			
+		}else{ 	// default 0-left
+			xl = x;
+			yl = y+(h-8*borderWidth)/2;	
+		}
 		//Serial.print("label size: ");Serial.println(labelSize);
 		
 		Tft.drawString(label,xl,yl,borderWidth,WHITE);
@@ -165,7 +200,7 @@ void Button::setEventHandler(void (*functionPointer)(Button *)){
  */
 void Button::show(){
 	drawBackground(bgColor);
-	drawText();
+	//drawText();
 	update();
 }
 
@@ -237,10 +272,20 @@ void Button::fitToText(){
  */
 bool Button::checkTouch(Point* p){
 	int labelSize = getLabelSize();
+	int xl;
 	
+	if(labelPos == 1){
+	
+	}else if(labelPos == 2){
+		xl = x;
+	}else if(labelPos == 3){
+		
+	}else{
+		xl = x + labelSize;
+	}  
 	//Serial.print("Checking button ");Serial.println(text);
 	if(lastMillis + debounceTime < millis()){ 
-		if((p->x > x+labelSize) && (p->x < x+labelSize+w) && (p->y > y) && (p->y < y+h)){
+		if((p->x > xl) && (p->x < xl+w) && (p->y > y) && (p->y < y+h)){
 			touched = !touched;
 			eventHandler(this);
 			lastMillis = millis();
