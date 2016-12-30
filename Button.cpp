@@ -83,7 +83,7 @@ void Button::drawBorder(){
 			height--;
 		}else{
 			int radius = width>>1;
-			Tft.drawCircle(x+radius,y+radius,(radius)-i,borderColor);
+			Tft.drawCircle(x+labelSize+radius,y+radius,(radius)-i,borderColor);
 		}
 	}	
 }
