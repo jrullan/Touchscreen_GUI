@@ -55,6 +55,7 @@ public:
 	 * 		Buttongrid-	0x31
 	 * 		Numkey -	0x32
 	 * 		Popup - 	0x33
+	 * 		Option - 	0x34
 	 */ 
 	int bgColor;
 	int borderColor;

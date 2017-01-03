@@ -62,8 +62,6 @@ protected:
 	unsigned int debounceTime;	
 	//A pointer to the event handler function.
 	//void (*eventHandler)(Button*);	
-
-private:
 	bool isRound;
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)
