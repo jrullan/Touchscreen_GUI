@@ -74,11 +74,14 @@ void Button::drawBackground(int color){
 		wl = w + labelSize;
 	}
 	//Fill background
+	
 	if(!isRound){
 		Tft.fillRectangle(x+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
 	}else{
 		int radius = (w>>1)-borderWidth;
 		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);
+		// label background
+		Tft.fillRectangle(xl+2*radius+2*borderWidth+FONT_SPACE, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),this->myCanvas->bgColor);
 	}
 }
 
@@ -201,7 +204,6 @@ void Button::setEventHandler(void (*functionPointer)(Button *)){
  */
 void Button::show(){
 	drawBackground(bgColor);
-	//drawText();
 	update();
 }
 
@@ -227,8 +229,8 @@ void Button::setNum(int num){
 	text[chars]=0;
 	
 	//Serial.print("Num entered: ");Serial.println(text);
-	drawBackground(bgColor);
-	update();
+	//drawBackground(bgColor);
+	//update();
 }
 
 void Button::setText(char* _text){
