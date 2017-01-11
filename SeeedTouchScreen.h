@@ -1,7 +1,10 @@
 #ifndef _SEEEDTOUCHSCREEN_H_
 #define _SEEEDTOUCHSCREEN_H_
 
+#include <Arduino.h>
+#include <avr/pgmspace.h>
 #include "Point.h"
+#include "GUI_TFT.h"
 /*
   SeeedTouchScreen.h - Library for 4-line resistance touch screen.
   Modified by loovee Aug 12, 2012.

@@ -30,7 +30,8 @@ Canvas::~Canvas(){
 // Initializes the LCD screen (Tft) and sets debounce and lastmillis variables.
 // Last millis is used for the Canvas-wide debounce of touch events.
 void Canvas::init(){
-	Tft.TFTinit();
+	Tft.begin();
+	Tft.fillScreen(BLACK);
 	lastMillis = millis();
 	debounceTime = DEBOUNCE;
 	if(_mode = TFT_PORTRAIT) portrait();
@@ -40,6 +41,7 @@ void Canvas::init(){
 // This method sets the TFT orientation mode to landscape.
 void Canvas::landscape(){
 	Tft.layoutMode = TFT_LANDSCAPE;
+	Tft.setRotation(3);
 	w=320;
 	h=240;
 }
@@ -97,7 +99,7 @@ Point* Canvas::getTouchedPoint(){
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
 	Widget* widget = widgets.pop();
-	Tft.fillRectangle(widget->x,widget->y,widget->w,widget->h,this->bgColor);
+	Tft.fillRect(widget->x,widget->y,widget->w,widget->h,this->bgColor);
 	redraw();
 	return widget;
 }

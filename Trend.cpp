@@ -118,7 +118,7 @@ void Trend::drawXScale(){
 	
 }
 
-void Trend::drawValues(INT16U color){
+void Trend::drawValues(uint16_t color){
 	unsigned int val; //= map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
 	int x1, y1, x2, y2;
 	

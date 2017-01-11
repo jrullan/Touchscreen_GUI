@@ -5,7 +5,7 @@
   Code under MIT License.
 */
 
-#include "pins_arduino.h"
+//#include "pins_arduino.h"
 #include "wiring_private.h"
 #include <avr/pgmspace.h>
 #include "SeeedTouchScreen.h"
@@ -59,10 +59,17 @@ Point TouchScreen::getPoint(void) {
 #endif
     uint8_t i, valid;
 
+#if defined (__AVR__) || defined(TEENSYDUINO)
     uint8_t xp_port = digitalPinToPort(_xp);
     unsigned char yp_port = digitalPinToPort(_yp);
     unsigned char xm_port = digitalPinToPort(_xm);
     unsigned char ym_port = digitalPinToPort(_ym);
+#elif defined (__STM32F1__)
+	gpio_dev* xp_port = digitalPinToPort(_xp);
+	gpio_dev* yp_port = digitalPinToPort(_yp);
+	gpio_dev* xm_port = digitalPinToPort(_xm);
+	gpio_dev* ym_port = digitalPinToPort(_ym);
+#endif
 
     unsigned char xp_pin = digitalPinToBitMask(_xp);
     unsigned char yp_pin = digitalPinToBitMask(_yp);

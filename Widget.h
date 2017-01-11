@@ -24,8 +24,12 @@
 #define DISPLAY_SIZE 6
 
 // Forward declarations
+//#include "Canvas.h"
+//#include "GUI_TFT.h"
 class Canvas;
 class Point;
+
+
 
 /**
  * A widget represents a button, a field box, a drop-down list, a list, etc. Any

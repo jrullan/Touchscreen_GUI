@@ -1,6 +1,9 @@
 #ifndef _POINT_H_
 #define _POINT_H_
 
+//#include <Arduino.h>
+//#include <avr/pgmspace.h>
+
 class Point {
     public:
     int x, y, z;

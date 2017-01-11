@@ -64,7 +64,7 @@ class Trend : public Indicator{
 		void drawXScale();
 		void drawBorder();
 		void drawThresholdLines(bool colors);
-		void drawValues(INT16U color);
+		void drawValues(uint16_t color);
 		//int limit(int val, int min, int max);
 };
 
