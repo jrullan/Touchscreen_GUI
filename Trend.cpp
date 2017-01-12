@@ -109,7 +109,11 @@ void Trend::drawXScale(){
 		xp = xPos + xWidth - i*xWidth/(MAX_TREND_VALUES);
 		Tft.drawVerticalLine(xp,yPos,10,borderColor);	
 		//draw alternating numbers
+		#if !defined(__STM32F1__)
 		if(i>0 && !(i%2)){
+		#else
+		if(i>0 && !(i%4)){
+		#endif
 			setNum(map(i,0,MAX_TREND_VALUES,0,maxX));
 			byte size = getTextLength(buf);
 			Tft.drawString(buf,xp - size*(FONT_X>>1),yPos+10+FONT_Y,1,borderColor);	

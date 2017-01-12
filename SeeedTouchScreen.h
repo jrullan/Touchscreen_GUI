@@ -11,7 +11,7 @@
   (c) ladyada / adafruit
   Code under MIT License.
 */
-#define __PRESURE 10
+#define __PRESURE 30//20//10
 
 class TouchScreen {
 	

@@ -38,4 +38,7 @@ uint8_t Guitft::drawNumber(long long_num,uint16_t poX, uint16_t poY,uint16_t siz
 	print(long_num);
 }
 
+// Needed to declare in GUI_TFT.h as extern
+// and instance it here
+// to avoid compiler issues with redeclarations
 Guitft Tft = Guitft(5, 6, -1); // Use hardware SPI

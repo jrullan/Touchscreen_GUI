@@ -1,6 +1,11 @@
 /*
  * Wrapper class for TFT display class
- *
+ * 
+ * This class wraps the Adafruit_ILI9341_STM.h
+ * calls using the calls already defined in the Touchscreen_Gui library
+ * 
+ * Author: José Rullán
+ * Date: 2017-01-10
  */
  
 #if !defined(GUITFT_H)
@@ -36,7 +41,6 @@
 
 class Guitft : public Adafruit_ILI9341_STM{
 	public:
-	
 		Guitft(int8_t TFT_CS, int8_t TFT_DC, int8_t TFT_RST):Adafruit_ILI9341_STM(TFT_CS, TFT_DC, -1){};
 		~Guitft();
 			
@@ -65,9 +69,9 @@ class Guitft : public Adafruit_ILI9341_STM{
 		
 		uint8_t layoutMode;
 };
-
-
-
 #endif
 
+// Needed to declare here as extern
+// and instance it in the GUI_TFT.cpp
+// to avoid compiler issues with redeclarations
 extern Guitft Tft;

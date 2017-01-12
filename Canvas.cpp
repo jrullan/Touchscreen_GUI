@@ -34,6 +34,8 @@ void Canvas::init(){
 	Tft.fillScreen(BLACK);
 	lastMillis = millis();
 	debounceTime = DEBOUNCE;
+	portrait();
+	return;
 	if(_mode = TFT_PORTRAIT) portrait();
 	if(_mode = TFT_LANDSCAPE) landscape();	
 }
@@ -49,6 +51,7 @@ void Canvas::landscape(){
 // This method sets the TFT orientation mode to portrait.
 void Canvas::portrait(){
 	Tft.layoutMode = TFT_PORTRAIT;
+	Tft.setRotation(0);
 	w=240;
 	h=320;
 }
@@ -88,6 +91,9 @@ Point* Canvas::getTouchedPoint(){
 			
 			touchedPoint.x = p.x;
 			touchedPoint.y = p.y;
+			
+			//Tft.drawCircle(p.x,p.y,10,RED);
+			
 			return &touchedPoint;
 		}
 
@@ -140,6 +146,11 @@ bool Canvas::inBounds(Point* tP){
 	}else{
 		if(tP->x > 239 || tP->y > 319) return false;
 	}
+	Serial.print("Tx: ");
+	Serial.print(tP->x);
+	Serial.print(" Ty: ");
+	Serial.print(tP->y);
+	Serial.println();
 	return true;
 }
 

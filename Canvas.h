@@ -23,9 +23,6 @@
 #include "StackArray.h"
 #include "Point.h"
 #include "SeeedTouchScreen.h"
-//#include "GUI_TFT.h"
-//#include "TFTv2.h"
-
 
 #define YP 17//A2   // must be an analog pin, use "An" notation!
 #define XM 16//A1   // must be an analog pin, use "An" notation!
@@ -43,7 +40,6 @@ class Screen;
 
 // Declaration of static TouchScreen object
 static TouchScreen ts = TouchScreen(XP,YP,XM,YM);
-
 
 class Canvas
 {

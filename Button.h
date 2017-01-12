@@ -16,9 +16,7 @@ class Button : public Widget
 {
 
 public:
-	//Button();
-	/*Button(unsigned int _x, unsigned int _y, unsigned int _w, unsigned int _h,
-    int bgColor, int textColor, int borderColor);*/
+
 	Button();
 	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	Button(unsigned int radius, int backgroundColor, int textColor, int borderColor);
