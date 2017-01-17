@@ -6,8 +6,7 @@ Trend::Trend(){
 
 Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit)
 {	
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
-		
+	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug	
 	this->setSize(width,height);
 	this->setLimits(minLimit,setpoint,maxLimit);
 	this->setColors(BLACK,BLUE,WHITE);
@@ -21,8 +20,8 @@ void Trend::init(){
 	Indicator::init();
 	type = 0x23;
 	// Reserve memory for trend values
-	if(values = (uint8_t *)malloc(MAX_TREND_VALUES)){ 
-		memset(values,0,MAX_TREND_VALUES*sizeof(uint8_t));
+	if(values = (uint8_t *)malloc(maxValues)){ 
+		memset(values,0,maxValues*sizeof(uint8_t));
 		//Serial.println("Memory allocated for trend values");
 	}else{
 		//Serial.println("Memory was not allocated for trend values");
@@ -105,18 +104,22 @@ void Trend::drawXScale(){
 	xWidth -= borderWidth;
 	int xp = xPos + xWidth;
 	
-	for(int i = 0; i < MAX_TREND_VALUES+1; i++){
-		xp = xPos + xWidth - i*xWidth/(MAX_TREND_VALUES);
-		Tft.drawVerticalLine(xp,yPos,10,borderColor);	
+	for(int i = 0; i < maxValues+1; i++){
+		xp = xPos + xWidth - i*xWidth/(maxValues);	
 		//draw alternating numbers
 		#if !defined(__STM32F1__)
 		if(i>0 && !(i%2)){
 		#else
-		if(i>0 && !(i%4)){
+		if(i>0 && !(i%(10))){
 		#endif
-			setNum(map(i,0,MAX_TREND_VALUES,0,maxX));
+
+			Tft.drawVerticalLine(xp,yPos,10,borderColor);
+			//setNum(map(i,0,maxValues,0,maxX));
+			setNum(i);
 			byte size = getTextLength(buf);
 			Tft.drawString(buf,xp - size*(FONT_X>>1),yPos+10+FONT_Y,1,borderColor);	
+		}else{
+			Tft.drawVerticalLine(xp,yPos,5,borderColor);
 		}
 	}
 	
@@ -127,7 +130,7 @@ void Trend::drawValues(uint16_t color){
 	int x1, y1, x2, y2;
 	
 	//-- loop through all values and plot them left to right (starting with values[7])
-	for(int i = MAX_TREND_VALUES; i!=0; i--){
+	for(int i = maxValues; i!=0; i--){
 		int j = i-1;
 		
 		//-- previous values[j] coordinates 2-previous 1-current
@@ -137,7 +140,7 @@ void Trend::drawValues(uint16_t color){
 		x1 = getXVal(j);
 		y1 = getYVal(values[j]);
 		
-		if(j<MAX_TREND_VALUES-1){
+		if(j<maxValues-1){
 			Tft.drawLine(x2,y2-1,x1,y1-1,color);
 			Tft.drawLine(x2,y2,x1,y1,color);
 			Tft.drawLine(x2,y2+1,x1,y1+1,color);
@@ -184,7 +187,7 @@ void Trend::drawThresholdLines(bool colors){
  * to minutes.
  */
 void Trend::setMaxX(int m){
-	int interval = m/MAX_TREND_VALUES;
+	int interval = m/maxValues;
 	if(interval*2 >= 60){ //-- auto adjust for minutes interval if too many seconds.
 		maxX = m/60;
 	}else{
@@ -195,7 +198,7 @@ void Trend::setMaxX(int m){
 int Trend::getXVal(int index){
 	int xBase = x+yScaleWidth+borderWidth;
 	int effWidth = w - yScaleWidth - 2*borderWidth;
-	int inc = index*(effWidth)/(MAX_TREND_VALUES-1);
+	int inc = index*(effWidth)/(maxValues-1);
 	return xBase + effWidth - inc;
 }
 
@@ -209,7 +212,7 @@ int Trend::getYVal(int value){
 
 int Trend::getMin(){
 	int val = values[0];
-	for(int i = 1; i<MAX_TREND_VALUES; i++){
+	for(int i = 1; i<maxValues; i++){
 		if(values[i] < val) val = values[i];
 	}
 	return val;
@@ -217,7 +220,7 @@ int Trend::getMin(){
 
 int Trend::getMax(){
 	int val = values[0];
-	for(int i = 1; i<MAX_TREND_VALUES; i++){
+	for(int i = 1; i<maxValues; i++){
 		if(values[i] > val) val = values[i];
 	}
 	return val;
@@ -261,7 +264,7 @@ void Trend::addValue(uint8_t val){
 	if(visible) drawValues(this->bgColor);
 
 	//--push value into the array
-	for(int i = MAX_TREND_VALUES; i!=0; i--){
+	for(int i = maxValues; i!=0; i--){
 
 		if(i==1){
 			values[i-1] = val;
@@ -300,7 +303,7 @@ void Trend::update(){
 			return;
 		}
 		/*
-		 *if(updates++ > MAX_TREND_VALUES){
+		 *if(updates++ > maxValues){
 			autoFit();
 			updates = 0;
 			return;

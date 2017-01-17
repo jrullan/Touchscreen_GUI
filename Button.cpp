@@ -103,8 +103,8 @@ void Button::drawBorder(){
 	
 	int xPos = xl;	
 	int width = w;
-	byte yPos = y;
-	byte height = h;
+	int yPos = y;
+	uint8_t height = h;
   
 	for(byte i=borderWidth; i!=0;i--){
 		if(!isRound){
