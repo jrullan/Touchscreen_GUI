@@ -46,6 +46,7 @@ class Trend : public Indicator{
 		int getMax();
 		void setMaxX(int maxX);
 		void autoFit(bool scale);
+		void setWindow(int min, int max);
 		
 		//Overriden methods
 		void show();
@@ -54,13 +55,14 @@ class Trend : public Indicator{
 		//Attributes
 		uint8_t* values;  // Array of values to plot
 		uint8_t vals;			// number of values in the array
-		uint8_t maxValues = MAX_TREND_VALUES;	// To define max values in the trend
+		//uint8_t maxValues = MAX_TREND_VALUES;	// To define max values in the trend
+		uint8_t maxValues;
 		bool forcedUpdate = false;
 		bool enableAutoFit = false;
 		
 		struct TrendWindow {
-			int minValue = 0;
-			int maxValue = MAX_TREND_VALUES-1;
+			int minValue;
+			int maxValue;
 		} trendWindow;
 		
 	private:
