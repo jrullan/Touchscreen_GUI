@@ -8,7 +8,7 @@
 #define DISPLAY_H
 
 
-#define DISPLAY_SIZE 8
+#define CHARS_SIZE 8
 
 #include "Canvas.h"
 #include "Widget.h"
@@ -29,9 +29,8 @@ public:
 	char* getText();
 	unsigned char getTextSize();
 	void init();
-	//void setText(String _text);
-	void setNum(int num);
-	void setText(char* _text);
+	void setNum(int num, bool now = true);
+	void setText(char* _text, bool now = true);
 	void deleteChar();
 	void clear();
   

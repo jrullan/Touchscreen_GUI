@@ -1,11 +1,11 @@
 #include "Display.h"
 
 Display::Display(){
-	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
+	if(text = (char *)malloc(CHARS_SIZE+1)) memset(text,0,CHARS_SIZE+1); //Had to add one more, to avoid some bug
 }
 
 Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
-	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
+	if(text = (char *)malloc(CHARS_SIZE+1)) memset(text,0,CHARS_SIZE+1); //Had to add one more, to avoid some bug
 	x = 0;
 	y = 0;
 	this->setSize(width,height);
@@ -112,8 +112,8 @@ long Display::getNum(){
 	return result;
 }
 
-void Display::setNum(int num){
-	drawText(bgColor);
+void Display::setNum(int num, bool now){
+	if(now) drawText(bgColor);
 	clear();
 	char numChar[DISPLAY_SIZE];
 	char chars = 0;
@@ -136,16 +136,16 @@ void Display::setNum(int num){
 	
 	text[chars]=0;
 	//update();
-	drawText(fgColor);
+	if(now) drawText(fgColor);
 }
 
-void Display::setText(char* _text){
-	drawText(bgColor);
+void Display::setText(char* _text, bool now){
+	if(now) drawText(bgColor);
 	for(int i=0; i<8;i++){
 		text[i] = _text[i];
 		//Serial.print("char ");Serial.println(text[i]);
 	}
-	drawText(fgColor);
+	if(now) drawText(fgColor);
 	//update();
 	//Serial.print("Display set to ");Serial.println(text);
 }

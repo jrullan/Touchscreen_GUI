@@ -137,8 +137,8 @@ void Button::drawText(){
 			xl = x;
 			yl = y+(h-8*borderWidth)/2;	
 		}
-		Serial.print("labelPos: ");Serial.println(labelPos);
-		Serial.print("label size: ");Serial.println(labelSize);
+		//Serial.print("labelPos: ");Serial.println(labelPos);
+		//Serial.print("label size: ");Serial.println(labelSize);
 		
 		Tft.drawString(label,xl,yl,borderWidth,WHITE);
 	}
