@@ -37,8 +37,6 @@ Button::~Button(){
 
 }
 
-
-
 /*
  * Initialization of several common parameters
  */
@@ -51,12 +49,14 @@ void Button::init(){
 	lastMillis = millis();	
 }
 
+
 int Button::getLabelSize(){
 	if(*label){
 		return getTextLength(label)*6*borderWidth + 6;
 	}
 	return 0;
 }
+
 
 void Button::drawBackground(int color){
 	int labelSize = getLabelSize();
@@ -169,7 +169,7 @@ void Button::clear(){
 	}
 }
 
-byte Button::getTextLength(char* c){
+unsigned char Button::getTextLength(char* c){
 	char size = 0;
 	if(*c){
     char* chars = c;
@@ -181,7 +181,7 @@ byte Button::getTextLength(char* c){
   return size;
 }
 
-byte Button::getTextSize(){
+unsigned char Button::getTextSize(){
   return getTextLength(text);
 }
 
