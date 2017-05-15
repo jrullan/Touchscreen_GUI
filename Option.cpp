@@ -8,7 +8,7 @@
 Option::Option(unsigned int diameter, int backgroundColor, int textColor, int borderColor){
 	
 	this->type = 0x34;
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	//if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
 	this->labelPos = 2;
 	this->isRound = true;

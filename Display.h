@@ -11,13 +11,11 @@
 #include "Widget.h"
 #include "Text.h"
 
-#define CHARS_SIZE 8
-
 class Display : public Widget
 {
 	public:
-		Display();
-		Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
+		Display(unsigned char textSize = 8);
+		Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textSize = 8);
 		virtual ~Display();
 	
 		void init();
@@ -25,7 +23,7 @@ class Display : public Widget
 		void drawFrame();
 		void drawText(int color);
 	
-		Text contents = Text();
+		Text contents;//= Text();
 		//Text label = Text();
 		
 		void fitToText();

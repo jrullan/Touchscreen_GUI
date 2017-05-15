@@ -9,6 +9,7 @@
 
 #include "Canvas.h"
 #include "Widget.h"
+#include "Text.h"
 
 #define DEBOUNCE 200
 
@@ -16,8 +17,8 @@ class Button : public Widget
 {
 
 public:
-	Button();
-	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
+	Button(unsigned char textSize = 8);
+	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char textSize = 8);
 	Button(unsigned int radius, int backgroundColor, int textColor, int borderColor);
 	virtual ~Button();
 
@@ -31,6 +32,15 @@ public:
 	virtual void show();
 	virtual void update();
 	
+	Text contents;
+	void fitToText();
+	void setNum(int n);
+	void setText(char* _text);
+	char* getText();
+	long getNum();
+	unsigned char getTextSize();
+	unsigned char getTextLength(char* c);
+	/*
 	//=====Text handling======
 	char* text;	
 	
@@ -44,6 +54,7 @@ public:
 	void setText(char* _text);
 	void clear();
 	//=======================
+	*/
 	
 	void setLabel(char* _label);
 	int getLabelSize();

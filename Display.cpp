@@ -1,14 +1,16 @@
 #include "Display.h"
 
-Display::Display(){
+Display::Display(unsigned char size){
 	x=0;
 	y=0;
+	contents = Text(size);
 	this->init();
 }
 
-Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
+Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char size){
 	x = 0;
 	y = 0;
+	contents = Text(size);
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
 	this->init();
@@ -49,10 +51,10 @@ void Display::drawText(int color){
 void Display::append(char* c){
 	byte cSize = contents.getTextLength(c);
 	byte txtSize = contents.getTextLength(contents.text);//getTextSize();
-	byte space = DISPLAY_SIZE - txtSize;
+	byte space = contents._textSize - txtSize;
 	
 	//Check that there space available to append
-	if(txtSize < DISPLAY_SIZE){
+	if(txtSize < contents._textSize){
 		//Serial.print("Space available: ");Serial.println(space);
 		for(int i=0; i<space; i++)
 		{
@@ -64,18 +66,22 @@ void Display::append(char* c){
 
 void Display::fitToText(){
   if(*contents.text){
+	/*
     char* chars = contents.text;
     char size = 0;
     while(*chars){
       *chars++;
       size++;
     }
+	*/
+	char size = contents.getTextSize();
     w = size * FONT_SPACE * borderWidth + FONT_SPACE;
     h = FONT_Y * borderWidth + FONT_Y;
   }
 }
 
 void Display::setNum(int num, bool now){
+	if(contents.getNum() == num) return;
 	if(now) drawText(bgColor);
 	contents.setNum(num);
 	if(now) drawText(fgColor);

@@ -7,14 +7,17 @@
 #include "Button.h"
 
 
-Button::Button(){}
+Button::Button(unsigned char textSize){
+	contents = Text(textSize);
+}
 
-Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textSize){
+	//if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
 	
 	x = 0;
 	y = 0;
+	contents = Text(textSize);
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
 	this->isRound = false;
@@ -22,9 +25,9 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
 }
 
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	//if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
-
+	contents = Text();
 	x = radius;
 	y = radius;
 	this->setSize(2*radius,2*radius);
@@ -34,7 +37,7 @@ Button::Button(unsigned int radius, int backgroundColor, int textColor, int bord
 }
 
 Button::~Button(){
-
+	free(contents.text);
 }
 
 /*
@@ -52,7 +55,7 @@ void Button::init(){
 
 int Button::getLabelSize(){
 	if(*label){
-		return getTextLength(label)*6*borderWidth + 6;
+		return contents.getTextLength(label)*6*borderWidth + 6;
 	}
 	return 0;
 }
@@ -144,21 +147,24 @@ void Button::drawText(){
 	}
 	
 	//Count characters to center on the button - Nice trick from the Tft2 library
-	if(*text){
-		char* chars = text;
+	if(*contents.text){
+		char size = contents.getTextSize();
+		/*
 		char size = 0;
+		char* chars = text;
 		while(*chars){
 			*chars++;
 			size++;
 		}
+		*/
 		//Calculate centered position of the text
 		int stringX = x+labelSize+(w-size*6*borderWidth)/2;
 		int stringY = y+(h-8*borderWidth)/2;
-		Tft.drawString(text,stringX,stringY,borderWidth,fgColor);
+		Tft.drawString(contents.text,stringX,stringY,borderWidth,fgColor);
 	}
 }
 
-
+/*
 void Button::clear(){
 	byte textSize = getTextSize();
 	if(textSize){
@@ -168,8 +174,12 @@ void Button::clear(){
 		}
 	}
 }
+*/
+
 
 unsigned char Button::getTextLength(char* c){
+	return contents.getTextLength(c);
+	/*
 	char size = 0;
 	if(*c){
     char* chars = c;
@@ -179,11 +189,16 @@ unsigned char Button::getTextLength(char* c){
     }
   }
   return size;
+	*/
 }
 
+
+
 unsigned char Button::getTextSize(){
-  return getTextLength(text);
+  //return getTextLength(text);
+	return contents.getTextSize();
 }
+
 
 void Button::setDebounce(unsigned int d){
 	debounceTime = d;
@@ -208,6 +223,10 @@ void Button::show(){
 }
 
 void Button::setNum(int num){
+	if(contents.getNum()==num)return;
+	contents.clear();
+	contents.setNum(num);
+	/*
 	clear();
 	//Serial.println("Text cleared in setNum");Serial.print("Num to be processed: ");Serial.println(num);
 	char numChar[DISPLAY_SIZE];
@@ -231,21 +250,25 @@ void Button::setNum(int num){
 	//Serial.print("Num entered: ");Serial.println(text);
 	//drawBackground(bgColor);
 	//update();
+	*/
 }
 
+
 void Button::setText(char* _text){
-  text = _text;
+  contents.text = _text;
 }
+
 
 void Button::setLabel(char* _label){
   label = _label;
 }
 
 char* Button::getText(){
-  return text;
+  return contents.text;
 }
 
 long Button::getNum(){
+	/*
 	char size = getTextSize();
 	long result = 0;
 	for(int i = 0; i<size; i++){
@@ -253,16 +276,21 @@ long Button::getNum(){
 		result = result * 10 + text[i]-'0';
 	}
 	return result;
+	*/
+	return contents.getNum();
 }
 
 void Button::fitToText(){
-  if(*text){
+  if(*contents.text){
+	char size = contents.getTextSize();
+	/*
     char* chars = text;
     char size = 0;
     while(*chars){
       *chars++;
       size++;
     }
+	*/
     w = size * 6 * borderWidth + 6;
     h = 8 * borderWidth + 8;
     //drawString(text,x+5,y+5,2,textColor);
