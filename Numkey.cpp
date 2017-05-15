@@ -44,7 +44,9 @@ void Numkey::drawFrame(){
   Tft.fillRectangle(xPos,yPos+btnHeight,width,height-btnHeight,bgColor);
 	//-- outer border
   for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
+    Tft.drawRectangle(xPos,yPos,width,height,borderColor);
+    xPos++;
+    yPos++;
     width--;
     height--;
   }
@@ -267,6 +269,7 @@ bool Numkey::checkTouch(Point* p){
 							if(autoremove){
 								if(myCanvas->widgets.peek() == this){ // check if top widget is this numkey
 									myCanvas->pop();				  // Remove this numkey from the canvas...
+									//this->hide();
 								}
 							}
 						}else{
@@ -306,9 +309,9 @@ void Numkey::reset(){
  * automatically redraw the canvas when hidden.
  */
 void Numkey::hide(){
-	Widget::hide();
+	//Widget::hide();
+	Tft.fillRectangle(x,y,w,h,this->myCanvas->bgColor);
 	visible = false;
-	//Tft.fillRectangle(x,y,w,h,this->canvas->bgColor);
 	this->myCanvas->redraw();
 }
 

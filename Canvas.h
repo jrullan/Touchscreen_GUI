@@ -23,7 +23,11 @@
 #include "StackArray.h"
 #include "Point.h"
 #include "SeeedTouchScreen.h"
-#include "TFTv2.h"
+
+#define YP 17//A2   // must be an analog pin, use "An" notation!
+#define XM 16//A1   // must be an analog pin, use "An" notation!
+#define YM 15//A0   // can be a digital pin, this is A0
+#define XP 18//A3   // can be a digital pin, this is A3
 
 #define DEBOUNCE 0
 #define TOUCH_SAMPLING_TIME 100
@@ -36,7 +40,6 @@ class Screen;
 
 // Declaration of static TouchScreen object
 static TouchScreen ts = TouchScreen(XP,YP,XM,YM);
-
 
 class Canvas
 {

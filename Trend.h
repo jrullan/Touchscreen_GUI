@@ -14,7 +14,11 @@
 #define TREND_H
 
 #ifndef MAX_TREND_VALUES
+#if defined(__STM32F1__)
+#define MAX_TREND_VALUES 32
+#else
 #define MAX_TREND_VALUES 16
+#endif
 #endif
 
 #include "Canvas.h"
@@ -42,6 +46,7 @@ class Trend : public Indicator{
 		int getMax();
 		void setMaxX(int maxX);
 		void autoFit(bool scale);
+		void setWindow(int min, int max);
 		
 		//Overriden methods
 		void show();
@@ -50,8 +55,15 @@ class Trend : public Indicator{
 		//Attributes
 		uint8_t* values;  // Array of values to plot
 		uint8_t vals;			// number of values in the array
+		//uint8_t maxValues = MAX_TREND_VALUES;	// To define max values in the trend
+		uint8_t maxValues;
 		bool forcedUpdate = false;
 		bool enableAutoFit = false;
+		
+		struct TrendWindow {
+			int minValue;
+			int maxValue;
+		} trendWindow;
 		
 	private:
 		//Attributes
@@ -64,7 +76,7 @@ class Trend : public Indicator{
 		void drawXScale();
 		void drawBorder();
 		void drawThresholdLines(bool colors);
-		void drawValues(INT16U color);
+		void drawValues(uint16_t color);
 		//int limit(int val, int min, int max);
 };
 

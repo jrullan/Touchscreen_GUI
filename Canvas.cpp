@@ -6,13 +6,8 @@
 ///////////////////////////////////////////////////////////
 
 #include "Canvas.h"
-//#include "Button.h"
-
-// Forward declaration of class Widget to solve issue with mutual 
-// includes
 #include "Widget.h"
 #include "Screen.h" 
-
 
 Canvas::Canvas(){
 
@@ -30,9 +25,12 @@ Canvas::~Canvas(){
 // Initializes the LCD screen (Tft) and sets debounce and lastmillis variables.
 // Last millis is used for the Canvas-wide debounce of touch events.
 void Canvas::init(){
-	Tft.TFTinit();
+	Tft.begin();
+	Tft.fillScreen(BLACK);
 	lastMillis = millis();
 	debounceTime = DEBOUNCE;
+	portrait();
+	return;
 	if(_mode = TFT_PORTRAIT) portrait();
 	if(_mode = TFT_LANDSCAPE) landscape();	
 }
@@ -40,6 +38,7 @@ void Canvas::init(){
 // This method sets the TFT orientation mode to landscape.
 void Canvas::landscape(){
 	Tft.layoutMode = TFT_LANDSCAPE;
+	Tft.setRotation(3);
 	w=320;
 	h=240;
 }
@@ -47,10 +46,10 @@ void Canvas::landscape(){
 // This method sets the TFT orientation mode to portrait.
 void Canvas::portrait(){
 	Tft.layoutMode = TFT_PORTRAIT;
+	Tft.setRotation(0);
 	w=240;
 	h=320;
 }
-
 
 // This method adds a widget to the widgets array and places it in the X,Y
 // position of the canvas. The value passed is the address of the widget object.
@@ -71,33 +70,27 @@ void Canvas::setScreen(Screen* screen){
 // This method calculates the x,y coordinates of the touched point
 // according to the currently set orientation mode.
 Point* Canvas::getTouchedPoint(){
-  Point p = ts.getPoint();
-  Point* ap;
-
-		if(millis() > touchSampling + TOUCH_SAMPLING_TIME){ //Debouncing of the touchscreen resistance
-
-			p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
-			p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);			
-			if(Tft.layoutMode == TFT_LANDSCAPE){
-				p.toLandscape();
-			}
-
-			touchSampling = millis();
+	Point p = ts.getPoint();
+	Point* ap;
+	if(millis() > touchSampling + TOUCH_SAMPLING_TIME){ //Debouncing of the touchscreen resistance
+		p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
+		p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);			
+		if(Tft.layoutMode == TFT_LANDSCAPE){
 			
-			touchedPoint.x = p.x;
-			touchedPoint.y = p.y;
-			return &touchedPoint;
 		}
-
-
+		touchSampling = millis();
+		touchedPoint.x = p.x;
+		touchedPoint.y = p.y;
+		//Tft.drawCircle(p.x,p.y,10,RED);
+		return &touchedPoint;
+	}
 	return NULL;
-
 }
  
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
 	Widget* widget = widgets.pop();
-	Tft.fillRectangle(widget->x,widget->y,widget->w,widget->h,this->bgColor);
+	Tft.fillRect(widget->x,widget->y,widget->w,widget->h,this->bgColor);
 	redraw();
 	return widget;
 }
@@ -138,10 +131,13 @@ bool Canvas::inBounds(Point* tP){
 	}else{
 		if(tP->x > 239 || tP->y > 319) return false;
 	}
+	Serial.print("Tx: ");
+	Serial.print(tP->x);
+	Serial.print(" Ty: ");
+	Serial.print(tP->y);
+	Serial.println();
 	return true;
 }
-
-
 
 // This method sets the canvas debouncing time to a value. By default it is 0.
 void Canvas::setDebounce(unsigned int d){

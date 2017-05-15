@@ -20,9 +20,9 @@ void Gauge::init(){
 	Indicator::init();
 	type = 0x22;
 	borderWidth=2;
-	this->hiLimit = scaleMax;
-	this->lowLimit = scaleMin;
-	this->currentValue = setpoint;
+	if(this->hiLimit == 0) this->hiLimit = scaleMax;
+	if(this->lowLimit == 0)this->lowLimit = scaleMin;
+	if(this->currentValue == 0)this->currentValue = setpoint;
 }
 
 void Gauge::clear(){

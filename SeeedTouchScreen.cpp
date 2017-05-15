@@ -5,7 +5,7 @@
   Code under MIT License.
 */
 
-#include "pins_arduino.h"
+//#include "pins_arduino.h"
 #include "wiring_private.h"
 #include <avr/pgmspace.h>
 #include "SeeedTouchScreen.h"
@@ -16,7 +16,7 @@
 // 3+ uses insert sort to get the median value.
 // We found 2 is precise yet not too slow so we suggest sticking with it!
 
-#define NUMSAMPLES 2		// sample number
+#define NUMSAMPLES 3		// sample number
 #define COMP       2
 #define AVERAGE    1
 #define RXPLATE    300
@@ -39,7 +39,14 @@ int avr_analog(int adpin)
     int min = 1024;
     for(int i = 0; i<AVERAGETIME; i++)
     {
-        int tmp = analogRead(adpin);
+				
+				int tmp = analogRead(adpin);
+				
+				// Adapt STM32
+				#if defined(__STM32F1__)
+        tmp = tmp >> 2;
+        #endif
+        
         if(tmp > max)max = tmp;
         if(tmp < min)min = tmp;
         sum += tmp;
@@ -59,10 +66,17 @@ Point TouchScreen::getPoint(void) {
 #endif
     uint8_t i, valid;
 
+#if defined (__AVR__) || defined(TEENSYDUINO)
     uint8_t xp_port = digitalPinToPort(_xp);
     unsigned char yp_port = digitalPinToPort(_yp);
     unsigned char xm_port = digitalPinToPort(_xm);
     unsigned char ym_port = digitalPinToPort(_ym);
+#elif defined (__STM32F1__)
+		gpio_dev* xp_port = digitalPinToPort(_xp);
+		gpio_dev* yp_port = digitalPinToPort(_yp);
+		gpio_dev* xm_port = digitalPinToPort(_xm);
+		gpio_dev* ym_port = digitalPinToPort(_ym);
+#endif
 
     unsigned char xp_pin = digitalPinToBitMask(_xp);
     unsigned char yp_pin = digitalPinToBitMask(_yp);
@@ -86,7 +100,14 @@ Point TouchScreen::getPoint(void) {
 #if AVERAGE
         samples[i] = avr_analog(_yp);
 #else
-        samples[i] = analogRead(_yp);
+
+				samples[i] = analogRead(_yp);
+				
+	// Adapt to STM32
+	#if defined(__STM32F1__)
+        samples[i] = samples[i] >> 2;
+	#endif
+	
 #endif
 
 #if TSDEBUG
@@ -116,6 +137,10 @@ Point TouchScreen::getPoint(void) {
         samples[i] = avr_analog(_xm);
 #else
         samples[i] = analogRead(_xm);
+        // Adapt STM32
+        #if defined(__STM32F1__)
+				samples[i] = samples[i]>>2;
+				#endif
 #endif
 #if TSDEBUG
         yy[i] = samples[i];
@@ -138,6 +163,13 @@ Point TouchScreen::getPoint(void) {
 
     int z1          = analogRead(_xm);
     int z2          = analogRead(_yp);
+    
+    // Adapt STM32
+    #if defined(__STM32F1__)
+			z1 = z1 >> 2;
+			z2 = z2 >> 2;
+		#endif
+		
     float rtouch    = 0;
 
     rtouch  = z2;
