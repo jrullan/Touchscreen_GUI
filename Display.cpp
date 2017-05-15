@@ -1,11 +1,12 @@
 #include "Display.h"
 
 Display::Display(){
-	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
+	x=0;
+	y=0;
+	this->init();
 }
 
 Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
-	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
 	x = 0;
 	y = 0;
 	this->setSize(width,height);
@@ -14,7 +15,7 @@ Display::Display(unsigned int width, unsigned int height, int backgroundColor, i
 }
 
 Display::~Display(){
-	if(text) free(text);
+	free(contents.text);
 }
 
 void Display::init(){
@@ -36,29 +37,18 @@ void Display::drawFrame(){
 }
 
 void Display::drawText(int color){
-	//if(color == NULL) color = fgColor;
-	
 	//Count characters to center on the button - Nice trick from the Tft2 library
-	if(*text){
-		char* chars = text;
-		char size = 0;
-		while(*chars){
-			*chars++;
-			size++;
-		}
-		//Calculate centered position of the text
-		int stringX = x+(w-size*6*borderWidth)/2;
-		//int stringX = x+(w-size*FONT_SPACE*borderWidth)/2;
-		int stringY = y+(h-8*borderWidth)/2;
-		//int stringY = y+(h-FONT_Y*borderWidth)/2;
-		Tft.drawString(text,stringX,stringY,borderWidth,color);
-		//Serial.print("color is ");Serial.println(color);
+	if(*contents.text){
+		char size = contents.getTextSize();
+		int stringX = x+(w-size*6*borderWidth)/2;//Calculate centered position of the text
+		int stringY = y+(h-8*borderWidth)/2;//int stringX = x+(w-size*FONT_SPACE*borderWidth)/2;
+		Tft.drawString(contents.text,stringX,stringY,borderWidth,color);
 	}
 }
 
 void Display::append(char* c){
-	byte cSize = getTextLength(c);
-	byte txtSize = getTextLength(text);//getTextSize();
+	byte cSize = contents.getTextLength(c);
+	byte txtSize = contents.getTextLength(contents.text);//getTextSize();
 	byte space = DISPLAY_SIZE - txtSize;
 	
 	//Check that there space available to append
@@ -66,27 +56,15 @@ void Display::append(char* c){
 		//Serial.print("Space available: ");Serial.println(space);
 		for(int i=0; i<space; i++)
 		{
-			text[i+txtSize] = c[i];
+			contents.text[i+txtSize] = c[i];
 		}
 	}
 	update();
 }
 
-unsigned char Display::getTextLength(char* c){
-	char size = 0;
-	if(*c){
-		char* chars = c;
-		while(*chars){
-		  *chars++;
-		  size++;
-		}
-	}
-	return size;
-}
-
 void Display::fitToText(){
-  if(*text){
-    char* chars = text;
+  if(*contents.text){
+    char* chars = contents.text;
     char size = 0;
     while(*chars){
       *chars++;
@@ -94,89 +72,33 @@ void Display::fitToText(){
     }
     w = size * FONT_SPACE * borderWidth + FONT_SPACE;
     h = FONT_Y * borderWidth + FONT_Y;
-    //drawString(text,x+5,y+5,2,textColor);
   }
 }
 
-char* Display::getText(){
-  return text;
+void Display::setNum(int num, bool now){
+	if(now) drawText(bgColor);
+	contents.setNum(num);
+	if(now) drawText(fgColor);
 }
 
-long Display::getNum(){
-	char size = getTextSize();
-	long result = 0;
-	for(int i = 0; i<size; i++){
-		if(text[i] == '.') break;  // Only process integer side
-		result = result * 10 + text[i]-'0';
-	}
-	return result;
-}
-
-void Display::setNum(int num){
-	drawText(bgColor);
-	clear();
-	char numChar[DISPLAY_SIZE];
-	char chars = 0;
-	
-	// Extract characters representing the powers of ten
-	while(num >= 10)
-	{
-		numChar[chars++] = num%10;
-		num /= 10;
-		//Serial.print("num ");Serial.println(num);
-	}
-	
-	numChar[chars++] = num;
-	
-	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
-	{
-		text[chars-1-j] = '0'+numChar[j];
-		//Serial.print("text[i] ");Serial.println(text[j]);
-	}
-	
-	text[chars]=0;
-	//update();
-	drawText(fgColor);
-}
-
-void Display::setText(char* _text){
-	drawText(bgColor);
-	for(int i=0; i<8;i++){
-		text[i] = _text[i];
-		//Serial.print("char ");Serial.println(text[i]);
-	}
-	drawText(fgColor);
-	//update();
-	//Serial.print("Display set to ");Serial.println(text);
+void Display::setText(char* _text, bool now){
+	if(now) drawText(bgColor);
+	contents.setText(_text);
+	if(now) drawText(fgColor);
 }
 
 void Display::deleteChar(){
-	byte textSize = getTextSize();
-	//Serial.print("Size is ");Serial.println(textSize);
+	byte textSize = contents.getTextSize();
 	if(textSize){
 		for(int i = textSize-1; i >= 0; i--)
 		{
-			if(text[i] != 0){
-				text[i] = 0;
+			if(contents.text[i] != 0){
+				contents.text[i] = 0;
 				break;
 			}
 		}
 	}
 	update();
-}
-
-unsigned char Display::getTextSize(){
-  return getTextLength(text);
-}
-
-void Display::clear(){
-	byte textSize = getTextSize();
-	if(textSize){
-		for(int i = textSize-1; i >= 0; i--)
-		{
-				text[i] = 0;
-		}
-	}
 }
 
 //Overriden virtual methods

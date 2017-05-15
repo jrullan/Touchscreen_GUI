@@ -21,35 +21,42 @@ public:
 	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	Button(unsigned int radius, int backgroundColor, int textColor, int borderColor);
 	virtual ~Button();
-	
-	void setEventHandler(void (*functionPointer)(Button *));
-	virtual void show();
-	virtual void update();
+
+	void init();
 	
 	void drawBackground(int color);
 	void drawBorder();
 	void drawText();
 	
+	void setEventHandler(void (*functionPointer)(Button *));
+	virtual void show();
+	virtual void update();
+	
+	//=====Text handling======
+	char* text;	
+	
 	char* getText();
 	long getNum();
-	void init();
-	void clear();
-	byte getTextLength(char* c);
-	byte getTextSize();
-	void setDebounce(unsigned int d);
+	unsigned char getTextSize();
+	unsigned char getTextLength(char* c);
+	void fitToText();
+	
 	void setNum(int n);
 	void setText(char* _text);
+	void clear();
+	//=======================
+	
 	void setLabel(char* _label);
 	int getLabelSize();
-	//void setSize(char _size);
-	void fitToText();
-  
+	
+	void setDebounce(unsigned int d);
+	
 	//Overriden methods
 	bool checkTouch(Point* p);
 	void (*eventHandler)(Button*);
 	
 	//Attributes
-	char* text;	
+
 	char* label;
 	char labelPos=0; //label position: 0-left, 1-top, 2-right, 3-bottom
 	bool touched;
