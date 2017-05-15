@@ -79,12 +79,12 @@ void Button::drawBackground(int color){
 	//Fill background
 	
 	if(!isRound){
-		Tft.fillRectangle(x+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
+		Tft.fillRect(x+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
 	}else{
 		int radius = (w>>1)-borderWidth;
 		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);
 		// label background
-		Tft.fillRectangle(xl+2*radius+2*borderWidth+FONT_SPACE, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),this->myCanvas->bgColor);
+		Tft.fillRect(xl+2*radius+2*borderWidth+FONT_SPACE, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),this->myCanvas->bgColor);
 	}
 }
 
@@ -106,8 +106,8 @@ void Button::drawBorder(){
 	
 	int xPos = xl;	
 	int width = w;
-	byte yPos = y;
-	byte height = h;
+	int yPos = y;
+	uint8_t height = h;
   
 	for(byte i=borderWidth; i!=0;i--){
 		if(!isRound){

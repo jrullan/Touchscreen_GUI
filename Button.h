@@ -17,8 +17,10 @@ class Button : public Widget
 {
 
 public:
+
 	Button(unsigned char textSize = 8);
 	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char textSize = 8);
+	
 	Button(unsigned int radius, int backgroundColor, int textColor, int borderColor);
 	virtual ~Button();
 

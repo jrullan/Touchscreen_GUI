@@ -46,8 +46,8 @@ void Dial::setSize(int radius){
 
 void Dial::drawBorder(){
 	int color = fgColor;
-	if(currentValue > hiLimit) color = hiLimitColor;
-	if(currentValue < lowLimit) color = lowLimitColor;
+	if(currentValue >= hiLimit) color = hiLimitColor;
+	if(currentValue <= lowLimit) color = lowLimitColor;
 
 	for(int i=0; i<borderWidth; i++)
 	{
@@ -186,20 +186,20 @@ void Dial::update(){
 	int color = fgColor;
 	
 	// Limit crossing forces border to redraw
-	if(previousValue <= hiLimit && previousValue >= lowLimit){
-		if(currentValue > hiLimit || currentValue < lowLimit) drawBorder();
+	if(previousValue < hiLimit && previousValue > lowLimit){
+		if(currentValue >= hiLimit || currentValue <= lowLimit) drawBorder();
 	}
-	if(previousValue > hiLimit){
-		if(currentValue <= hiLimit) drawBorder();
+	if(previousValue >= hiLimit){
+		if(currentValue < hiLimit) drawBorder();
 	}
-	if(previousValue < lowLimit){
-		if(currentValue >= lowLimit) drawBorder();
+	if(previousValue <= lowLimit){
+		if(currentValue > lowLimit) drawBorder();
 	}
 	
 	// Draw needle
 	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);
-	if(currentValue > hiLimit) color = hiLimitColor;
-	if(currentValue < lowLimit) color = lowLimitColor;
+	if(currentValue >= hiLimit) color = hiLimitColor;
+	if(currentValue <= lowLimit) color = lowLimitColor;
 	drawNeedle(x,y,currentValue,radius-tickSize-gap,color);
 	
 	if(showVal){

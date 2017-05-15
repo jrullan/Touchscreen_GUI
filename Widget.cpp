@@ -12,12 +12,9 @@ Widget::Widget(){
 
 }
 
-
-
 Widget::~Widget(){
 
 }
-
 
 /**
  * Hides the widget
@@ -62,5 +59,7 @@ char* Widget::getType(Widget* w){
 		return "numkey";
 	}else if ((w->type & 0xFF) == 0x33){
 		return "popup";
+	}else if ((w->type & 0xFF) == 0x34){
+		return "option";
 	}
 }
