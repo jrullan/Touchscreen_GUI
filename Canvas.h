@@ -22,12 +22,46 @@
 // Required includes:
 #include "StackArray.h"
 #include "Point.h"
-#include "SeeedTouchScreen.h"
+//#include "SeeedTouchScreen.h"
+#include "touch.h"
+#include "GUI_TFT.h"
+
+#if defined(__STM32F1__)
 
 #define YP 17//A2   // must be an analog pin, use "An" notation!
 #define XM 16//A1   // must be an analog pin, use "An" notation!
 #define YM 15//A0   // can be a digital pin, this is A0
 #define XP 18//A3   // can be a digital pin, this is A3
+
+#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+
+#define YP A2   // must be an analog pin, use "An" notation!
+#define XM A1   // must be an analog pin, use "An" notation!
+#define YM 54   // can be a digital pin, this is A0
+#define XP 57   // can be a digital pin, this is A3
+
+#elif defined(MQX_CPU) //Added support for Udoo Neo MCU!!!! Yay!!!
+
+#define YP A2   // must be an analog pin, use "An" notation!
+#define XM A1   // must be an analog pin, use "An" notation!
+#define YM A0   // can be a digital pin, this is A0
+#define XP A3   // can be a digital pin, this is A3
+
+#elif defined(__AVR_ATmega32U4__)
+
+#define YP A2   // must be an analog pin, use "An" notation!
+#define XM A1   // must be an analog pin, use "An" notation!
+#define YM 18   // can be a digital pin, this is A0
+#define XP 21   // can be a digital pin, this is A3
+
+#else 
+
+#define YP A2   // must be an analog pin, use "An" notation!
+#define XM A1   // must be an analog pin, use "An" notation!
+#define YM 14   // can be a digital pin, this is A0
+#define XP 17   // can be a digital pin, this is A3
+
+#endif
 
 #define DEBOUNCE 0
 #define TOUCH_SAMPLING_TIME 100

@@ -12,9 +12,14 @@
 #define GUITFT_H
 
 //#include "SPI.h"
-#include <Adafruit_GFX_AS.h>    // Core graphics library, with extra fonts.
-#include <Adafruit_ILI9341_STM.h> // STM32 DMA Hardware-specific library
-
+#if defined(__STM32F1__)
+	#include <Adafruit_GFX_AS.h>    // Core graphics library, with extra fonts.
+	#include <Adafruit_ILI9341_STM.h> // STM32 DMA Hardware-specific library
+#else
+	#include <Adafruit_GFX.h>
+	#include <Adafruit_ILI9341.h>
+#endif
+ 
 //Basic Colors
 #define RED		0xf800
 #define GREEN	0x07e0
@@ -39,9 +44,16 @@
 #define TS_MINY 83*2
 #define TS_MAXY 913*2
 
+#if defined(__STM32F1__)
 class Guitft : public Adafruit_ILI9341_STM{
-	public:
-		Guitft(int8_t TFT_CS, int8_t TFT_DC, int8_t TFT_RST):Adafruit_ILI9341_STM(TFT_CS, TFT_DC, -1){};
+public:
+	Guitft(int8_t TFT_CS, int8_t TFT_DC, int8_t TFT_RST):Adafruit_ILI9341_STM(TFT_CS, TFT_DC, -1){};
+#else
+class Guitft : public Adafruit_ILI9341{
+public:
+	Guitft(int8_t TFT_CS, int8_t TFT_DC, int8_t TFT_RST):Adafruit_ILI9341(TFT_CS, TFT_DC, -1){};
+#endif
+	
 		~Guitft();
 			
 		void fillRectangle(uint16_t poX, uint16_t poY, uint16_t length, uint16_t width, uint16_t color);

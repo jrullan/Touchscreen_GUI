@@ -29,8 +29,8 @@ void Canvas::init(){
 	Tft.fillScreen(BLACK);
 	lastMillis = millis();
 	debounceTime = DEBOUNCE;
-	portrait();
-	return;
+	//portrait();
+	//return;
 	if(_mode = TFT_PORTRAIT) portrait();
 	if(_mode = TFT_LANDSCAPE) landscape();	
 }
@@ -71,12 +71,11 @@ void Canvas::setScreen(Screen* screen){
 // according to the currently set orientation mode.
 Point* Canvas::getTouchedPoint(){
 	Point p = ts.getPoint();
-	Point* ap;
 	if(millis() > touchSampling + TOUCH_SAMPLING_TIME){ //Debouncing of the touchscreen resistance
 		p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
 		p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);			
 		if(Tft.layoutMode == TFT_LANDSCAPE){
-			
+			p.toLandscape();
 		}
 		touchSampling = millis();
 		touchedPoint.x = p.x;
@@ -131,11 +130,6 @@ bool Canvas::inBounds(Point* tP){
 	}else{
 		if(tP->x > 239 || tP->y > 319) return false;
 	}
-	Serial.print("Tx: ");
-	Serial.print(tP->x);
-	Serial.print(" Ty: ");
-	Serial.print(tP->y);
-	Serial.println();
 	return true;
 }
 
