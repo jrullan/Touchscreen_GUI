@@ -3,21 +3,21 @@
 Display::Display(unsigned char size){
 	x=0;
 	y=0;
-	contents = Text(size);
+	contents = new Text(size);
 	this->init();
 }
 
 Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char size){
 	x = 0;
 	y = 0;
-	contents = Text(size);
+	contents = new Text(size);
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
 	this->init();
 }
 
 Display::~Display(){
-	free(contents.text);
+	free(contents->text);
 }
 
 void Display::init(){
@@ -40,66 +40,66 @@ void Display::drawFrame(){
 
 void Display::drawText(int color){
 	//Count characters to center on the button - Nice trick from the Tft2 library
-	if(*contents.text){
-		char size = contents.getTextSize();
+	if(*contents->text){
+		char size = contents->getTextSize();
 		int stringX = x+(w-size*6*borderWidth)/2;//Calculate centered position of the text
 		int stringY = y+(h-8*borderWidth)/2;//int stringX = x+(w-size*FONT_SPACE*borderWidth)/2;
-		Tft.drawString(contents.text,stringX,stringY,borderWidth,color);
+		Tft.drawString(contents->text,stringX,stringY,borderWidth,color);
 	}
 }
 
 void Display::append(char* c){
-	byte cSize = contents.getTextLength(c);
-	byte txtSize = contents.getTextLength(contents.text);//getTextSize();
-	byte space = contents._textSize - txtSize;
+	byte cSize = contents->getTextLength(c);
+	byte txtSize = contents->getTextLength(contents->text);//getTextSize();
+	byte space = contents->_textSize - txtSize;
 	
 	//Check that there space available to append
-	if(txtSize < contents._textSize){
+	if(txtSize < contents->_textSize){
 		//Serial.print("Space available: ");Serial.println(space);
 		for(int i=0; i<space; i++)
 		{
-			contents.text[i+txtSize] = c[i];
+			contents->text[i+txtSize] = c[i];
 		}
 	}
 	update();
 }
 
 void Display::fitToText(){
-  if(*contents.text){
+  if(*contents->text){
 	/*
-    char* chars = contents.text;
+    char* chars = contents->text;
     char size = 0;
     while(*chars){
       *chars++;
       size++;
     }
 	*/
-	char size = contents.getTextSize();
+	char size = contents->getTextSize();
     w = size * FONT_SPACE * borderWidth + FONT_SPACE;
     h = FONT_Y * borderWidth + FONT_Y;
   }
 }
 
 void Display::setNum(int num, bool now){
-	if(contents.getNum() == num) return;
+	if(contents->getNum() == num) return;
 	if(now) drawText(bgColor);
-	contents.setNum(num);
+	contents->setNum(num);
 	if(now) drawText(fgColor);
 }
 
 void Display::setText(char* _text, bool now){
 	if(now) drawText(bgColor);
-	contents.setText(_text);
+	contents->setText(_text);
 	if(now) drawText(fgColor);
 }
 
 void Display::deleteChar(){
-	byte textSize = contents.getTextSize();
+	byte textSize = contents->getTextSize();
 	if(textSize){
 		for(int i = textSize-1; i >= 0; i--)
 		{
-			if(contents.text[i] != 0){
-				contents.text[i] = 0;
+			if(contents->text[i] != 0){
+				contents->text[i] = 0;
 				break;
 			}
 		}

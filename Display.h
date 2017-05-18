@@ -23,7 +23,7 @@ class Display : public Widget
 		void drawFrame();
 		void drawText(int color);
 	
-		Text contents;//= Text();
+		Text* contents;
 		//Text label = Text();
 		
 		void fitToText();
