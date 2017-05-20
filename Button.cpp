@@ -133,17 +133,17 @@ void Button::drawText(){
 		
 		}else if(labelPos == 2){ // right
 			xl = x + w + FONT_SPACE;
-			yl = y+(h-8*borderWidth)/2;
+			yl = y+(h-8*fontSize)/2;
 		}else if(labelPos == 3){ // bottom
 			
 		}else{ 	// default 0-left
 			xl = x;
-			yl = y+(h-8*borderWidth)/2;	
+			yl = y+(h-8*fontSize)/2;	
 		}
 		//Serial.print("labelPos: ");Serial.println(labelPos);
 		//Serial.print("label size: ");Serial.println(labelSize);
 		
-		Tft.drawString(label,xl,yl,borderWidth,WHITE);
+		Tft.drawString(label,xl,yl,fontSize,WHITE);
 	}
 	
 	//Count characters to center on the button - Nice trick from the Tft2 library
@@ -158,9 +158,9 @@ void Button::drawText(){
 		}
 		*/
 		//Calculate centered position of the text
-		int stringX = x+labelSize+(w-size*6*borderWidth)/2;
-		int stringY = y+(h-8*borderWidth)/2;
-		Tft.drawString(contents.text,stringX,stringY,borderWidth,fgColor);
+		int stringX = x+labelSize+(w-size*6*fontSize)/2;
+		int stringY = y+(h-8*fontSize)/2;
+		Tft.drawString(contents.text,stringX,stringY,fontSize,fgColor);
 	}
 }
 
