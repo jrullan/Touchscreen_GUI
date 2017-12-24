@@ -123,6 +123,6 @@ void Display::show(){
 }
 
 void Display::update(){
-	Tft.fillRectangle(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
+	Tft.fillRectangle(x+borderWidth, y+borderWidth, w-(2*borderWidth)+1,h-(2*borderWidth)+1,bgColor);
 	drawText(fgColor);
 }
