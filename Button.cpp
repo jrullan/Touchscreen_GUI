@@ -27,9 +27,10 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
 	//if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
-	contents = Text();
+
 	x = radius;
-	y = radius;
+	y = radius;	
+	contents = Text(8);
 	this->setSize(2*radius,2*radius);
 	this->setColors(backgroundColor,textColor,borderColor);
 	this->isRound = true;
@@ -52,14 +53,12 @@ void Button::init(){
 	lastMillis = millis();	
 }
 
-
 int Button::getLabelSize(){
 	if(*label){
 		return contents.getTextLength(label)*6*borderWidth + 6;
 	}
 	return 0;
 }
-
 
 void Button::drawBackground(int color){
 	int labelSize = getLabelSize();
@@ -78,13 +77,14 @@ void Button::drawBackground(int color){
 	}
 	//Fill background
 	
-	if(!isRound){
+	if(!this->isRound){
 		Tft.fillRect(x+borderWidth, y+borderWidth, wl-(2*borderWidth)+1,h-(2*borderWidth)+1,color);
 	}else{
 		int radius = (w>>1)-borderWidth;
-		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);
+		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius-borderWidth/2,color);
 		// label background
-		Tft.fillRect(xl+2*radius+2*borderWidth+FONT_SPACE, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),this->myCanvas->bgColor);
+		//Tft.fillRect(xl+2*radius+2*borderWidth+FONT_SPACE, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),this->myCanvas->bgColor);
+		//Tft.fillRect(x, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),BLACK);
 	}
 }
 
@@ -110,7 +110,7 @@ void Button::drawBorder(){
 	uint8_t height = h;
   
 	for(byte i=borderWidth; i!=0;i--){
-		if(!isRound){
+		if(!this->isRound){
 			Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
 			width--;
 			height--;
@@ -143,7 +143,7 @@ void Button::drawText(){
 		//Serial.print("labelPos: ");Serial.println(labelPos);
 		//Serial.print("label size: ");Serial.println(labelSize);
 		
-		Tft.drawString(label,xl,yl,fontSize,WHITE);
+		Tft.drawString(label,xl,yl,fontSize,fgColor);
 	}
 	
 	//Count characters to center on the button - Nice trick from the Tft2 library
@@ -192,13 +192,10 @@ unsigned char Button::getTextLength(char* c){
 	*/
 }
 
-
-
 unsigned char Button::getTextSize(){
   //return getTextLength(text);
 	return contents.getTextSize();
 }
-
 
 void Button::setDebounce(unsigned int d){
 	debounceTime = d;
@@ -253,11 +250,9 @@ void Button::setNum(int num){
 	*/
 }
 
-
 void Button::setText(char* _text){
   contents.text = _text;
 }
-
 
 void Button::setLabel(char* _label){
   label = _label;
