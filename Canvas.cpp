@@ -31,8 +31,8 @@ void Canvas::init(){
 	debounceTime = DEBOUNCE;
 	//portrait();
 	//return;
-	if(_mode = TFT_PORTRAIT) portrait();
-	if(_mode = TFT_LANDSCAPE) landscape();	
+	if(_mode == TFT_PORTRAIT) portrait();
+	if(_mode == TFT_LANDSCAPE) landscape();	
 }
 
 // This method sets the TFT orientation mode to landscape.
