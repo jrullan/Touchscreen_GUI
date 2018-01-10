@@ -14,10 +14,12 @@ void Guitft::fillRectangle(uint16_t poX, uint16_t poY, uint16_t length, uint16_t
  */
 void Guitft::drawRectangle(uint16_t poX, uint16_t poY, uint16_t length, uint16_t width,uint16_t color)
 {
-	drawFastHLine(poX,poY,length,color);
-	drawFastHLine(poX, poY+width, length, color);
-	drawFastVLine(poX, poY, width,color);
-	drawFastVLine(poX+length,poY,width,color);
+	this->drawRect(poX,poY,length,width,color);
+	
+	//drawFastHLine(poX,poY,length,color);
+	//drawFastHLine(poX, poY+width, length, color);
+	//drawFastVLine(poX, poY, width,color);
+	//drawFastVLine(poX+length,poY,width,color);
 }
 
 /*
