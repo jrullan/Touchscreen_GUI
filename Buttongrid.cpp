@@ -199,34 +199,12 @@ void Buttongrid::configure(byte size, byte f){
 unsigned char Buttongrid::getColumn(unsigned char num){
 	unsigned char val = num%columns;
 	return val==0 ? columns : val;
-	//return val==0 ? columns : val;
 }
 
 unsigned char Buttongrid::getRow(unsigned char num){
-	//Serial.print("Num = ");
-	//Serial.print(num);
-	//Serial.print(" columns = ");
-	//Serial.print(columns);
-	
 	num -= 1;
-	//Serial.print(" (Num-1) = ");
-	//Serial.print(num);	
-	unsigned char mod = num%columns;	
-
-	//Serial.print(" Mod = ");
-	//Serial.print(mod);
-	//Serial.print(" (num-1)/columns = ");
-	//Serial.println(num/columns);
-	
+	unsigned char mod = num%columns;		
 	return num/columns + 1;
-	
-	//if(num <= columns){		
-	//	return 1;
-	//}else{
-	//	return mod==1 ? num/columns + 1 : num/columns;
-	//}
-	//return val==0 ? num/rows : (num-val)/rows+1;
-	//return mod==1 ? num/rows + 1 : num/rows; 
 }
 
 unsigned char Buttongrid::getNumber(unsigned char row, unsigned char column){
@@ -267,24 +245,18 @@ void Buttongrid::setLabel(unsigned char id, unsigned char label){
 	//labels[rowIndex][colIndex] = label; <---- No, can't do this! No enough memory to hold strings for each button
 	//Calculates initial position of text inside the btnWidth
 	//considering the number's width and font size.
-	int xPos = btnWidth/2 - (digits*FONT_X*font_size)/2;//btnWidth/(2) - 6*digits -2;
-	int yPos = btnHeight/(2) - 8;
+	
+	int xPos = (btnWidth - digits*6*font_size)/2;//btnWidth/(2) - 6*digits -2;
+	int yPos = (btnHeight-FONT_Y*fontSize)/2;//btnHeight/(2) - 8;
 	
 	//Calculates position of the text considering
 	//its column or row and the btnWidth.
-	xPos = x+(colIndex*btnWidth)+xPos+borderWidth;
-	yPos = y+yPos+(rowIndex*btnHeight);
+	xPos = x+(colIndex*btnWidth)+xPos+borderWidth+hGap;//+(2*borderWidth);//+borderWidth;
+	yPos = y+(rowIndex*btnHeight)+yPos+borderWidth+vGap;//+(2*borderWidth);
 
 	//Draw contents function
 	Tft.drawNumber(label,xPos,yPos,font_size,BLACK);
-	//Serial.print("label: ");
-	//Serial.print(label);
-	//Serial.print(" rowIndex: ");
-	//Serial.print(rowIndex);
-	//Serial.print(" colIndex: ");
-	//Serial.println(colIndex);
 }
-
 
 void Buttongrid::setName(unsigned char id, const char name[8]){
 	names[id] = name;	
@@ -295,7 +267,6 @@ void Buttongrid::setName(unsigned char id, char number){
 	//names[id] = ;	
 	return;
 }
-
 
 void Buttongrid::printName(unsigned char id){
 	const char* name = names[id];	
@@ -311,6 +282,10 @@ void Buttongrid::printName(unsigned char id){
 	Serial.print(" ");
 	Serial.println(names[id]);
 
+	//setNum(id);
+	setLabel(id,labels[getRow(id)-1][getColumn(id)-1]);
+	return;
+	
 	// If name is empty draw the id, else draw the name
 	if(n==0){
 		setNum(id);
@@ -363,7 +338,7 @@ bool Buttongrid::checkTouch(Point* p){
 					if((p->x > boundX1) && (p->x < boundX2) && (p->y > boundY1) && (p->y < boundY2)){
 						
 						// Restore last button pressed appearance
-						if(lastPressed != 0){
+						if(clearLastPressed && lastPressed != 0){
 							int lastX = x + (btnWidth)*(getColumn(lastPressed)-1) + borderWidth;
 							int lastY = y+(btnHeight)*(getRow(lastPressed)-1)+borderWidth;
 							if(HIGHLIGHT == 1){

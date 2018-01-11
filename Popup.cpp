@@ -72,7 +72,7 @@ void Popup::draw(){
 	//Serial.println(text);
 	
 	// Draw buttons (One or Two based on popup_type)
-	btnPoY = y+h-getBtnHeight()-10;
+	btnPoY = y+h-getBtnHeight()-10;		
 	if(popup_type > POPUP_OK){ // Two buttons
 		btnPoX = x+w/2-(getBtnWidth()*2+10)/2;
 		//Button 1

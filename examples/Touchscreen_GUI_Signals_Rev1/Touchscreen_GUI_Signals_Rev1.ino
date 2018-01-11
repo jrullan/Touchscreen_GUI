@@ -27,7 +27,7 @@
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
+Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Button btnLed = Button(20,BLACK,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button btnLeft = Button(80,80,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button btnRight = Button(80,80,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
@@ -67,7 +67,7 @@ void setup() {
   pinMode(7,OUTPUT);
   digitalWrite(7,HIGH);
   
-  canvas.init(TFT_LANDSCAPE);
+  canvas.init();
 
   //Configure the widgets
   //=========================================  

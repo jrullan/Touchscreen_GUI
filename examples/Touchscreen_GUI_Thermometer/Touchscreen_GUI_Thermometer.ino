@@ -36,7 +36,7 @@
 #define trendUpdate 300000
 #define backLightOffDelay 100
 
-Canvas canvas;
+Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK);
 Dial dial;
 Numkey numkey;
 Buttongrid grid = Buttongrid(3,1);
@@ -52,7 +52,7 @@ void setup() {
   pinMode(BACKLIGHT,OUTPUT);
   digitalWrite(BACKLIGHT,HIGH);
   backLightOffUpdate = backLightOffDelay;
-  canvas.init(TFT_LANDSCAPE);
+  canvas.init();
 
   delay(1000);
   //Configure the widgets

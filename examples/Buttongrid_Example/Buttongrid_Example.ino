@@ -1,6 +1,6 @@
   /**************************************************************
  *
- *  Touchscreen_GUI_Template
+ *  Buttongrid Example - Bingo
  *
  *  Use this template as a starting point.
  *  The required libraries "includes" and configuration
@@ -25,7 +25,7 @@
  *
  *	Credits:
  *	
- *  
+ 
  *************************************************************/
 
 // Required includes 
@@ -37,7 +37,7 @@
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
+Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Display rowDisplay = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
 Display colDisplay = Display();
 Display numberDisplay = Display();
@@ -73,7 +73,7 @@ unsigned char result[][5] = {
 
 void setup() {
   Serial.begin(9600);
-  canvas.init(TFT_LANDSCAPE);
+  canvas.init();
 
   //Configure the widgets
   //=========================================  
@@ -107,7 +107,8 @@ void setup() {
     btnWon.setDebounce(100);
     btnWon.visible = false;
     btnWon.block = true;
-    
+
+    buttonGrid.clearLastPressed = false;
     buttonGrid.setSize(220 ,240);
     buttonGrid.setColors(GRAY1,BLACK,WHITE);
     buttonGrid.init();
@@ -147,9 +148,9 @@ void loop() {
 
 // This declaration must conform to the declaration of 
 // the eventHandler in the Buttongrid class.
-void buttonGridEventHandler(Buttongrid* bg, INT8U val){
-  byte gridSize = val;
+void buttonGridEventHandler(Buttongrid* bg, uint8_t val){
 
+  setPosition(val);
   rowDisplay.setNum(bg->getRow(val));
   colDisplay.setNum(bg->getColumn(val));
   numberDisplay.setNum(val);
@@ -188,19 +189,17 @@ void buttonGridEventHandler(Buttongrid* bg, INT8U val){
 
 
 void buttonEventHandler(Button* btn){
-  Serial.println("Clear pressed");
+  rowDisplay.setText("",true);
+  colDisplay.setText("",true);
+  numberDisplay.setText("",true);
   setBingoLabels();
   buttonGrid.clear();
-  rowDisplay.clear();
-  colDisplay.clear();
-  numberDisplay.clear();
   clearResult();
   showResult();
 }
 
 
 void displayWon(){
-    //canvas.pop();
     btnWon.visible = true;
     buttonGrid.visible = false;
     clearResult();
@@ -209,10 +208,11 @@ void displayWon(){
 
 
 void wonEventHandler(Button* btn){
-  setBingoLabels();
+  //setBingoLabels();
+  btnClear.eventHandler(&btnClear);
   btn->visible = false;
   buttonGrid.visible = true;
-  canvas.redraw();
+  //canvas.redraw();
 }
 
 
@@ -280,7 +280,7 @@ void setPosition(unsigned char num){
 
 boolean checkDownDiagonal(unsigned char num){
   Serial.print("Num value: ");Serial.println(num);
-  setPosition(num);  
+  //setPosition(num);  
   if((result[0][0]==1)&&(result[1][1]==1)&&(result[3][3]==1)&&(result[4][4]==1)){
     return true;
   }
@@ -290,7 +290,7 @@ boolean checkDownDiagonal(unsigned char num){
 
 boolean checkUpDiagonal(unsigned char num){
   Serial.print("Num value: ");Serial.println(num);
-  setPosition(num);
+  //setPosition(num);
   if((result[4][0]==1)&&(result[3][1]==1)&&(result[1][3]==1)&&(result[0][4]==1)){
     return true;
   }
@@ -299,7 +299,7 @@ boolean checkUpDiagonal(unsigned char num){
 
 
 signed char checkHorizontal(unsigned char num){
-  setPosition(num);
+  //setPosition(num);
   for(byte r=0; r<5; r++)
   {
       if((result[r][0]==1)&&(result[r][1]==1)&&(result[r][2]==1)&&(result[r][3]==1)&&(result[r][4]==1)){
@@ -311,7 +311,7 @@ signed char checkHorizontal(unsigned char num){
 
 
 signed char checkVertical(unsigned char num){
-  setPosition(num);
+  //setPosition(num);
   for(byte c=0; c<5; c++)
   {
       if((result[0][c]==1)&&(result[1][c]==1)&&(result[2][c]==1)&&(result[3][c]==1)&&(result[4][c]==1)){
