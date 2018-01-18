@@ -264,11 +264,11 @@ void Buttongrid::printName(unsigned char id){
 		if(name[n] == 0) break;
 	}
 
-	Serial.print(n);
-	Serial.print(" characters for id: ");
-	Serial.print(id);
-	Serial.print(" ");
-	Serial.println(names[id]);
+	//Serial.print(n);
+	//Serial.print(" characters for id: ");
+	//Serial.print(id);
+	//Serial.print(" ");
+	//Serial.println(names[id]);
 
 	//setNum(id);
 	setLabel(id,labels[getRow(id)-1][getColumn(id)-1]);
