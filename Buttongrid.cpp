@@ -147,30 +147,6 @@ void Buttongrid::drawGrid(){
   	
   }
 
-  //-- draw contents  
-  byte colIndex=0;
-  byte rowIndex=0;
-  for(byte r=1; r<=rows; r++)
-  {
-	  for(byte c=1; c<=columns; c++)
-	  {
-		  //byte num = getNumber(r,c); //c+(r-1)*columns;
-		  //Serial.print(" r: ");
-		  //Serial.print(r);
-		  //Serial.print(" c: ");
-		  //Serial.print(c);
-		  //Serial.print(" num: ");
-		  //Serial.print(num);
-		  //Serial.print(" label: ");
-		  //Serial.print(labels[r-1][c-1]);
-		  //Serial.print(",");
-		  
-		  //setLabel(getNumber(r,c),labels[r-1][c-1]);
-		  printName(getNumber(r,c));
-	  }
-	  //Serial.println();
-  }
-  
   //-- Gaps fill
   if(hGap > 0){
 		for(byte j=1;j<columns;j++){
@@ -182,6 +158,18 @@ void Buttongrid::drawGrid(){
 			Tft.fillRectangle(x,y+j*btnHeight+borderWidth-vGap,w,vGap*2,myCanvas->bgColor);
 		}
   }  
+  
+  //-- draw contents  
+  byte colIndex=0;
+  byte rowIndex=0;
+  for(byte r=1; r<=rows; r++)
+  {
+	  for(byte c=1; c<=columns; c++)
+	  {
+		  printName(getNumber(r,c));
+	  }
+  }
+    
 }
 
 void Buttongrid::setEventHandler(void (*functionPointer)(Buttongrid *, unsigned char)){
