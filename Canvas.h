@@ -17,7 +17,10 @@
 #else
 #include <WProgram.h>
 #endif
-#include <avr/pgmspace.h>
+
+#if defined (__AVR__) //|| defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
+	#include <avr/pgmspace.h>
+#endif
 
 // Required includes:
 #include "StackArray.h"
@@ -54,12 +57,20 @@
 #define YM 18   // can be a digital pin, this is A0
 #define XP 21   // can be a digital pin, this is A3
 
+#elif defined(ESP32)
+
+#define YP 34   // must be an analog pin, use "An" notation!
+#define XM 33   // must be an analog pin, use "An" notation!
+#define YM 36   // can be a digital pin, this is A0
+#define XP 35   // can be a digital pin, this is A3
+
 #else 
 
 #define YP A2   // must be an analog pin, use "An" notation!
 #define XM A1   // must be an analog pin, use "An" notation!
 #define YM 14   // can be a digital pin, this is A0
 #define XP 17   // can be a digital pin, this is A3
+
 
 #endif
 
@@ -71,9 +82,11 @@
 // includes
 class Widget;
 class Screen;
+extern Guitft Tft;
 
 // Declaration of static TouchScreen object
 static TouchScreen ts = TouchScreen(XP,YP,XM,YM);
+
 
 class Canvas
 {
@@ -81,6 +94,7 @@ class Canvas
 public:
 	Canvas();
 	Canvas(int mode, int color);
+	Canvas(int mode, int color, int cs, int dc);
 	virtual ~Canvas();
 
 	void add(Widget* widget, int x, int y);

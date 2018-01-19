@@ -55,7 +55,7 @@ void Button::init(){
 
 int Button::getLabelSize(){
 	if(*label){
-		return contents.getTextLength(label)*6*borderWidth + 6;
+		return contents.getTextLength(label)*6*fontSize + 6;
 	}
 	return 0;
 }
@@ -133,12 +133,12 @@ void Button::drawText(){
 		
 		}else if(labelPos == 2){ // right
 			xl = x + w + FONT_SPACE;
-			yl = y+(h-8*fontSize)/2;
+			yl = y+(h-6*fontSize)/2;
 		}else if(labelPos == 3){ // bottom
 			
 		}else{ 	// default 0-left
 			xl = x;
-			yl = y+(h-8*fontSize)/2;	
+			yl = y+(h-6*fontSize)/2;	
 		}
 		//Serial.print("labelPos: ");Serial.println(labelPos);
 		//Serial.print("label size: ");Serial.println(labelSize);

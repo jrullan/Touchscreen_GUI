@@ -13,6 +13,7 @@ Canvas::Canvas(){
 
 }
 
+
 Canvas::Canvas(int mode, int color){
 	_mode = mode;
 	bgColor = color;
