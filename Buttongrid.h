@@ -64,6 +64,7 @@ public:
 	unsigned char** labels = 0;
 	const char** names;
 	int highlightColor = YELLOW;
+	unsigned char clearLastPressed = 1; // used to decide if to redraw as a maintained or as a momentary
 	
 private:
 	//String text;

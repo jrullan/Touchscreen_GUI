@@ -40,8 +40,8 @@
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(); // Memory used: (storage/ram: 1,676/36)  3,372/228
-Button button = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
+Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
+Button button = Button();//80,40,GRAY1,BLACK,WHITE); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
 Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
 Gauge gauge = Gauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
@@ -59,7 +59,7 @@ void setup() {
   Serial.begin(9600);
   pinMode(7,OUTPUT);
   digitalWrite(7,HIGH);
-  canvas.init(TFT_LANDSCAPE);
+  canvas.init();
 
   //Configure the widgets
   //=========================================  
@@ -69,7 +69,7 @@ void setup() {
     button.setEventHandler(&buttonEventHandler);
     button.init();
     button.setDebounce(100);  
-
+    
     btnPlus.setText("+");
     btnPlus.setEventHandler(&btnPlusEventHandler);
     btnPlus.init();

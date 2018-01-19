@@ -8,11 +8,11 @@
 
 
 Button::Button(unsigned char textSize){
+	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
 	contents = Text(textSize);
 }
 
 Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textSize){
-	//if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
 	
 	x = 0;
@@ -25,7 +25,6 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
 }
 
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
-	//if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
 
 	x = radius;
@@ -125,8 +124,6 @@ void Button::drawText(){
 	int xl=0;
 	int yl=0;
 	int labelSize=getLabelSize();
-
-	//Serial.print("Label: ");Serial.println(label);
 	
 	if(labelSize > 0){
 		if(labelPos == 1){ // top
@@ -140,24 +137,12 @@ void Button::drawText(){
 			xl = x;
 			yl = y+(h-6*fontSize)/2;	
 		}
-		//Serial.print("labelPos: ");Serial.println(labelPos);
-		//Serial.print("label size: ");Serial.println(labelSize);
 		
 		Tft.drawString(label,xl,yl,fontSize,fgColor);
 	}
 	
-	//Count characters to center on the button - Nice trick from the Tft2 library
 	if(*contents.text){
 		char size = contents.getTextSize();
-		/*
-		char size = 0;
-		char* chars = text;
-		while(*chars){
-			*chars++;
-			size++;
-		}
-		*/
-		//Calculate centered position of the text
 		int stringX = x+labelSize+(w-size*6*fontSize)/2;
 		int stringY = y+(h-8*fontSize)/2;
 		Tft.drawString(contents.text,stringX,stringY,fontSize,fgColor);
