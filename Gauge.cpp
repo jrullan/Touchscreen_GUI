@@ -42,7 +42,7 @@ void Gauge::drawScale(){
 	int lineX = x + textWidth - 1; //to separate from border
 	
 	// Draw background
-	//Tft.fillRectangle(x,y,yScaleWidth-borderWidth+1,h+borderWidth,bgColor);
+	//Tft.fillRect(x,y,yScaleWidth-borderWidth+1,h+borderWidth,bgColor);
 	
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
@@ -76,7 +76,7 @@ void Gauge::drawScale(){
 	//Draw SCALE
 	int textWidth = 4 * FONT_SPACE;
 
-	Tft.fillRectangle(x+textWidth,y+borderWidth,10,h,BLACK);
+	Tft.fillRect(x+textWidth,y+borderWidth,10,h,BLACK);
 
 	setNum(scaleMax);
 	Tft.drawString(buf,x,y,1,borderColor);
@@ -116,7 +116,7 @@ int Gauge::getYVal(int value){
 //Overriden virtual methods
 void Gauge::show(){
 	if(this->visible){
-		Tft.fillRectangle(x,y,w,h,bgColor);
+		Tft.fillRect(x,y,w,h,bgColor);
 		this->drawScale();
 		this->drawBorder();
 		this->update();
@@ -132,7 +132,7 @@ void Gauge::drawBorder(){
 	//Draw the Vertical Bar
 	//--border
 	for(byte i=borderWidth; i!=0;i--){
-		Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
+		Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
 		width--;
 		height--;
 	}
@@ -146,12 +146,12 @@ void Gauge::drawFill(){
 	unsigned int val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
 
 	//--background fill
-	Tft.fillRectangle(x+borderWidth+yScaleWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
+	Tft.fillRect(x+borderWidth+yScaleWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
 	//--bar fill
 	int color=fgColor;
 	if(currentValue > this->hiLimit) color = hiLimitColor;
 	if(currentValue < this->lowLimit) color = lowLimitColor;
-	Tft.fillRectangle(x+borderWidth+yScaleWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);	
+	Tft.fillRect(x+borderWidth+yScaleWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);	
 }
 
 void Gauge::update(){

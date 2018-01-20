@@ -37,14 +37,14 @@ void Numkey::drawFrame(){
   btnHeight = h / 5;
   
   //--display background
-  Tft.fillRectangle(xPos,yPos,btnWidth*2,btnHeight,BLACK);
+  Tft.fillRect(xPos,yPos,btnWidth*2,btnHeight,BLACK);
   //--backspace background
-  Tft.fillRectangle(xPos+btnWidth*2,yPos,btnWidth,btnHeight,bgColor);
+  Tft.fillRect(xPos+btnWidth*2,yPos,btnWidth,btnHeight,bgColor);
   //--nums background rectangle
-  Tft.fillRectangle(xPos,yPos+btnHeight,width,height-btnHeight,bgColor);
+  Tft.fillRect(xPos,yPos+btnHeight,width,height-btnHeight,bgColor);
 	//-- outer border
   for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRectangle(xPos,yPos,width,height,borderColor);
+    Tft.drawRect(xPos,yPos,width,height,borderColor);
     xPos++;
     yPos++;
     width--;
@@ -310,7 +310,7 @@ void Numkey::reset(){
  */
 void Numkey::hide(){
 	//Widget::hide();
-	Tft.fillRectangle(x,y,w,h,this->myCanvas->bgColor);
+	Tft.fillRect(x,y,w,h,this->myCanvas->bgColor);
 	visible = false;
 	this->myCanvas->redraw();
 }
@@ -318,7 +318,7 @@ void Numkey::hide(){
 void Numkey::update(){
   int btnWidth = w / 3;
   int btnHeight = h / 5;
-  Tft.fillRectangle(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
+  Tft.fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
   //Count characters to center on the button - Nice trick from the Tft2 library
   if(*text){
     char* chars = text;

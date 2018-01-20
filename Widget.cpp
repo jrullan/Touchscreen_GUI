@@ -20,7 +20,7 @@ Widget::~Widget(){
  * Hides the widget
  */
 void Widget::hide(){
-	Tft.fillRectangle(x,y,w,h,myCanvas->bgColor);
+	Tft.fillRect(x,y,w,h,myCanvas->bgColor);
 }
 
 void Widget::setCanvas(Canvas* c){

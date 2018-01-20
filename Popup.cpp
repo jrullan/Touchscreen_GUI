@@ -32,11 +32,10 @@ void Popup::init(){
 void Popup::drawFrame(int pX, int pY, int wW, int hH){
 	for(unsigned char i=0; i<borderWidth; i++)
 	{
-		Tft.drawRectangle(pX+i,pY+i,wW-i*2,hH-i*2,borderColor);
+		Tft.drawRect(pX+i,pY+i,wW-i*2,hH-i*2,borderColor);
 	}
 	//Serial.println("Drew frame");
 }
-
 
 void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
 	if(!t) return;
@@ -45,7 +44,6 @@ void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
 	Tft.drawString(t,stringX,stringY,fontSize,fgColor);
 	//Serial.println("Drew text");
 }
-
 
 void Popup::draw(){
 	int btnPoX, btnPoY;
@@ -65,7 +63,7 @@ void Popup::draw(){
 		
 	// Draw enclosing frame and background
 	drawFrame(x,y,w,h);
-	Tft.fillRectangle(x+borderWidth,y+borderWidth,w-borderWidth*2,h-borderWidth*2,bgColor);
+	Tft.fillRect(x+borderWidth,y+borderWidth,w-borderWidth*2,h-borderWidth*2,bgColor);
 	
 	// Draw message
 	this->drawText(x,y,w,h-getBtnHeight(),text);
@@ -77,19 +75,19 @@ void Popup::draw(){
 		btnPoX = x+w/2-(getBtnWidth()*2+10)/2;
 		//Button 1
 		drawFrame(btnPoX, btnPoY, getBtnWidth(), getBtnHeight());
-		Tft.fillRectangle(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GREEN);
+		Tft.fillRect(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GREEN);
 		drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),btn1Text);
 			
 		//Button 2
 		drawFrame(btnPoX+getBtnWidth()+10,btnPoY,getBtnWidth(),getBtnHeight());
-		Tft.fillRectangle(btnPoX+borderWidth+getBtnWidth()+10,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0xf888); //Redish
+		Tft.fillRect(btnPoX+borderWidth+getBtnWidth()+10,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0xf888); //Redish
 		drawText(btnPoX+getBtnWidth()+10,btnPoY,getBtnWidth(),getBtnHeight(),btn2Text);
 	
 	}else{ // One button
 		btnPoX = x+w/2-(getBtnWidth())/2;		
 		//Button 1
 		drawFrame(btnPoX,btnPoY,getBtnWidth(),getBtnHeight());
-		Tft.fillRectangle(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0x551f); // 0x001f Bluish
+		Tft.fillRect(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0x551f); // 0x001f Bluish
 			// Btn1 Message
 			drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),btn1Text);
 	}
@@ -108,7 +106,6 @@ void Popup::setEventHandler(void (*functionPointer)(Popup*,unsigned char)){
 	eventHandler = functionPointer;
 } 
 
-
 void Popup::setText(char* _text){
 	text = _text;
 }
@@ -120,14 +117,12 @@ void Popup::setText(char* _text, char* _btn1, char* _btn2){
 }
 */
 
-
 void Popup::processEvent(unsigned char btnNo){
 	//process event
 	selection = btnNo;
 	eventHandler(this,btnNo); // Call event handler	& pass button number
 	//Serial.println("Processing Event");	
 }
-
 
 // Overrides
 bool Popup::checkTouch(Point* p){
@@ -203,7 +198,7 @@ void Popup::show(){
 
 void Popup::hide(){
 	this->visible = false;	
-	Tft.fillRectangle(x,y,w,h,myCanvas->bgColor);
+	Tft.fillRect(x,y,w,h,myCanvas->bgColor);
 	myCanvas->redraw();
 }
 

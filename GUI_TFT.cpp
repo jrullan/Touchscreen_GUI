@@ -4,24 +4,21 @@ Guitft::~Guitft(){
 	
 }
 
-void Guitft::fillRectangle(uint16_t poX, uint16_t poY, uint16_t length, uint16_t width, uint16_t color)
+/*
+void Guitft::fillRect(uint16_t poX, uint16_t poY, uint16_t length, uint16_t width, uint16_t color)
 {
 	this->fillRect(poX,poY,length,width,color);
 }
-
+*/
 /*
- * Implement a drawRectangle function
+ * Implement a drawRect function
  */
-void Guitft::drawRectangle(uint16_t poX, uint16_t poY, uint16_t length, uint16_t width,uint16_t color)
+/*
+ void Guitft::drawRect(uint16_t poX, uint16_t poY, uint16_t length, uint16_t width,uint16_t color)
 {
 	this->drawRect(poX,poY,length,width,color);
-	
-	//drawFastHLine(poX,poY,length,color);
-	//drawFastHLine(poX, poY+width, length, color);
-	//drawFastVLine(poX, poY, width,color);
-	//drawFastVLine(poX+length,poY,width,color);
 }
-
+*/
 /*
  * Wrapper for drawing strings on the canvas
  */

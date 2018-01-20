@@ -32,7 +32,7 @@ void Display::drawFrame(){
   byte yPos = y;
   byte height = h;
   for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
+    Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
     width--;
     height--;
   }
@@ -123,6 +123,6 @@ void Display::show(){
 }
 
 void Display::update(){
-	Tft.fillRectangle(x+borderWidth, y+borderWidth, w-(2*borderWidth)+1,h-(2*borderWidth)+1,bgColor);
+	Tft.fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth)+1,h-(2*borderWidth)+1,bgColor);
 	drawText(fgColor);
 }

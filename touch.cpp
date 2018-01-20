@@ -7,9 +7,11 @@
 
 //#include "pins_arduino.h"
 #include "wiring_private.h"
+
 #if defined (__AVR__) //|| defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
 	#include <avr/pgmspace.h>
 #endif
+
 #include "touch.h"
 
 // increase or decrease the touchscreen oversampling. This is a little different than you make think:
@@ -41,18 +43,16 @@ int avr_analog(int adpin)
     int min = 1024;
     for(int i = 0; i<AVERAGETIME; i++)
     {
+		int tmp = analogRead(adpin);
 				
-				int tmp = analogRead(adpin);
-				
-				// Adapt STM32
-				#if defined(__STM32F1__)
+		// Adapt STM32
+		#if defined(__STM32F1__)
         tmp = tmp >> 2;
         #endif
         
         if(tmp > max)max = tmp;
         if(tmp < min)min = tmp;
         sum += tmp;
-        //   sum+=analogRead(adpin);
     }
     return (sum-min-max)/(AVERAGETIME-2);
 
@@ -84,6 +84,7 @@ Point TouchScreen::getPoint(void) {
     unsigned char yp_pin = digitalPinToBitMask(_yp);
     unsigned char xm_pin = digitalPinToBitMask(_xm);
     unsigned char ym_pin = digitalPinToBitMask(_ym);
+	
     valid = 1;
     pinMode(_yp, INPUT);
     pinMode(_ym, INPUT);

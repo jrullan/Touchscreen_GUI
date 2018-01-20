@@ -30,6 +30,12 @@
 #include <SPI.h>
 #include <Popup.h>
 
+#if defined(ESP32)
+  Guitft Tft = Guitft(5,26);
+#else
+  Guitft Tft = Guitft(5,6);
+#endif
+
 Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK);
 Popup popup = Popup();
 

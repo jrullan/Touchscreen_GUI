@@ -102,11 +102,11 @@ void Buttongrid::drawGrid(){
   btnHeight = h / rows;
   
   //--nums background rectangle
-  Tft.fillRectangle(xPos,yPos,width,height,bgColor);
+  Tft.fillRect(xPos,yPos,width,height,bgColor);
   
 	//-- outer border
   for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
+    Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
     width--;
     height--;
   }
@@ -121,7 +121,7 @@ void Buttongrid::drawGrid(){
   	
 		//Only draw gaps in between edges
 		if(vGap>0){  	
-			//Tft.fillRectangle(xPos,y-vGap+btnHeight*j+1,width,btnHeight-1,BLACK);
+			//Tft.fillRect(xPos,y-vGap+btnHeight*j+1,width,btnHeight-1,BLACK);
 			for(byte i=0; i<borderWidth;i++){
 				Tft.drawHorizontalLine(x,y+btnHeight*j+i+borderWidth+vGap,width+borderWidth,borderColor);
 			}
@@ -139,7 +139,7 @@ void Buttongrid::drawGrid(){
   	
 		//Only draw gaps in between edges
 		if(hGap>0){  	
-			//Tft.fillRectangle(xPos,y-vGap+btnHeight*j+1,width,btnHeight-1,BLACK);
+			//Tft.fillRect(xPos,y-vGap+btnHeight*j+1,width,btnHeight-1,BLACK);
 			for(byte i=0; i<borderWidth;i++){
 				Tft.drawVerticalLine(x+btnWidth*j+i+borderWidth+hGap,y+borderWidth,height+borderWidth,borderColor);
 			}
@@ -150,12 +150,12 @@ void Buttongrid::drawGrid(){
   //-- Gaps fill
   if(hGap > 0){
 		for(byte j=1;j<columns;j++){
-			Tft.fillRectangle(x+j*btnWidth+borderWidth-hGap,y,hGap*2,h,myCanvas->bgColor);
+			Tft.fillRect(x+j*btnWidth+borderWidth-hGap,y,hGap*2,h,myCanvas->bgColor);
 		}
   }
   if(vGap > 0){
 		for(byte j=1;j<rows;j++){
-			Tft.fillRectangle(x,y+j*btnHeight+borderWidth-vGap,w,vGap*2,myCanvas->bgColor);
+			Tft.fillRect(x,y+j*btnHeight+borderWidth-vGap,w,vGap*2,myCanvas->bgColor);
 		}
   }  
   
@@ -330,7 +330,7 @@ bool Buttongrid::checkTouch(Point* p){
 							int lastX = x + (btnWidth)*(getColumn(lastPressed)-1) + borderWidth;
 							int lastY = y+(btnHeight)*(getRow(lastPressed)-1)+borderWidth;
 							if(HIGHLIGHT == 1){
-								Tft.fillRectangle(lastX,lastY,btnWidth-borderWidth-1,btnHeight-borderWidth-1,bgColor);
+								Tft.fillRect(lastX,lastY,btnWidth-borderWidth-1,btnHeight-borderWidth-1,bgColor);
 							}
 							//setLabel(lastPressed,labels[getRow(lastPressed)-1][getColumn(lastPressed)-1]);
 							printName(lastPressed);
@@ -338,7 +338,7 @@ bool Buttongrid::checkTouch(Point* p){
 						
 						// Highlight currently pressed button
 						if(HIGHLIGHT == 1){
-							Tft.fillRectangle(boundX1,boundY1,btnWidth-borderWidth-1,btnHeight-borderWidth-1,highlightColor);
+							Tft.fillRect(boundX1,boundY1,btnWidth-borderWidth-1,btnHeight-borderWidth-1,highlightColor);
 						}
 						//setNum(num);
 						//setLabel(num,labels[r-1][c-1]);

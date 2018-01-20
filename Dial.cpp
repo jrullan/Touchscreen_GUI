@@ -142,6 +142,7 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
   pY2 = getY(cY,degree+90,2);
   pX3 = getX(cX,degree,radius);
   pY3 = getY(cY,degree,radius);
+  
   // Outer triangle
   Tft.drawLine(pX1,pY1,pX2,pY2,color);
   Tft.drawLine(pX1,pY1,pX3,pY3,color);
@@ -209,7 +210,7 @@ void Dial::update(){
   	if(currentValue<10) dSpace = 3 * fontSize;
   	if(currentValue>=10) dSpace = 6 * fontSize;
   	if(currentValue>99) dSpace = 9 * fontSize;
-  	Tft.fillRectangle(x-9*fontSize,y+radius-12*fontSize,18*fontSize,8*fontSize,bgColor);
+  	Tft.fillRect(x-9*fontSize,y+radius-12*fontSize,18*fontSize,8*fontSize,bgColor);
   	Tft.drawNumber(currentValue,x-dSpace,y+radius-12*fontSize,fontSize,color);
 	}
 }

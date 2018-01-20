@@ -110,7 +110,7 @@ void Button::drawBorder(){
   
 	for(byte i=borderWidth; i!=0;i--){
 		if(!this->isRound){
-			Tft.drawRectangle(xPos++,yPos++,width--,height--,borderColor);
+			Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
 			width--;
 			height--;
 		}else{

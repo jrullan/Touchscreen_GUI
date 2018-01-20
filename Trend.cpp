@@ -58,7 +58,7 @@ void Trend::drawYScale(){
 	int lineX = x + textWidth - 1; //to separate from border
 
 	// Draw background
-	Tft.fillRectangle(x,y,yScaleWidth-borderWidth+1,h-xScaleHeight+borderWidth,bgColor);
+	Tft.fillRect(x,y,yScaleWidth-borderWidth+1,h-xScaleHeight+borderWidth,bgColor);
 	
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
@@ -98,7 +98,7 @@ void Trend::drawXScale(){
 	int yPos = y + h + borderWidth - xScaleHeight;
 	int xWidth = w - yScaleWidth;
 	int xHeight = xScaleHeight;
-	Tft.fillRectangle(xPos-yScaleWidth-1,yPos,w,xHeight+1,bgColor);
+	Tft.fillRect(xPos-yScaleWidth-1,yPos,w,xHeight+1,bgColor);
 	yPos += borderWidth;
 
 	//--right
@@ -169,7 +169,7 @@ void Trend::drawBorder(){
 
 	//--border
 	for(byte i=borderWidth; i!=0; i--){
-		Tft.drawRectangle(xPos,yPos,borderW,borderH,borderColor);
+		Tft.drawRect(xPos,yPos,borderW,borderH,borderColor);
 		xPos++;
 		yPos++;
 		borderW -= 2;
@@ -304,7 +304,7 @@ void Trend::addValue(uint8_t val){
 void Trend::show(){
 	//Serial.print("Show");Serial.println();
 	if(this->visible){
-	  Tft.fillRectangle(x,y,w,h,bgColor);
+	  Tft.fillRect(x,y,w,h,bgColor);
 	  this->drawYScale();
 	  this->drawXScale();
 	  this->drawBorder();

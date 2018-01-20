@@ -29,7 +29,7 @@ void Screen::add(Widget* w, int x, int y){
 void Screen::show(){
 	if(this->canvas->currentScreen != this) return; // Do not draw if not canvas' current screen.
 	
-	Tft.fillRectangle(x,y,w,h,bgColor);
+	Tft.fillRect(x,y,w,h,bgColor);
 	byte cnt = this->widgets.count();
 	for(int i=0;i<cnt;i++){
 		if(this->widgets[i]->visible) this->widgets[i]->show();

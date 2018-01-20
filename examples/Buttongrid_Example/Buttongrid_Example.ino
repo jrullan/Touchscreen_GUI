@@ -37,6 +37,12 @@
 
 // Create the objects
 //==========================================
+#if defined(ESP32)
+  Guitft Tft = Guitft(5,26);
+#else
+  Guitft Tft = Guitft(5,6);
+#endif
+
 Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
 Display rowDisplay = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
 Display colDisplay = Display();
