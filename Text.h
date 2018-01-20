@@ -23,14 +23,11 @@ class Text
 		void setText(char* _text);
 		long getNum();	
 		char* getText();
+		unsigned char getTextSize();
 		
 		//=====Utilities======
-		unsigned char getTextSize();
 		unsigned char getTextLength(char* c);	
 		void clear();
-		
-		
 		unsigned char _textSize;
-	
 };
 #endif

@@ -39,10 +39,9 @@ void Popup::drawFrame(int pX, int pY, int wW, int hH){
 
 void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
 	if(!t) return;
-	int stringX = pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
-	int stringY = pY+hH/2-(FONT_Y*fontSize)/2;
+	int stringX = getCenterTextX(pX,wW,getTextLength(t));//pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
+	int stringY = getCenterTextY(pY,hH);//pY+hH/2-(FONT_Y*fontSize)/2;
 	Tft.drawString(t,stringX,stringY,fontSize,fgColor);
-	//Serial.println("Drew text");
 }
 
 void Popup::draw(){

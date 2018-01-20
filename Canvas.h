@@ -82,7 +82,6 @@
 // includes
 class Widget;
 class Screen;
-extern Guitft Tft;
 
 // Declaration of static TouchScreen object
 static TouchScreen ts = TouchScreen(XP,YP,XM,YM);

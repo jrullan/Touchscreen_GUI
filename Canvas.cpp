@@ -13,11 +13,18 @@ Canvas::Canvas(){
 
 }
 
-
 Canvas::Canvas(int mode, int color){
 	_mode = mode;
 	bgColor = color;
 }
+
+/*
+Canvas::Canvas(int mode, int color, int cs, int dc){
+	_mode = mode;
+	bgColor = color;
+	Tft = Guitft(cs,dc);
+}
+*/
 
 Canvas::~Canvas(){
 

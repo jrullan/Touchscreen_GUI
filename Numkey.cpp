@@ -42,6 +42,7 @@ void Numkey::drawFrame(){
   Tft.fillRect(xPos+btnWidth*2,yPos,btnWidth,btnHeight,bgColor);
   //--nums background rectangle
   Tft.fillRect(xPos,yPos+btnHeight,width,height-btnHeight,bgColor);
+  
 	//-- outer border
   for(byte i=borderWidth; i!=0;i--){
     Tft.drawRect(xPos,yPos,width,height,borderColor);
@@ -68,22 +69,22 @@ void Numkey::drawFrame(){
   }
 
 	//-- draw numbers  
-  xPos = btnWidth/2 - 8;
-  yPos = btnHeight/2 - 8;
+  xPos = btnWidth/2 - FONT_X;
+  yPos = btnHeight/2 - FONT_Y;
   byte xF=0;
   byte yF=1;
-  Tft.drawString("<-",x+xPos+2*btnWidth-6,y+yPos,2,BLACK); 
+  Tft.drawString("<-",x+xPos+2*btnWidth-6,y+yPos,fontSize,BLACK); 
   for(byte number=1; number<10; number++)
   {
-  	Tft.drawNumber(number,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),2,BLACK);
+  	Tft.drawNumber(number,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
   	if(number == 3 || number == 6 || number == 9){
   		yF++;
   		xF = 0;
   	}
   }
-  Tft.drawString(".",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),2,BLACK);  
-  Tft.drawNumber(0,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),2,BLACK);
-  Tft.drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),2,BLACK);
+  Tft.drawString(".",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);  
+  Tft.drawNumber(0,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
+  Tft.drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
 }
 
 void Numkey::append(char* c){
@@ -328,8 +329,8 @@ void Numkey::update(){
       size++;
     }
     //Calculate centered position of the text
-    int stringX = x+(btnWidth*2-size*FONT_SPACE*borderWidth)/2;
-    int stringY = y+(btnHeight-FONT_Y*borderWidth)/2;
+    int stringX = getCenterTextX(x,btnWidth*2,size);//x+(btnWidth*2-size*FONT_SPACE*borderWidth)/2;
+    int stringY = getCenterTextY(y,btnHeight);//y+(btnHeight-FONT_Y*borderWidth)/2;
     Tft.drawString(text,stringX,stringY,borderWidth,GREEN);
   }	
 }

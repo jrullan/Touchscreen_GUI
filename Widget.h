@@ -15,12 +15,13 @@
 #define FONT_SPACE 6
 #endif
 #ifndef FONT_X
-#define FONT_X 8
+#define FONT_X 6
 #endif
 #ifndef FONT_Y
 #define FONT_Y 8
 #endif
 
+//Length of characters to use for labels and texts in general
 #define DISPLAY_SIZE 6
 
 // Forward declarations
@@ -69,16 +70,21 @@ public:
 	bool isButton = false;
 	unsigned char fontSize = 2;
 
-	//template <typename T> void update(T* c);
 	void hide();
 	void setCanvas(Canvas* c);
 	void setColors(int bgColor,int fgColor, int borderColor);
 	void setSize(int width, int height);
 	static char* getType(Widget* w);
 	
+	int getCenterTextX(int xPos, int width, int length){
+		return xPos + (width - (length*FONT_X*this->fontSize))/2 + 1;
+	};
+	int getCenterTextY(int y, int h){
+		return y+(h-FONT_Y*this->fontSize)/2 + 1;	
+	};
+	
 	//Pure Virtual methods
 	virtual bool checkTouch(Point* p)=0;
-	//virtual bool isButton() =0;
 	virtual void show() =0;
 	virtual void update() =0;
 	

@@ -42,8 +42,8 @@ void Display::drawText(int color){
 	//Count characters to center on the button - Nice trick from the Tft2 library
 	if(*contents->text){
 		char size = contents->getTextSize();
-		int stringX = x+(w-size*6*fontSize)/2;//Calculate centered position of the text
-		int stringY = y+(h-8*fontSize)/2;//int stringX = x+(w-size*FONT_SPACE*borderWidth)/2;
+		int stringX = getCenterTextX(x,w,size);
+		int stringY = getCenterTextY(y,h);
 		Tft.drawString(contents->text,stringX,stringY,fontSize,color);
 	}
 }

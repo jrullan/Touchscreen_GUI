@@ -30,12 +30,6 @@
 #include <SPI.h>
 #include <Popup.h>
 
-#if defined(ESP32)
-  Guitft Tft = Guitft(5,26);
-#else
-  Guitft Tft = Guitft(5,6);
-#endif
-
 Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK);
 Popup popup = Popup();
 
@@ -88,7 +82,7 @@ void popupEventHandler(Popup* pup, unsigned char val){
 
 
 void showPopUpType(){
-  Tft.fillRectangle(0,0,200,40,BLACK);
+  Tft.fillRect(0,0,200,40,BLACK);
   String txt = "Pop-Up Type: ";
   txt += popup.popup_type;
   char buf[16];

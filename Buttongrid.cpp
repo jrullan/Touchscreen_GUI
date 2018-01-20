@@ -264,13 +264,6 @@ void Buttongrid::printName(unsigned char id){
 		if(name[n] == 0) break;
 	}
 
-	//Serial.print(n);
-	//Serial.print(" characters for id: ");
-	//Serial.print(id);
-	//Serial.print(" ");
-	//Serial.println(names[id]);
-
-	//setNum(id);
 	setLabel(id,labels[getRow(id)-1][getColumn(id)-1]);
 	return;
 	
@@ -278,18 +271,14 @@ void Buttongrid::printName(unsigned char id){
 	if(n==0){
 		setNum(id);
 	}else{
-		//i++;
 		int boundX1, boundX2, boundY1, boundY2;
 		int btnWidth = w/columns;
 		int btnHeight = h/rows;
 		unsigned char colIndex = getColumn(id)-1;
 		unsigned char rowIndex = getRow(id)-1;
 	
-		int xPos = btnWidth/2 - (n*FONT_X*font_size)/2;
-		int yPos = btnHeight/(2) - 8;	
-	
-		xPos = x+(colIndex*btnWidth)+xPos+3*borderWidth;
-		yPos = y+yPos+(rowIndex*btnHeight);	
+		int xPos = getCenterTextX(x+(colIndex*btnWidth), btnWidth, n);
+		int yPos = getCenterTextY(y+(rowIndex*btnHeight), btnHeight);
 	
 		Tft.drawString((char*)names[id],xPos, yPos, font_size, fgColor);
 	}	

@@ -23,9 +23,7 @@ class Display : public Widget
 		void drawFrame();
 		void drawText(int color);
 	
-		Text* contents;
-		//Text label = Text();
-		
+		Text* contents;		
 		void fitToText();
 		void setNum(int num, bool now = true);
 		void setText(char* _text, bool now = true);
@@ -41,10 +39,7 @@ class Display : public Widget
 		
 		//Attributes
 	
-		
 	private:
-		//char text[DISPLAY_SIZE];
 		char charPos;
-		//unsigned char getTextLength(char* c);
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)

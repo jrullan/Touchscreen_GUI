@@ -7,17 +7,16 @@
 #include "Button.h"
 
 
-Button::Button(unsigned char textSize){
+Button::Button(unsigned char textLength){
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
-	contents = Text(textSize);
+	contents = Text(textLength);
 }
 
-Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textSize){
+Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textLength){
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
-	
 	x = 0;
 	y = 0;
-	contents = Text(textSize);
+	contents = Text(textLength);
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
 	this->isRound = false;
@@ -54,7 +53,7 @@ void Button::init(){
 
 int Button::getLabelSize(){
 	if(*label){
-		return contents.getTextLength(label)*6*fontSize + 6;
+		return contents.getTextLength(label)*FONT_X*fontSize;// + 6;
 	}
 	return 0;
 }
@@ -63,27 +62,26 @@ void Button::drawBackground(int color){
 	int labelSize = getLabelSize();
 	int xl;
 	int wl;
+	
+	// Label Background
 	if(labelPos == 1){
 	
 	}else if(labelPos == 2){
-		xl = x;// + labelSize;
-		wl = w + labelSize;
+		xl = x;
+		wl = w;
 	}else if(labelPos == 3){
 		
 	}else{
 		xl = x + labelSize;
-		wl = w + labelSize;
+		wl = w;
 	}
-	//Fill background
-	
+
+	// Button background	
 	if(!this->isRound){
-		Tft.fillRect(x+borderWidth, y+borderWidth, wl-(2*borderWidth)+1,h-(2*borderWidth)+1,color);
+		Tft.fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
 	}else{
-		int radius = (w>>1)-borderWidth;
-		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius-borderWidth/2,color);
-		// label background
-		//Tft.fillRect(xl+2*radius+2*borderWidth+FONT_SPACE, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),this->myCanvas->bgColor);
-		//Tft.fillRect(x, y+borderWidth, labelSize-(2*borderWidth),h-(2*borderWidth),BLACK);
+		int radius = (w>>1);//-borderWidth;
+		Tft.fillCircle(xl+radius,y+radius,radius,color);//radius-borderWidth/2,color);
 	}
 }
 
@@ -125,42 +123,30 @@ void Button::drawText(){
 	int yl=0;
 	int labelSize=getLabelSize();
 	
+	// Draw label
 	if(labelSize > 0){
 		if(labelPos == 1){ // top
 		
 		}else if(labelPos == 2){ // right
-			xl = x + w + FONT_SPACE;
-			yl = y+(h-6*fontSize)/2;
+			xl = x + w + FONT_SPACE*fontSize;
+			yl = y+(h-FONT_Y*fontSize)/2;
 		}else if(labelPos == 3){ // bottom
 			
 		}else{ 	// default 0-left
 			xl = x;
-			yl = y+(h-6*fontSize)/2;	
+			yl = y+(h-FONT_Y*fontSize)/2;	
 		}
-		
-		Tft.drawString(label,xl,yl,fontSize,fgColor);
+		Tft.drawString(label,xl,yl,fontSize,~this->myCanvas->bgColor);
 	}
 	
+	// Draw contents text
 	if(*contents.text){
-		char size = contents.getTextSize();
-		int stringX = x+labelSize+(w-size*6*fontSize)/2;
-		int stringY = y+(h-8*fontSize)/2;
+		char length = contents.getTextSize();
+		int stringX = getCenterTextX(x+labelSize,w,length);
+		int stringY = getCenterTextY(y,h);
 		Tft.drawString(contents.text,stringX,stringY,fontSize,fgColor);
 	}
 }
-
-/*
-void Button::clear(){
-	byte textSize = getTextSize();
-	if(textSize){
-		for(int i = textSize-1; i >= 0; i--)
-		{
-				text[i] = 0;
-		}
-	}
-}
-*/
-
 
 unsigned char Button::getTextLength(char* c){
 	return contents.getTextLength(c);
@@ -178,7 +164,6 @@ unsigned char Button::getTextLength(char* c){
 }
 
 unsigned char Button::getTextSize(){
-  //return getTextLength(text);
 	return contents.getTextSize();
 }
 
@@ -208,31 +193,6 @@ void Button::setNum(int num){
 	if(contents.getNum()==num)return;
 	contents.clear();
 	contents.setNum(num);
-	/*
-	clear();
-	//Serial.println("Text cleared in setNum");Serial.print("Num to be processed: ");Serial.println(num);
-	char numChar[DISPLAY_SIZE];
-	char chars = 0;
-	
-	
-	while(num > 0)	// Extract characters representing the powers of ten
-	{
-		numChar[chars++] = '0'+num%10;
-		num /= 10;
-		//Serial.print("Num after loop: ");Serial.println(numChar[chars-1]);
-	}
-
-	// Reverse the order of the characters
-	for(int j = chars-1; j >= 0; j--)//DISPLAY_SIZE; j++)
-	{
-		text[j] = numChar[chars-1-j];
-	}
-	text[chars]=0;
-	
-	//Serial.print("Num entered: ");Serial.println(text);
-	//drawBackground(bgColor);
-	//update();
-	*/
 }
 
 void Button::setText(char* _text){
@@ -248,32 +208,14 @@ char* Button::getText(){
 }
 
 long Button::getNum(){
-	/*
-	char size = getTextSize();
-	long result = 0;
-	for(int i = 0; i<size; i++){
-		if(text[i] == '.') break;  // Only process integer side
-		result = result * 10 + text[i]-'0';
-	}
-	return result;
-	*/
 	return contents.getNum();
 }
 
 void Button::fitToText(){
   if(*contents.text){
-	char size = contents.getTextSize();
-	/*
-    char* chars = text;
-    char size = 0;
-    while(*chars){
-      *chars++;
-      size++;
-    }
-	*/
-    w = size * 6 * borderWidth + 6;
-    h = 8 * borderWidth + 8;
-    //drawString(text,x+5,y+5,2,textColor);
+	char length = contents.getTextSize();
+    w = length * FONT_X * fontSize + FONT_SPACE;
+    h = FONT_Y * fontSize + FONT_Y;
   }
 }
 
@@ -314,17 +256,6 @@ bool Button::checkTouch(Point* p){
  * This is the update() method.
  */
 void Button::update(){
-	//drawBackground(bgColor);
 	drawText();
 	drawBorder();
 }
-
-/*
- * This method is called by the canvas and passes a pointer to it. 
- * The button class uses this pointer to get a pointer to the 
- * touched point, if any, and calls the checkTouch routine to detect
- * if the button was touched.
- */
-/*void Button::update(Canvas* c){
-	checkTouch(c->touchedPoint);
-}*/
