@@ -18,41 +18,40 @@
 
 class Indicator : public Widget{
 	public:
-		//Constructor
+		// Constructor
 		Indicator();
 		~Indicator();
 		
-		//Methods
-		void clear();		
-		unsigned int getCV();
+		// Attributes
+		unsigned int hiLimit;
+		unsigned int lowLimit;
+		unsigned int setpoint;
+		unsigned int scaleMin;
+		unsigned int scaleMax;
+		unsigned int currentValue;
+		unsigned int previousValue;
+
+		int hiLimitColor;
+		int lowLimitColor;	
+		int setpointColor;			
+		
+		// Methods
 		void init();
+		void clear();		
 		void setCV(int cv);
 		void setHiLimit(unsigned int h, int color);		
 		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
 		void setLowLimit(unsigned int l, int color);
 		void setSP(unsigned int sp, int color);
 		void setNum(int num);
-		unsigned char getTextLength(char* c);
+		unsigned int getCV();
 
-		
-		//Overriden methods
+		// Overriden methods
 		bool checkTouch(Point* p);
 		bool isButton();		
 		virtual void update()=0;
 		virtual void show()=0;
 		
-		//Attributes
-		unsigned int currentValue,previousValue;
-		unsigned int hiLimit;
-		int hiLimitColor;		
-		unsigned int lowLimit;
-		int lowLimitColor;
-		unsigned int scaleMax;
-		unsigned int scaleMin;
-		unsigned int setpoint;
-		int setpointColor;	
-		//bool isButton = false;
-
 	protected:
 		char* buf;
 		

@@ -1,16 +1,16 @@
 #include "Display.h"
 
-Display::Display(unsigned char size){
+Display::Display(unsigned char textLength){
 	x=0;
 	y=0;
-	contents = new Text(size);
+	contents = new Text(textLength);
 	this->init();
 }
 
-Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char size){
+Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char textLength){
 	x = 0;
 	y = 0;
-	contents = new Text(size);
+	contents = new Text(textLength);
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
 	this->init();
@@ -39,7 +39,6 @@ void Display::drawFrame(){
 }
 
 void Display::drawText(int color){
-	//Count characters to center on the button - Nice trick from the Tft2 library
 	if(*contents->text){
 		char size = contents->getTextSize();
 		int stringX = getCenterTextX(x,w,size);
@@ -49,13 +48,12 @@ void Display::drawText(int color){
 }
 
 void Display::append(char* c){
-	byte cSize = contents->getTextLength(c);
-	byte txtSize = contents->getTextLength(contents->text);//getTextSize();
+	byte cSize = getTextLength(c);
+	byte txtSize = getTextLength(contents->text);//getTextSize();
 	byte space = contents->_textSize - txtSize;
 	
 	//Check that there space available to append
 	if(txtSize < contents->_textSize){
-		//Serial.print("Space available: ");Serial.println(space);
 		for(int i=0; i<space; i++)
 		{
 			contents->text[i+txtSize] = c[i];

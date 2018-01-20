@@ -1,4 +1,5 @@
 #include "Text.h"
+#include "Widget.h"
 
 Text::Text(unsigned char textSize){
 	// Reserve memory for the text, and initialize to empty characters (0)
@@ -53,19 +54,7 @@ void Text::setText(char* _text){
 }
 
 unsigned char Text::getTextSize(){
-  return getTextLength(this->text);
-}
-
-unsigned char Text::getTextLength(char* c){
-	char size = 0;
-	if(*c){
-		char* chars = c;
-		while(*chars){
-		  *chars++;
-		  size++;
-		}
-	}
-	return size;
+  return Widget::getTextLength(this->text);
 }
 
 void Text::clear(){

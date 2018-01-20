@@ -44,23 +44,20 @@
 #define TS_MINY 83*2
 #define TS_MAXY 913*2
 
+// Inherit from STM version if using an STM mcu
 #if defined(__STM32F1__)
 class Guitft : public Adafruit_ILI9341_STM{
 public:
 	Guitft(int8_t TFT_CS, int8_t TFT_DC):Adafruit_ILI9341_STM(TFT_CS, TFT_DC, -1){};
-	
+
+//Otherwise inherit from standard library
 #else
-	
 class Guitft : public Adafruit_ILI9341{
 public:
 	Guitft(int8_t TFT_CS, int8_t TFT_DC):Adafruit_ILI9341(TFT_CS, TFT_DC, -1){};
-
-#endif
-	
+#endif	
 	~Guitft();
-		
-	//void fillRect(uint16_t poX, uint16_t poY, uint16_t length, uint16_t width, uint16_t color);
-	//void drawRect(uint16_t poX, uint16_t poY, uint16_t length,uint16_t width,uint16_t color);
+
 	void drawString(char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor);
 	void drawString(const char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor)
 	{

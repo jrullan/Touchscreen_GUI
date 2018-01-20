@@ -70,46 +70,13 @@ void Gauge::drawScale(){
 		Tft.drawString(buf,x,getYVal(lowLimit)-(FONT_Y/2),1,lowLimitColor);
 		Tft.drawHorizontalLine(lineX,getYVal(lowLimit),10,lowLimitColor);
 	}	
-//=======================================
-	/*
-	unsigned int val;
-	//Draw SCALE
-	int textWidth = 4 * FONT_SPACE;
-
-	Tft.fillRect(x+textWidth,y+borderWidth,10,h,BLACK);
-
-	setNum(scaleMax);
-	Tft.drawString(buf,x,y,1,borderColor);
-	Tft.drawHorizontalLine(x+textWidth,y+borderWidth,10,borderColor);
-
-	setNum(setpoint);
-	val = map(setpoint,scaleMin,scaleMax,h-borderWidth,borderWidth);
-	Tft.drawString(buf,x+FONT_SPACE,y+(val)-(FONT_Y>>1)-borderWidth,1,setpointColor);
-	Tft.drawHorizontalLine(x+textWidth,y+(val)-borderWidth,10,setpointColor);
-		
-	setNum(scaleMin);
-	Tft.drawString(buf,x+2*FONT_SPACE,y+h-(FONT_Y),1,borderColor);
-	Tft.drawHorizontalLine(x+textWidth,y+(h)-borderWidth,10,borderColor);
-
-	if(hiLimit != scaleMax){// && currentValue > lowLimit){
-		val = map(hiLimit,scaleMin,scaleMax,h-borderWidth,borderWidth);
-		Tft.drawHorizontalLine(x+textWidth,y+val,10,hiLimitColor);
-		//Tft.drawHorizontalLine(x+borderWidth+textWidth,y+val,w-(2*borderWidth),hiLimitColor);
-	}
-	if(lowLimit != scaleMin){// && currentValue < hiLimit){
-		val = map(lowLimit,scaleMin,scaleMax,h-borderWidth,borderWidth);
-		Tft.drawHorizontalLine(x+textWidth,y+val,10,lowLimitColor);
-		//Tft.drawHorizontalLine(x+borderWidth+textWidth,y+val,w-(2*borderWidth),lowLimitColor);
-	}
-	*/
-	//drawLimits();
 }
 
 int Gauge::getYVal(int value){
-	int yBase = y ;//+ borderWidth ;//+ 1; 	// +1 to account for trend width line
-	int maxHeight = h-borderWidth; // -2 to account for trend line width
+	int yBase = y ;
+	int maxHeight = h-borderWidth;
 	unsigned int val = constrain(value,scaleMin,scaleMax);
-	val = map(val,scaleMin,scaleMax,maxHeight,borderWidth+1); //-1 to account for trend line width
+	val = map(val,scaleMin,scaleMax,maxHeight,borderWidth+1);
 	return yBase + val;
 }
 
@@ -155,6 +122,5 @@ void Gauge::drawFill(){
 }
 
 void Gauge::update(){
-	//if(previousValue == currentValue) return;
 	drawFill();
 }

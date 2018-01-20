@@ -38,10 +38,6 @@ void Indicator::setHiLimit(unsigned int h, int color){
 }
 
 void Indicator::setLimits(unsigned int min, unsigned int sp, unsigned int max){
-	//this->hiLimit = max;
-	//this->lowLimit = min;
-	//this->currentValue = sp;
-	
 	this->scaleMax = max;
 	this->scaleMin = min;
 	this->setpoint = sp;
@@ -57,7 +53,6 @@ void Indicator::setSP(unsigned int sp, int color){
 	this->setpointColor = color;
 }
 
-
 void Indicator::setNum(int num){
 	clear();
 	char numChar[BUF_SIZE];
@@ -68,30 +63,16 @@ void Indicator::setNum(int num){
 	{
 		numChar[chars++] = num%10;
 		num /= 10;
-		//Serial.print("num ");Serial.println(num);
 	}
 	
 	numChar[chars++] = num;
 	
-	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
+	for(int j = 0; j < chars; j++)
 	{
 		buf[chars-1-j] = '0'+numChar[j];
-		//Serial.print("buf[i] ");Serial.println(buf[j]);
 	}
 	
 	buf[chars]=0;
-}
-
-unsigned char Indicator::getTextLength(char* c){
-	char size = 0;
-	if(*c){
-    char* chars = c;
-    while(*chars){
-      *chars++;
-      size++;
-    }
-  }
-  return size;
 }
 
 

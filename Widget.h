@@ -43,6 +43,35 @@ public:
 	virtual ~Widget();
 	
 	char type = 0x00;
+
+	// Attributes
+	int x;
+	int y;	
+	int h;
+	int w;	
+	int borderWidth;	
+	int bgColor;
+	int fgColor;	
+	int borderColor;
+	
+	// defaults
+	bool visible = true;
+	bool isButton = false;
+	unsigned char fontSize = 2;
+
+	// Methods
+	void hide();
+	void setCanvas(Canvas* c);
+	void setColors(int bgColor,int fgColor, int borderColor);
+	void setSize(int width, int height);
+	int getCenterTextX(int xPos, int width, int length){
+		return xPos + (width - (length*FONT_X*this->fontSize))/2 + 1;
+	};
+	int getCenterTextY(int y, int h){
+		return y+(h-FONT_Y*this->fontSize)/2 + 1;	
+	};
+	
+	// static methods
 	/*
 	 * Widgets types:
 	 * 
@@ -58,32 +87,44 @@ public:
 	 * 		Popup - 	0x33
 	 * 		Option - 	0x34
 	 */ 
-	int bgColor;
-	int borderColor;
-	int borderWidth;
-	int fgColor;
-	int h;
-	int w;
-	int x;
-	int y;
-	bool visible = true;
-	bool isButton = false;
-	unsigned char fontSize = 2;
-
-	void hide();
-	void setCanvas(Canvas* c);
-	void setColors(int bgColor,int fgColor, int borderColor);
-	void setSize(int width, int height);
-	static char* getType(Widget* w);
-	
-	int getCenterTextX(int xPos, int width, int length){
-		return xPos + (width - (length*FONT_X*this->fontSize))/2 + 1;
+	static char* getType(Widget* w){
+		if((w->type & 0xFF) == 0x00){ 
+			return "widget";
+		}else if ((w->type & 0xFF) == 0x10){
+			return "display";
+		}else if ((w->type & 0xFF) == 0x20){
+			return "indicator";
+		}else if ((w->type & 0xFF) == 0x21){
+			return "dial";
+		}else if ((w->type & 0xFF) == 0x22){
+			return "gauge";
+		}else if ((w->type & 0xFF) == 0x23){
+			return "trend";
+		}else if ((w->type & 0xFF) == 0x30){
+			return "button";
+		}else if ((w->type & 0xFF) == 0x31){
+			return "buttongrid";
+		}else if ((w->type & 0xFF) == 0x32){
+			return "numkey";
+		}else if ((w->type & 0xFF) == 0x33){
+			return "popup";
+		}else if ((w->type & 0xFF) == 0x34){
+			return "option";
+		}		
 	};
-	int getCenterTextY(int y, int h){
-		return y+(h-FONT_Y*this->fontSize)/2 + 1;	
-	};
+	static unsigned char getTextLength(char* c){
+		char size = 0;
+		if(*c){
+		char* chars = c;
+		while(*chars){
+		  *chars++;
+		  size++;
+		}
+	  }
+	  return size;
+	}
 	
-	//Pure Virtual methods
+	// Pure Virtual methods - To force inheritance (makes this an abstract class)
 	virtual bool checkTouch(Point* p)=0;
 	virtual void show() =0;
 	virtual void update() =0;

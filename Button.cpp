@@ -53,7 +53,7 @@ void Button::init(){
 
 int Button::getLabelSize(){
 	if(*label){
-		return contents.getTextLength(label)*FONT_X*fontSize;// + 6;
+		return getTextLength(label)*FONT_X*fontSize;// + 6;
 	}
 	return 0;
 }
@@ -141,30 +141,11 @@ void Button::drawText(){
 	
 	// Draw contents text
 	if(*contents.text){
-		char length = contents.getTextSize();
+		char length = getTextLength(contents.text);//contents.getTextSize();
 		int stringX = getCenterTextX(x+labelSize,w,length);
 		int stringY = getCenterTextY(y,h);
 		Tft.drawString(contents.text,stringX,stringY,fontSize,fgColor);
 	}
-}
-
-unsigned char Button::getTextLength(char* c){
-	return contents.getTextLength(c);
-	/*
-	char size = 0;
-	if(*c){
-    char* chars = c;
-    while(*chars){
-      *chars++;
-      size++;
-    }
-  }
-  return size;
-	*/
-}
-
-unsigned char Button::getTextSize(){
-	return contents.getTextSize();
 }
 
 void Button::setDebounce(unsigned int d){
@@ -213,7 +194,7 @@ long Button::getNum(){
 
 void Button::fitToText(){
   if(*contents.text){
-	char length = contents.getTextSize();
+	char length = getTextLength(contents.text);//contents.getTextSize();
     w = length * FONT_X * fontSize + FONT_SPACE;
     h = FONT_Y * fontSize + FONT_Y;
   }

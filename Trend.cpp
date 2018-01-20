@@ -44,14 +44,6 @@ void Trend::clear(){
 	}
 }
 
-/*
-int Trend::limit(int val, int min, int max){
-	if(val > max) val = max;
-	if(val < min) val = min;
-	return val;
-}
-*/
-
 void Trend::drawYScale(){
 	//Draw Y SCALE
 	int textWidth = 4 * FONT_X;

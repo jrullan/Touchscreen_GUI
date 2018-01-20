@@ -12,12 +12,11 @@
 #define CANVAS_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
-#define SEEEDUINO
-#include <Arduino.h>
+	#define SEEEDUINO
+	#include <Arduino.h>
 #else
-#include <WProgram.h>
+	#include <WProgram.h>
 #endif
-
 #if defined (__AVR__) //|| defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
 	#include <avr/pgmspace.h>
 #endif
@@ -25,7 +24,6 @@
 // Required includes:
 #include "StackArray.h"
 #include "Point.h"
-//#include "SeeedTouchScreen.h"
 #include "touch.h"
 #include "GUI_TFT.h"
 
@@ -71,7 +69,6 @@
 #define YM 14   // can be a digital pin, this is A0
 #define XP 17   // can be a digital pin, this is A3
 
-
 #endif
 
 #define DEBOUNCE 0
@@ -86,56 +83,48 @@ class Screen;
 // Declaration of static TouchScreen object
 static TouchScreen ts = TouchScreen(XP,YP,XM,YM);
 
-
 class Canvas
 {
-
 public:
+	// Constructors and Destructor
 	Canvas();
 	Canvas(int mode, int color);
-	Canvas(int mode, int color, int cs, int dc);
 	virtual ~Canvas();
-
-	void add(Widget* widget, int x, int y);
-	void setScreen(Screen* screen);
 	
-	Point* getTouchedPoint();
+	// Methods
 	void init();
-	//void init(int mode);
 	void portrait();
+	void landscape();		
+	void add(Widget* widget, int x, int y);
 	Widget* pop();
-	void landscape();
-	bool touchWidgets(Point* p);
 	void showWidgets();
+	bool touchWidgets(Point* p);
 	bool scan();
-	void setDebounce(unsigned int d);
-	void updateTouch(Point* p);
 	void redraw();
+	void setDebounce(unsigned int d);
+	void setScreen(Screen* screen);
+	void updateTouch(Point* p);
 	bool inBounds(Point* p);
+	Point* getTouchedPoint();
 	
-	int touchBufferIndex = 0;
-	int xTouchBuffer[TOUCH_BUFFER_SIZE];
-	int yTouchBuffer[TOUCH_BUFFER_SIZE];
-	
-	Point touchedPoint;	
-	
-	Screen* currentScreen = NULL;
-	StackArray<Widget*> widgets;
-	
+	// Attributes
 	int x;
 	int y;
 	int w;
 	int h;
 	int bgColor;
-
+	int touchBufferIndex = 0;
+	int xTouchBuffer[TOUCH_BUFFER_SIZE];
+	int yTouchBuffer[TOUCH_BUFFER_SIZE];
+	Point touchedPoint;	
+	Screen* currentScreen = NULL;
+	StackArray<Widget*> widgets;
 	unsigned int _mode;
 	
 private:
 	unsigned long lastMillis;
 	unsigned long touchSampling;
 	unsigned int debounceTime;
-
-
 };
 
 #endif //CANVAS_H

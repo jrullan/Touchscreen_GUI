@@ -26,7 +26,6 @@ class Text
 		unsigned char getTextSize();
 		
 		//=====Utilities======
-		unsigned char getTextLength(char* c);	
 		void clear();
 		unsigned char _textSize;
 };

@@ -27,50 +27,45 @@ public:
 	Buttongrid(unsigned char gridSize);
 	Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	virtual ~Buttongrid();
-	
-	void drawGrid();
-	void init();
-	// This is a modified declaration for setting the event handler function
-	// See comment below in the eventHandler declaration.
-	void setEventHandler(void (*functionPointer)(Buttongrid*, unsigned char));
-	void configure(byte gridSize, byte fontSize);
-	void setNum(unsigned char num);
-	
-	void setLabel(unsigned char id, unsigned char label);
-	//void printLabel(unsigned char num);
-	
-	void setName(unsigned char id, const char name[8]);
-	void setName(unsigned char id, char num);
-	void printName(unsigned char id);
-	void clear();
-	unsigned char getColumn(unsigned char number);
-	unsigned char getRow(unsigned char number);
-	unsigned char getNumber(unsigned char row, unsigned char col);
-    
-	//Overriden methods
-	virtual bool checkTouch(Point* p);
-	virtual void show();
-	virtual void update();
-	
+
 	// Attributes
-	//bool autoremove; //Forces autoremove from Canvas when = is pressed.
 	byte gridSize = 2;
 	byte columns;
 	byte rows;
-	byte font_size = 2;
-	byte hGap = 1;
-	byte vGap = 1;
+	//byte font_size = 2;
+	byte hGap = 0;
+	byte vGap = 0;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
 	unsigned char** labels = 0;
 	const char** names;
 	int highlightColor = YELLOW;
 	unsigned char clearLastPressed = 1; // used to decide if to redraw as a maintained or as a momentary
 	
+	// Methods
+	void init();
+	void configure(byte gridSize);
+	//void setNum(unsigned char num);
+	void setName(unsigned char id, const char name[8]);
+	unsigned char getColumn(unsigned char number);
+	unsigned char getRow(unsigned char number);
+	unsigned char getId(unsigned char row, unsigned char col);
+	void drawGrid();
+	void drawButtonId(unsigned char id, uint8_t label);	
+	void drawLabel(unsigned char id);
+	void clear();
+	// This is a modified declaration for setting the event handler function
+	// See comment below in the eventHandler declaration.
+	void setEventHandler(void (*functionPointer)(Buttongrid*, unsigned char));
+	
+	//Overriden methods
+	virtual bool checkTouch(Point* p);
+	virtual void show();
+	virtual void update();
+	
 private:
 	//String text;
 	char* text; 
 	char charPos;
-	byte getTextLength(char* c);
 	// Modified the special declaration of eventHandler to accept
 	// a second argument which would be the value of the button pressed
 	// This is set in the checkTouch method.

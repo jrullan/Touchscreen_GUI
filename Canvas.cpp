@@ -18,14 +18,6 @@ Canvas::Canvas(int mode, int color){
 	bgColor = color;
 }
 
-/*
-Canvas::Canvas(int mode, int color, int cs, int dc){
-	_mode = mode;
-	bgColor = color;
-	Tft = Guitft(cs,dc);
-}
-*/
-
 Canvas::~Canvas(){
 
 }
@@ -131,7 +123,8 @@ bool Canvas::scan(){
   return true;
 }
 
-
+// Determines if the given point falls
+// within the Bounds of the layout chosen
 bool Canvas::inBounds(Point* tP){
 	if(Tft.layoutMode == TFT_LANDSCAPE){
 		if(tP->x > 319 || tP->y > 239) return false;

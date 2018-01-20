@@ -13,33 +13,31 @@
 
 class Display : public Widget
 {
-	public:
-		Display(unsigned char textSize = 8);
-		Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textSize = 8);
-		virtual ~Display();
+public:
+	Display(unsigned char textLength = 8);
+	Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textLength = 8);
+	virtual ~Display();
+
+	// Attributes	
+	Text* contents;		
+
+	// Methods
+	void init();
+	void drawFrame();
+	void drawText(int color);
+	void fitToText();
+	void setNum(int num, bool now = true);
+	void setText(char* _text, bool now = true);
+	void append(char* c);
+	void deleteChar();
 	
-		void init();
-		
-		void drawFrame();
-		void drawText(int color);
-	
-		Text* contents;		
-		void fitToText();
-		void setNum(int num, bool now = true);
-		void setText(char* _text, bool now = true);
-		
-		void append(char* c);
-		void deleteChar();
-		
-		//Overriden methods
-		virtual bool checkTouch(Point* p);
-		virtual bool isButton();
-		virtual void show();
-		virtual void update();
-		
-		//Attributes
-	
-	private:
-		char charPos;
+	//Overriden methods
+	virtual bool checkTouch(Point* p);
+	virtual bool isButton();
+	virtual void show();
+	virtual void update();
+
+private:
+	char charPos;
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)
