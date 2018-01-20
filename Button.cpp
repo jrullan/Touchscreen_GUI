@@ -80,8 +80,8 @@ void Button::drawBackground(int color){
 	if(!this->isRound){
 		Tft.fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
 	}else{
-		int radius = (w>>1);//-borderWidth;
-		Tft.fillCircle(xl+radius,y+radius,radius,color);//radius-borderWidth/2,color);
+		int radius = (w>>1)-borderWidth;
+		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);//radius-borderWidth/2,color);
 	}
 }
 
