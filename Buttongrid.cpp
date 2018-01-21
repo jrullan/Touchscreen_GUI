@@ -1,24 +1,16 @@
 #include "Buttongrid.h"
 
-Buttongrid::Buttongrid(){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
-}
-
 Buttongrid::Buttongrid(unsigned char size){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); 
 	columns = size;
 	rows = size;
 	gridSize = size;
-	
+
 	//Allocate memory for labels
-	if(gridSize!=NULL){
-		if(labels = (unsigned char**)malloc(gridSize * sizeof(unsigned char*))){
-			for(int i=0; i<gridSize; i++)
-			{
-				if(labels[i] = (unsigned char*)malloc(gridSize)){
-					memset(labels[i],0,gridSize);
-				}
-			}
+	if(rows >= 0 && columns >= 0){
+		char qty = rows * columns;
+		if(labels = (const char**) malloc(qty * 8 * sizeof(char))){
+			memset(labels,0,qty*8*sizeof(char));
 		}
 	}
 	
@@ -26,41 +18,18 @@ Buttongrid::Buttongrid(unsigned char size){
 }
 
 Buttongrid::Buttongrid(unsigned char r, unsigned char c){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1);
 	columns = c;
 	rows = r;
-	//gridSize = size;
 	
 	//Allocate memory for labels
-	if(rows!=NULL){
-		if(labels = (unsigned char**)malloc(rows * sizeof(unsigned char*))){
-			for(int i=0; i<rows; i++)
-			{
-				if(labels[i] = (unsigned char*)malloc(columns)){
-					memset(labels[i],0,columns);
-				}
-			}
-		}
-	}
-	
-	//Allocate memory for names
 	if(rows >= 0 && columns >= 0){
 		char qty = rows * columns;
-		if(names = (const char**) malloc(qty * 8 * sizeof(char))){
-			memset(names,0,qty*8*sizeof(char));
+		if(labels = (const char**) malloc(qty * 8 * sizeof(char))){
+			memset(labels,0,qty*8*sizeof(char));
 		}
 	}
 	
-	//this->init();
-
-}
-
-Buttongrid::Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
-	x = 0;
-	y = 0;
-	this->setSize(width,height);
-	this->setColors(backgroundColor,textColor,borderColor);
 	this->init();
 }
 
@@ -68,39 +37,33 @@ Buttongrid::~Buttongrid(){
 	if(text) free(text);
 }
 
+void Buttongrid::setSize(int width, int height){
+	Widget::setSize(width,height);
+	btnWidth = (w-(borderWidth*(columns+1)))/columns;
+	btnHeight = (h-(borderWidth*(rows+1)))/rows;
+}
+
 void Buttongrid::init(){
 	Button::init();
 	type = 0x31;
 	borderWidth = 2;
 	charPos = 0;
-	
-	// Initialize labels with position ID
-	for(byte r=1; r<=rows; r++)
-	{
-		for(byte c=1; c<=columns; c++)
-		{
-			labels[r-1][c-1] = c+columns*(r-1);
-			//Serial.print("Row ");
-			//Serial.print(r);
-			//Serial.print(" Col ");
-			//Serial.print(c);
-			//Serial.print(" Num ");
-			//Serial.println(c+columns*(r-1));
-		}
-	}
+}
+
+void Buttongrid::configure(byte size){
+	columns = size;
+	rows = size;
+	gridSize = size;
+	show();
 }
 
 void Buttongrid::drawGrid(){
 	int xPos,yPos,width,height;
-	int btnWidth,btnHeight;
-
 	xPos = x;	
 	yPos = y;
 	width = w;
 	height = h;
-	btnWidth = (w-(borderWidth*(columns+1)))/columns;
-	btnHeight = (h-(borderWidth*(rows+1)))/rows;
-  
+
 	//-- outer border
 	for(byte i=borderWidth; i!=0;i--){
 		Tft.drawRect(xPos,yPos,width,height,borderColor);
@@ -138,58 +101,41 @@ void Buttongrid::drawGrid(){
 	{
 	  for(byte c=1; c<=columns; c++)
 	  {
-		  drawButtonId(getId(r,c),labels[r-1][c-1]);
+		  //drawButtonId(getId(r,c),labels[r-1][c-1]);
+		  drawLabel(getId(r,c));
 	  }
 	}	
 	
 	
  	return;
-	/*
-	//-- Gaps fill
-	if(hGap > 0){
-		for(byte j=1;j<columns;j++){
-			Tft.fillRect(x+j*btnWidth+borderWidth-hGap,y,hGap*2,h,myCanvas->bgColor);
-		}
-	}
-	if(vGap > 0){
-		for(byte j=1;j<rows;j++){
-			Tft.fillRect(x,y+j*btnHeight+borderWidth-vGap,w,vGap*2,myCanvas->bgColor);
-		}
-	}  
-	*/
-}
-
-void Buttongrid::drawButtonId(unsigned char id, uint8_t label){
-	//int boundX1, boundX2, boundY1, boundY2;
-	int btnWidth = (w-(borderWidth*(columns+1)))/columns;
-	int btnHeight = (h-(borderWidth*(rows+1)))/rows;	
-	unsigned char colIndex = getColumn(id)-1;
-	unsigned char rowIndex = getRow(id)-1;
-	unsigned char digits = Tft.Get_Digits(label);
-	
-	//Calculates position of the text considering
-	//its column or row and the btnWidth.
-	int xPos = getCenterTextX(x+(colIndex*btnWidth)+borderWidth*(1+colIndex), btnWidth, digits);
-	int yPos = getCenterTextY(y+(rowIndex*btnHeight)+borderWidth*(1+rowIndex), btnHeight);
-
-	//Draw contents function
-	Tft.drawNumber(label,xPos,yPos,fontSize,BLACK);
 }
 
 void Buttongrid::drawLabel(unsigned char id){
-	drawButtonId(id,labels[getRow(id)-1][getColumn(id)-1]);
+	unsigned char colIndex = getColumn(id)-1;
+	unsigned char rowIndex = getRow(id)-1;
+	unsigned char length;
+	int xPos,yPos;
+	
+	if(labels[id] != 0){
+		length = getTextLength(labels[id]);
+	}else{
+		length = Tft.Get_Digits(id);
+	}
+
+	xPos = getCenterTextX(x+(colIndex*btnWidth)+borderWidth*(1+colIndex), btnWidth, length);
+	yPos = getCenterTextY(y+(rowIndex*btnHeight)+borderWidth*(1+rowIndex), btnHeight);
+
+	if(labels[id] != 0){
+		Tft.drawString(labels[id],xPos,yPos,fontSize,fgColor);
+	}else{
+		Tft.drawNumber(id,xPos,yPos,fontSize,fgColor);
+	}
 	return;
 }
 
+
 void Buttongrid::setEventHandler(void (*functionPointer)(Buttongrid *, unsigned char)){
 	eventHandler = functionPointer;
-}
-
-void Buttongrid::configure(byte size){
-	columns = size;
-	rows = size;
-	gridSize = size;
-	show();
 }
 
 unsigned char Buttongrid::getColumn(unsigned char num){
@@ -208,32 +154,8 @@ unsigned char Buttongrid::getId(unsigned char row, unsigned char column){
 	return val;
 }
 
-/*
-void Buttongrid::setNum(unsigned char id){
-	int boundX1, boundX2, boundY1, boundY2;
-	int btnWidth = w/columns;
-	int btnHeight = h/rows;
-	unsigned char colIndex = getColumn(id)-1;
-	unsigned char rowIndex = getRow(id)-1;
-	unsigned char digits = Tft.Get_Digits(id);
-	
-	//Calculates initial position of text inside the btnWidth
-	//considering the number's width and font size.
-	int xPos = btnWidth/2 - (digits*FONT_X*fontSize)/2;//btnWidth/(2) - 6*digits -2;
-	int yPos = btnHeight/(2) - 8;
-	
-	//Calculates position of the text considering
-	//its column or row and the btnWidth.
-  	xPos = x+(colIndex*btnWidth)+xPos+borderWidth;
-  	yPos = y+yPos+(rowIndex*btnHeight);
-  	
-  	//Draw contents function
-  	Tft.drawNumber(id,xPos,yPos,fontSize,BLACK);
-}
-*/
-
 void Buttongrid::setName(unsigned char id, const char name[8]){
-	names[id] = name;	
+	labels[id] = name;	
 	return;
 }
 
@@ -243,12 +165,8 @@ void Buttongrid::clear(){
 }
  
 //Overriden virtual methods
-
 bool Buttongrid::checkTouch(Point* p){
-	int boundX1, boundX2, boundY1, boundY2;
-	int btnWidth = (w-(borderWidth*(columns+1)))/columns;
-	int btnHeight = (h-(borderWidth*(rows+1)))/rows;	
-	
+	int boundX1, boundX2, boundY1, boundY2;	
 	bool pressed = false;
 	if(lastMillis + debounceTime < millis()){ 
 		if((p->x > x+borderWidth) && (p->x < x+w-borderWidth) && (p->y > y+borderWidth) && (p->y < y+h-borderWidth)){
@@ -267,13 +185,12 @@ bool Buttongrid::checkTouch(Point* p){
 					
 					int num = columns*(r - 1) + c;
 					if((p->x > boundX1) && (p->x < boundX2) && (p->y > boundY1) && (p->y < boundY2)){
-						
 						// Restore last button pressed appearance
 						if(clearLastPressed && lastPressed != 0){
 							char cIndex = getColumn(lastPressed) - 1;
 							char rIndex = getRow(lastPressed) - 1;
 							int lastX = x + btnWidth*cIndex + borderWidth*(cIndex + 1);
-							int lastY = y + btnHeight*rIndex + borderWidth*(rIndex + 1);//y+(btnHeight)*(getRow(lastPressed)-1)+borderWidth;
+							int lastY = y + btnHeight*rIndex + borderWidth*(rIndex + 1);
 							if(HIGHLIGHT == 1){
 								Tft.fillRect(lastX,lastY,btnWidth,btnHeight,bgColor);
 							}

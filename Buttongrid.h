@@ -22,35 +22,31 @@ class Buttongrid : public Button
 {
 
 public:
-	Buttongrid();
 	Buttongrid(unsigned char r, unsigned char c);
 	Buttongrid(unsigned char gridSize);
-	Buttongrid(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor);
 	virtual ~Buttongrid();
 
 	// Attributes
 	byte gridSize = 2;
 	byte columns;
 	byte rows;
-	//byte font_size = 2;
 	byte hGap = 0;
 	byte vGap = 0;
+	int btnWidth,btnHeight;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
-	unsigned char** labels = 0;
-	const char** names;
+	const char** labels;
 	int highlightColor = YELLOW;
 	unsigned char clearLastPressed = 1; // used to decide if to redraw as a maintained or as a momentary
 	
 	// Methods
 	void init();
+	void setSize(int width, int height);
 	void configure(byte gridSize);
-	//void setNum(unsigned char num);
 	void setName(unsigned char id, const char name[8]);
 	unsigned char getColumn(unsigned char number);
 	unsigned char getRow(unsigned char number);
 	unsigned char getId(unsigned char row, unsigned char col);
 	void drawGrid();
-	void drawButtonId(unsigned char id, uint8_t label);	
 	void drawLabel(unsigned char id);
 	void clear();
 	// This is a modified declaration for setting the event handler function
