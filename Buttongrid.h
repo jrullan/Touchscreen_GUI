@@ -16,6 +16,7 @@
 #define BUTTONGRID_HIGHLIGHT 	0b0001
 #define BUTTONGRID_MAINTAINED 	0b0010
 #define BUTTONGRID_USELABELS	0b0100
+#define BUTTONGRID_NUMLABELS    0b1000
 
 #include "Canvas.h"
 #include "Button.h"

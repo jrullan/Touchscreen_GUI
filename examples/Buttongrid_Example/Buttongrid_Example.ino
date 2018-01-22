@@ -43,7 +43,7 @@ Display colDisplay = Display();
 Display numberDisplay = Display();
 Button btnClear = Button();
 Button btnWon = Button();
-Buttongrid buttonGrid = Buttongrid(5); // Memory used: (storage/ram: 2,370/59)  16,080/503
+Buttongrid buttonGrid = Buttongrid(5,5,BUTTONGRID_HIGHLIGHT|BUTTONGRID_MAINTAINED|BUTTONGRID_USELABELS|BUTTONGRID_NUMLABELS); // Memory used: (storage/ram: 2,370/59)  16,080/503
 
 // Global variables
 // If you need global variables in your program put them here,
@@ -108,7 +108,6 @@ void setup() {
     btnWon.visible = false;
     btnWon.block = true;
 
-    buttonGrid.clearLastPressed = false;
     buttonGrid.setSize(220 ,240);
     buttonGrid.setColors(GRAY1,BLACK,WHITE);
     buttonGrid.init();

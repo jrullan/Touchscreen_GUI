@@ -32,9 +32,10 @@ Buttongrid::Buttongrid(unsigned char r, unsigned char c, unsigned char cfg){
 	
 	if(rows >= 0 && columns >= 0){
 		char qty = rows * columns;
+		char chars = ((config&BUTTONGRID_NUMLABELS)?1:8);
 		if(config&BUTTONGRID_USELABELS){
-			if(labels = (const char**) malloc(qty * 8 * sizeof(char))){
-				memset(labels,0,qty*8*sizeof(char));
+			if(labels = (const char**) malloc(qty * chars * sizeof(char))){
+				memset(labels,0,qty*chars*sizeof(char));
 			}
 		}
 		if(states = (unsigned char*)malloc(qty)){
@@ -162,7 +163,7 @@ unsigned char Buttongrid::getId(unsigned char row, unsigned char column){
 }
 
 void Buttongrid::setLabel(unsigned char id, const char name[8]){
-	if(config&BUTTONGRID_USELABELS){
+	if((config&BUTTONGRID_USELABELS) && !(config&BUTTONGRID_NUMLABELS))){
 		labels[id] = name;
 	}		
 	return;
