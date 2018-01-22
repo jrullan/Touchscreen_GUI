@@ -13,7 +13,9 @@
 #ifndef BUTTONGRID_H
 #define BUTTONGRID_H
 
-#define HIGHLIGHT 1
+#define BUTTONGRID_HIGHLIGHT 	0b0001
+#define BUTTONGRID_MAINTAINED 	0b0010
+#define BUTTONGRID_USELABELS	0b0100
 
 #include "Canvas.h"
 #include "Button.h"
@@ -22,8 +24,8 @@ class Buttongrid : public Button
 {
 
 public:
-	Buttongrid(unsigned char r, unsigned char c);
-	Buttongrid(unsigned char gridSize);
+	Buttongrid(unsigned char r, unsigned char c, unsigned char configuration);
+	//Buttongrid(unsigned char gridSize);
 	virtual ~Buttongrid();
 
 	// Attributes
@@ -32,17 +34,19 @@ public:
 	byte rows;
 	byte hGap = 0;
 	byte vGap = 0;
+	unsigned char config = 0;
 	int btnWidth,btnHeight;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
 	const char** labels;
+	unsigned char* states;
 	int highlightColor = YELLOW;
-	unsigned char clearLastPressed = 1; // used to decide if to redraw as a maintained or as a momentary
+	unsigned char maintained = 1; // used to decide if to redraw as a maintained or as a momentary
 	
-	// Methods
+	// Methods	
 	void init();
 	void setSize(int width, int height);
 	void configure(byte gridSize);
-	void setName(unsigned char id, const char name[8]);
+	void setLabel(unsigned char id, const char name[8]);
 	unsigned char getColumn(unsigned char number);
 	unsigned char getRow(unsigned char number);
 	unsigned char getId(unsigned char row, unsigned char col);
