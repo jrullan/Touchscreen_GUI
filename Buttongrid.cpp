@@ -163,7 +163,7 @@ unsigned char Buttongrid::getId(unsigned char row, unsigned char column){
 }
 
 void Buttongrid::setLabel(unsigned char id, const char name[8]){
-	if((config&BUTTONGRID_USELABELS) && !(config&BUTTONGRID_NUMLABELS))){
+	if((config&BUTTONGRID_USELABELS) && !(config&BUTTONGRID_NUMLABELS)){
 		labels[id] = name;
 	}		
 	return;
