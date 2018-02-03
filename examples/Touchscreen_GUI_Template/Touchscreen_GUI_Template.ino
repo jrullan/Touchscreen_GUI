@@ -44,8 +44,8 @@
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // or Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_SEEEDSTUDIO_RESISTIVE)
-//Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_ADAFRUIT_CAPACITIVE); 
+//Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // or Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_SEEEDSTUDIO_RESISTIVE)
+Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_ADAFRUIT_CAPACITIVE); 
 Button button = Button();
 Dial dial = Dial();       
 Display disp = Display(); 
@@ -84,6 +84,7 @@ void setup() {
     dial.setLimits(0,50,100);
     dial.init();
     dial.setHiLimit(75,GREEN);
+    dial.setSP(50,BLUE);
     dial.setLowLimit(25,RED);
     
     disp.setSize(80,40);
@@ -92,10 +93,11 @@ void setup() {
     disp.init();
     
     gauge.setSize(40,100);
-    gauge.setColors(GRAY2,YELLOW,WHITE);
+    gauge.setColors(BLACK,YELLOW,WHITE);
     gauge.setLimits(0,50,100);
     gauge.init();
     gauge.setHiLimit(75,GREEN);
+    gauge.setSP(50,BLUE);
     gauge.setLowLimit(25,RED);
     
     numkey.setSize(120,180);
@@ -107,10 +109,10 @@ void setup() {
   // Add widgets to canvas
   // (Use layout template for coordinates)
   //=========================================
-  canvas.add(&disp,45,40);
-  canvas.add(&button,145,40);
+  canvas.add(&disp,55,40);
+  canvas.add(&button,155,40);
   canvas.add(&dial,95,150);
-  canvas.add(&gauge,150,100);
+  canvas.add(&gauge,160,100);
   canvas.add(&btnPlus,240,100);
   canvas.add(&btnMinus,240,160);
   
