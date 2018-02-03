@@ -1,8 +1,10 @@
 #ifndef _POINT_H_
 #define _POINT_H_
 
-//#include <Arduino.h>
-//#include <avr/pgmspace.h>
+#define POINT_PORTRAIT1 0
+#define POINT_LANDSCAPE1 1
+#define POINT_PORTRAIT2 2
+#define POINT_LANDSCAPE2 3
 
 class Point {
     public:
@@ -16,7 +18,7 @@ class Point {
     
     //New method
     void toLandscape();
-
+	void rotate(char dir = 0);
 };
 
 #endif

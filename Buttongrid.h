@@ -38,7 +38,7 @@ public:
 	unsigned char config = 0;
 	int btnWidth,btnHeight;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
-	const char** labels;
+	char** labels;
 	unsigned char* states;
 	int highlightColor = YELLOW;
 	unsigned char maintained = 1; // used to decide if to redraw as a maintained or as a momentary
@@ -47,7 +47,7 @@ public:
 	void init();
 	void setSize(int width, int height);
 	void configure(byte gridSize);
-	void setLabel(unsigned char id, const char name[8]);
+	void setLabel(unsigned char id,  char name[8]);
 	unsigned char getColumn(unsigned char number);
 	unsigned char getRow(unsigned char number);
 	unsigned char getId(unsigned char row, unsigned char col);

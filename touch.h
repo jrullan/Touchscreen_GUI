@@ -1,27 +1,24 @@
-#ifndef _TOUCH_H_
-#define _TOUCH_H_
-
-#include "Point.h"
 /*
-  SeeedTouchScreen.h - Library for 4-line resistance touch screen.
-  Modified by loovee Aug 12, 2012.
-  (c) ladyada / adafruit
-  Code under MIT License.
-*/
-#define __PRESURE 10
-
-class TouchScreen {
-	
-	  //TouchScreen(unsigned char xp, unsigned char yp, unsigned char xm, unsigned char ym);
-    
-    private:
-    unsigned char _yp, _ym, _xm, _xp;
-
-    public:
-    TouchScreen(unsigned char xp, unsigned char yp, unsigned char xm, unsigned char ym);
-    bool isTouching(void);
-    Point getPoint();
-
-};
-
-#endif
+ *
+ */
+ #if !defined(TOUCH_H)
+ #define TOUCH_H
+ 
+ #include "Arduino.h"
+ #include "Point.h"
+ 
+ #define TOUCHTYPE_SEEEDSTUDIO_RESISTIVE 	0
+ #define TOUCHTYPE_ADAFRUIT_CAPACITIVE 		1
+ 
+ class Touch
+ {
+	public:
+		Touch(void);
+		~Touch(void);
+		
+		virtual bool begin(uint8_t thresh) = 0;
+		virtual Point getPoint(void) = 0;
+		virtual uint8_t touched(void) = 0;
+ };
+ 
+ #endif

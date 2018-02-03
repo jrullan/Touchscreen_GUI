@@ -8,14 +8,24 @@
 #include "Canvas.h"
 #include "Widget.h"
 #include "Screen.h" 
+#include "Seeedtouch.h"
+#include "Adafruit_FT6206.h"
 
 Canvas::Canvas(){
 
 }
 
-Canvas::Canvas(int mode, int color){
+Canvas::Canvas(int mode, int color, int type){
 	_mode = mode;
 	bgColor = color;
+	touchType = type;
+	if(type == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
+		ts = new SeeedstudioTouch(XP,YP,XM,YM);
+	}
+	if(type == TOUCHTYPE_ADAFRUIT_CAPACITIVE){
+		ts = new Adafruit_FT6206();
+		ts->begin(FT62XX_DEFAULT_THRESHOLD);
+	}
 }
 
 Canvas::~Canvas(){
@@ -25,6 +35,16 @@ Canvas::~Canvas(){
 // Initializes the LCD screen (Tft) and sets debounce and lastmillis variables.
 // Last millis is used for the Canvas-wide debounce of touch events.
 void Canvas::init(){
+	
+	/*
+	#ifdef ADAFRUIT_FT6206_LIBRARY
+		Serial.println("FT6206 library IS defined!");
+		ts.begin();
+	#else
+		Serial.println("FT6206 library NOT defined...");
+	#endif
+	*/
+	
 	Tft.begin();
 	Tft.fillScreen(BLACK);
 	lastMillis = millis();
@@ -70,19 +90,32 @@ void Canvas::setScreen(Screen* screen){
 // This method calculates the x,y coordinates of the touched point
 // according to the currently set orientation mode.
 Point* Canvas::getTouchedPoint(){
-	Point p = ts.getPoint();
-	if(millis() > touchSampling + TOUCH_SAMPLING_TIME){ //Debouncing of the touchscreen resistance
-		p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
-		p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);			
-		if(Tft.layoutMode == TFT_LANDSCAPE){
-			p.toLandscape();
+	Point p = ts->getPoint();
+	if(millis() > touchSampling + TOUCH_SAMPLING_TIME){
+
+		if(touchType == TOUCHTYPE_ADAFRUIT_CAPACITIVE){
+			if(Tft.layoutMode == TFT_PORTRAIT){
+				p.rotate(POINT_PORTRAIT2);
+			}
+			if(Tft.layoutMode == TFT_LANDSCAPE){
+				p.rotate(POINT_LANDSCAPE2);
+			}
 		}
-		touchSampling = millis();
+
+		if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
+			p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
+			p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);			
+			if(Tft.layoutMode == TFT_LANDSCAPE){
+				p.toLandscape();
+			}
+		}
+
 		touchedPoint.x = p.x;
 		touchedPoint.y = p.y;
-		//Tft.drawCircle(p.x,p.y,10,RED);
+		touchSampling = millis();
 		return &touchedPoint;
 	}
+	
 	return NULL;
 }
  
@@ -98,15 +131,33 @@ Widget* Canvas::pop(){
 // If an event is detected, all registered widgets are notified of the event by
 // calling its event handler function.
 bool Canvas::scan(){
-
+	
 	if(millis()>lastMillis + debounceTime){ //Debouncing of the touchscreen resistance
+		
+		if(touchType == TOUCHTYPE_ADAFRUIT_CAPACITIVE){
+			if(!ts->touched()) return false;
+		}
+	
 		Point* tP = getTouchedPoint();
-
+		
 		//Early exits
-		if(tP == NULL) return false;
-		if(!inBounds(tP)){
+		if(tP == NULL){
+			//Serial.println("tp == NULL");
 			return false;
 		}
+		
+		if(!inBounds(tP)){
+			//Serial.println("!inBounds(tP)");
+			//Serial.print("tP.x = ");Serial.println(tP->x);
+			return false;
+		}
+		
+		/*
+		Serial.print("Canvas.scan touched point: x=");
+		Serial.print(tP->x);
+		Serial.print(" y=");
+		Serial.println(tP->y);
+		*/
 		
 		// Send event to canvas widgets, then to screen widgets
 		// if no canvas widget blocks the event.
