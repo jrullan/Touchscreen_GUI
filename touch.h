@@ -1,5 +1,21 @@
 /*
+ * This is the abstract class that Canvas
+ * needs to interact with the touch events
+ * on the screen. The need for an abstract
+ * class came from the need to support different
+ * drivers for the touchscreen. 
+ * (Seeedstudio's resistive and Adafruit's capacitive)
  *
+ * As of this version, the two classes that
+ * implement this class are SeeedTouch and
+ * Adafruit_FT6206
+ *
+ *  Author: Jose Rullan
+ *	Release Date: 02/03/2018
+ *	Release Version: 0.1 beta
+ *
+ *	License: Whatever only requires to give credit to original 
+ *	author (i.e. Jose Rullan) 
  */
  #if !defined(TOUCH_H)
  #define TOUCH_H
