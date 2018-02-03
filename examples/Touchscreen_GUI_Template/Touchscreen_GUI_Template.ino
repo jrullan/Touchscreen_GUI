@@ -7,9 +7,12 @@
  *  sample code is provided to help you quickly create
  *  a working sketch.
  *
- *  This library was developed for Seeedstudio
+ *  This library was originally developed for Seeedstudio
  *  TouchShield v2.0, based on their TFTv2 and SeeedTouchscreen
- *  libraries. This library is intended to provide a minimal
+ *  libraries. It now includes support for Adafruit's Capacitive
+ *  touchscreen TFT as well.
+ *  
+ *	This library is intended to provide a minimal
  *  but useful collection of reusable widgets that can be used
  *  to create a Graphical User Interface (GUI) for any Arduino 
  *  project.
@@ -24,7 +27,8 @@
  *	author (i.e. Jose Rullan)
  *
  *	Credits:
- *	
+ *	Seeedstudio - original code
+ *  Adafruit - underlying code for ILI9341, GFX, FT6206, etc.
  *  
  *************************************************************/
 
@@ -40,25 +44,20 @@
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
-Button button = Button();//80,40,GRAY1,BLACK,WHITE); // Memory used: (storage/ram: 3,624/63)  6,996/291
-Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
-Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
-Gauge gauge = Gauge();    // Memory used: (storage/ram: 1,470/52)  13710/444
-Numkey numkey = Numkey(); // Memory used: (storage/ram: 2,370/59)  16,080/503
+Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // or Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_SEEEDSTUDIO_RESISTIVE)
+//Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_ADAFRUIT_CAPACITIVE); 
+Button button = Button();
+Dial dial = Dial();       
+Display disp = Display(); 
+Gauge gauge = Gauge();    
+Numkey numkey = Numkey();
 Button btnPlus = Button(20,GRAY1,BLACK,WHITE);	//Initialization version for round buttons
 Button btnMinus = Button(20,GRAY1,BLACK,WHITE); //Initialization version for round buttons
 
-// Global variables
-// If you need global variables in your program put them here,
-// before the setup() routine.
-
-
+const char increment = 1;
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(7,OUTPUT);
-  digitalWrite(7,HIGH);
+  Serial.begin(115200);
   canvas.init();
 
   //Configure the widgets
@@ -73,12 +72,12 @@ void setup() {
     btnPlus.setText("+");
     btnPlus.setEventHandler(&btnPlusEventHandler);
     btnPlus.init();
-    btnPlus.setDebounce(100);  
+    btnPlus.setDebounce(25);  
 
     btnMinus.setText("-");
     btnMinus.setEventHandler(&btnMinusEventHandler);
     btnMinus.init();
-    btnMinus.setDebounce(100);  
+    btnMinus.setDebounce(25);  
 
     dial.setSize(50);
     dial.setColors(GRAY2,YELLOW,GRAY1);
@@ -108,12 +107,12 @@ void setup() {
   // Add widgets to canvas
   // (Use layout template for coordinates)
   //=========================================
-  canvas.add(&button,105,0);
-  canvas.add(&dial,55,110);
-  canvas.add(&disp,5,0);
-  canvas.add(&gauge,110,60);
-  canvas.add(&btnPlus,200,60);
-  canvas.add(&btnMinus,200,120);
+  canvas.add(&disp,45,40);
+  canvas.add(&button,145,40);
+  canvas.add(&dial,95,150);
+  canvas.add(&gauge,150,100);
+  canvas.add(&btnPlus,240,100);
+  canvas.add(&btnMinus,240,160);
   
   //Numkey Notes:
   //The numkey widget is meant to be a pop-up
@@ -140,18 +139,18 @@ void buttonEventHandler(Button* btn){
   // When button is pressed, the numkey
   // is added to the canvas, and it is rendered
   // automatically.
-  canvas.add(&numkey,195,0);
+  canvas.add(&numkey,100,30);
 }
 
 void btnPlusEventHandler(Button* btn){
-	gauge.setCV(gauge.getCV()+5);
+	gauge.setCV(gauge.getCV()+increment);
 	dial.setCV(gauge.getCV());
 	disp.setNum(gauge.getCV());
 }
 
 void btnMinusEventHandler(Button* btn){
-	if(gauge.getCV() < 5) return;
-	gauge.setCV(gauge.getCV()-5);
+	if(gauge.getCV() < increment) return;
+	gauge.setCV(gauge.getCV()-increment);
 	dial.setCV(gauge.getCV());
 	disp.setNum(gauge.getCV());
 }

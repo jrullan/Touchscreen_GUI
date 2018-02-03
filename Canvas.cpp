@@ -134,13 +134,10 @@ bool Canvas::scan(){
 	
 	if(millis()>lastMillis + debounceTime){ //Debouncing of the touchscreen resistance
 		
-		if(touchType == TOUCHTYPE_ADAFRUIT_CAPACITIVE){
-			if(!ts->touched()) return false;
-		}
+		//Early exits
+		if(!ts->touched()) return false;
 	
 		Point* tP = getTouchedPoint();
-		
-		//Early exits
 		if(tP == NULL){
 			//Serial.println("tp == NULL");
 			return false;
