@@ -27,6 +27,7 @@ class Text
 		
 		//=====Utilities======
 		void clear();
+		
 		unsigned char _textSize;
 };
 #endif

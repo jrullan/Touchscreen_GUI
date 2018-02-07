@@ -169,6 +169,16 @@ void Buttongrid::setLabel(unsigned char id, char name[8]){
 	return;
 }
 
+/* NOT WORKING
+void Buttongrid::setLabel(unsigned char id, char c){
+	//char name[8] = {c,0,0,0,0,0,0,0};
+	if((config&BUTTONGRID_USELABELS) && !(config&BUTTONGRID_NUMLABELS)){
+		labels[id][0] = c;
+	}		
+	return;
+}
+*/
+
 void Buttongrid::clear(){
 	drawGrid();
 	lastPressed = 0;

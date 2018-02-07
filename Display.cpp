@@ -62,6 +62,16 @@ void Display::append(char* c){
 	update();
 }
 
+//New testing out...
+void Display::append(char c){
+	byte txtSize = getTextLength(contents->text);
+	//Check that there space available to append
+	if(txtSize < contents->_textSize){
+		contents->text[txtSize] = c;
+	}
+	update();	
+}
+
 void Display::fitToText(){
   if(*contents->text){
 	/*

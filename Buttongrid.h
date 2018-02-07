@@ -48,6 +48,11 @@ public:
 	void setSize(int width, int height);
 	void configure(byte gridSize);
 	void setLabel(unsigned char id,  char name[8]);
+	
+	/* NOT WORKING
+	void setLabel(unsigned char id,  char c);
+	*/
+	
 	unsigned char getColumn(unsigned char number);
 	unsigned char getRow(unsigned char number);
 	unsigned char getId(unsigned char row, unsigned char col);

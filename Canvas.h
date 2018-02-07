@@ -58,6 +58,7 @@
 	#define YM 14   // can be a digital pin, this is A0
 	#define XP 17   // can be a digital pin, this is A3
 #endif
+
 #define DEBOUNCE 0
 #define TOUCH_SAMPLING_TIME 100
 #define TOUCH_BUFFER_SIZE 5

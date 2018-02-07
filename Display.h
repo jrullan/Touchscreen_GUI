@@ -29,6 +29,10 @@ public:
 	void setNum(int num, bool now = true);
 	void setText(char* _text, bool now = true);
 	void append(char* c);
+	
+	//new testing out...
+	void append(char c);
+	
 	void deleteChar();
 	
 	//Overriden methods

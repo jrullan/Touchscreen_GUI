@@ -12,6 +12,12 @@
 */
 #define __PRESURE 10
 
+//Touchscreen values for Seeedstudio resistive
+#define TS_MINX 116*2
+#define TS_MAXX 890*2
+#define TS_MINY 83*2
+#define TS_MAXY 913*2
+
 class SeeedstudioTouch : public Touch
 {   
     public:

@@ -11,18 +11,13 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#ifndef FONT_SPACE
-#define FONT_SPACE 6
-#endif
-#ifndef FONT_X
-#define FONT_X 6
-#endif
-#ifndef FONT_Y
-#define FONT_Y 8
-#endif
-
 //Length of characters to use for labels and texts in general
 #define DISPLAY_SIZE 6
+
+//Font Dimensions (based on the standard 5x7 font included in Adafruit_GFX
+#define FONT_SPACE 6
+#define FONT_X 6
+#define FONT_Y 8
 
 // Forward declarations
 class Canvas;

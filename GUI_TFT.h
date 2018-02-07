@@ -38,11 +38,12 @@
 #define TFT_PORTRAIT 0
 #define TFT_LANDSCAPE 1
 
-//Touchscreen values
-#define TS_MINX 116*2
-#define TS_MAXX 890*2
-#define TS_MINY 83*2
-#define TS_MAXY 913*2
+/*
+//Font Dimensions (based on the standard 5x7 font included in Adafruit_GFX
+#define FONT_SPACE 6
+#define FONT_X 6
+#define FONT_Y 8
+*/
 
 // Inherit from STM version if using an STM mcu
 #if defined(__STM32F1__)
