@@ -7,9 +7,11 @@
 Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK);//,TOUCHTYPE_ADAFRUIT_CAPACITIVE);
 Screen homeScreen = Screen(&canvas);
 Screen pwdScreen = Screen(&canvas);
-Buttongrid keyboard = Buttongrid(4,10,BUTTONGRID_USELABELS);
-Display dsp = Display(304,40,BLACK,GREEN,GRAY2,24);
 Button btnPassword = Button(80,40,GRAY2,WHITE,GRAY1);
+Display msgDisplay = Display(240,100,GRAY1,WHITE,BLUE,16);
+
+Display dsp = Display(304,40,BLACK,GREEN,GRAY2,24);
+Buttongrid keyboard = Buttongrid(4,10,BUTTONGRID_USELABELS);
 
 int keymap = 0;
 char keymap1[40][2] = {
@@ -24,13 +26,14 @@ char keymap2[40][2] = {
   ".",",",":",";",{168,0},"?",{173,0},"'","\"",{190,0},
   {171,0}," ","~","`","{","}"," "," "," ",{216,0}
 };
-char* password = "15SSPKATM";
+char* password = "%yuPiti*&";
 
 void setup() {
   Serial.begin(115200);
   canvas.init();
 
-  dsp.setText("");
+
+  dsp.setText("",false);
   keyboard.setDebounce(100);
   keyboard.borderWidth = 1;
   for(char i=0;i<40;i++){
@@ -50,13 +53,18 @@ void setup() {
   pwdScreen.add(&dsp,5,10);
   pwdScreen.add(&keyboard,5,50);
 
-  btnPassword.setText("Password");
+
+  msgDisplay.setText("Password Correct",false);
+  msgDisplay.borderWidth = 8;
+  btnPassword.setText("Lock");
   btnPassword.setEventHandler(&btnPasswordEventHandler);
   homeScreen.x = 0;
   homeScreen.y = 0;
   homeScreen.w = 320;
   homeScreen.h = 240;
-  homeScreen.add(&btnPassword,120,100);
+  homeScreen.add(&msgDisplay,40,20);
+  homeScreen.add(&btnPassword,120,140);
+  
   canvas.setScreen(&pwdScreen);
 }
 
@@ -76,7 +84,7 @@ bool matchPassword(){
   for(int i=0; i<pwdSize; i++){
     char baseChar = dsp.contents->text[i];
     char lowerChar,upperChar;
-    Serial.print(baseChar);
+    
     //Check if baseChar is a CAPS character or a LOWER character
     if(baseChar >= 65 && baseChar < 91 || baseChar >= 97 && baseChar < 123){
 
@@ -96,7 +104,6 @@ bool matchPassword(){
         }
       }
     }
-    Serial.println();
   }
   return true;
 }
@@ -111,9 +118,13 @@ void keyboardEventHandler(Buttongrid* kbd, unsigned char key){
   // Enter key
   if(key == 40){
     Serial.println(dsp.contents->text);
-    if(matchPassword()) canvas.setScreen(&homeScreen);
-    dsp.setText("");
-    dsp.update();
+    if(matchPassword()){
+      dsp.setText("",false);
+      canvas.setScreen(&homeScreen);
+    }else{
+      dsp.setText("");
+      dsp.update();
+    }
     return;
   }
   // Alt key
@@ -130,9 +141,7 @@ void keyboardEventHandler(Buttongrid* kbd, unsigned char key){
       }else{
         keyboard.setLabel(i+1,keymap1[i]);
       }
-      //Serial.print(keyboard.labels[i]);
     }
-    //Serial.println();
     keyboard.show();
     return;
   }
@@ -142,4 +151,3 @@ void keyboardEventHandler(Buttongrid* kbd, unsigned char key){
   }
   return;
 }
-
