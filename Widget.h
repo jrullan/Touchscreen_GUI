@@ -107,6 +107,7 @@ public:
 			return "option";
 		}		
 	};
+	
 	static unsigned char getTextLength(char* c){
 		char size = 0;
 		if(*c){
