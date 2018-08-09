@@ -42,7 +42,8 @@ uint8_t Guitft::drawNumber(long long_num,uint16_t poX, uint16_t poY,uint16_t siz
 // and instance it here
 // to avoid compiler issues with redeclarations
 #if defined(ESP32)
-	Guitft Tft = Guitft(5, 26); // Use hardware SPI
+	//Guitft Tft = Guitft(5, 26); // Use hardware SPI
+	Guitft Tft = Guitft(15, 33); // Use hardware SPI
 #else
 	Guitft Tft = Guitft(5, 6); // Use hardware SPI
 #endif

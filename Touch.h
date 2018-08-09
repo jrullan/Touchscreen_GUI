@@ -16,6 +16,8 @@
  *
  *	License: Whatever only requires to give credit to original 
  *	author (i.e. Jose Rullan) 
+ * 
+ * 	2018-08-08: Added new type for Adafruit touch controller STMPE610
  */
  #if !defined(TOUCH_H)
  #define TOUCH_H
@@ -24,7 +26,8 @@
  #include "Point.h"
  
  #define TOUCHTYPE_SEEEDSTUDIO_RESISTIVE 	0
- #define TOUCHTYPE_ADAFRUIT_CAPACITIVE 		1
+ #define TOUCHTYPE_ADAFRUIT_FT6206 		1
+ #define TOUCHTYPE_ADAFRUIT_STMPE610 		2
  
  class Touch
  {

@@ -1,31 +1,46 @@
-///////////////////////////////////////////////////////////
-//  Canvas.cpp
-//  Implementation of the Class Canvas
-//  Created on:      02-Mar-2015 9:16:46 PM
-//  Original author: Invision
-///////////////////////////////////////////////////////////
+/*
+* Canvas.cpp
+* Implementation of the Class Canvas
+* Created on:      02-Mar-2015 9:16:46 PM
+* Original author: Invision
+* 
+*	2018-08-08: Added initialization for Adafruit touch controller STMPE610
+*
+*/
 
 #include "Canvas.h"
 #include "Widget.h"
-#include "Screen.h" 
+#include "Screen.h"
+
+// Touch drivers includes
 #include "Seeedtouch.h"
 #include "Adafruit_FT6206.h"
+#include "Adafruit_STMPE610.h"
 
 Canvas::Canvas(){
 
 }
 
-Canvas::Canvas(int mode, int color, int type){
+Canvas::Canvas(int mode, int color, int touch_type, int touch_cs){
 	_mode = mode;
 	bgColor = color;
-	touchType = type;
-	if(type == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
+	touchType = touch_type;
+	if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
 		ts = new SeeedstudioTouch(XP,YP,XM,YM);
 	}
-	if(type == TOUCHTYPE_ADAFRUIT_CAPACITIVE){
+	if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
 		ts = new Adafruit_FT6206();
 		ts->begin(FT62XX_DEFAULT_THRESHOLD);
 	}
+	if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){
+		if(touch_cs == -1){
+			touch_cs = STMPE_CS;
+		}
+		ts = new Adafruit_STMPE610(touch_cs);
+		ts->begin(STMPE_ADDR);
+	}
+	
+
 }
 
 Canvas::~Canvas(){
@@ -90,10 +105,11 @@ void Canvas::setScreen(Screen* screen){
 // This method calculates the x,y coordinates of the touched point
 // according to the currently set orientation mode.
 Point* Canvas::getTouchedPoint(){
-	Point p = ts->getPoint();
+	
 	if(millis() > touchSampling + TOUCH_SAMPLING_TIME){
-
-		if(touchType == TOUCHTYPE_ADAFRUIT_CAPACITIVE){
+		Point p = ts->getPoint();
+		
+		if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
 			if(Tft.layoutMode == TFT_PORTRAIT){
 				p.rotate(POINT_PORTRAIT2);
 			}
@@ -101,6 +117,14 @@ Point* Canvas::getTouchedPoint(){
 				p.rotate(POINT_LANDSCAPE2);
 			}
 		}
+		
+		if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){				
+			p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
+			p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);			
+			if(_mode == TFT_LANDSCAPE){
+				p.rotate(POINT_LANDSCAPE1_INVY);
+			}
+		}		
 
 		if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
 			p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
@@ -113,6 +137,7 @@ Point* Canvas::getTouchedPoint(){
 		touchedPoint.x = p.x;
 		touchedPoint.y = p.y;
 		touchSampling = millis();
+		
 		return &touchedPoint;
 	}
 	
@@ -135,8 +160,24 @@ bool Canvas::scan(){
 	if(millis()>lastMillis + debounceTime){ //Debouncing of the touchscreen resistance
 		
 		//Early exits
-		if(!ts->touched()) return false;
-	
+		if(!ts->touched()){
+			return false;
+		}
+		
+		/*
+		if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){
+			if(ts->touched()){
+				Point* tP = getTouchedPoint();
+				if(tP != NULL){
+					Serial.print("RAW Canvas.scan touched point: x=");
+					Serial.print(tP->x);
+					Serial.print(" y=");
+					Serial.println(tP->y);
+				}
+			}
+		}
+		*/
+		
 		Point* tP = getTouchedPoint();
 		if(tP == NULL){
 			//Serial.println("tp == NULL");
@@ -149,12 +190,12 @@ bool Canvas::scan(){
 			return false;
 		}
 		
-		/*
-		Serial.print("Canvas.scan touched point: x=");
+		Serial.print("Inbounds! Canvas.scan touched point: x=");
 		Serial.print(tP->x);
 		Serial.print(" y=");
-		Serial.println(tP->y);
-		*/
+		Serial.println(tP->y);		
+
+		
 		
 		// Send event to canvas widgets, then to screen widgets
 		// if no canvas widget blocks the event.

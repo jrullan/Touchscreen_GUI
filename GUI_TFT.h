@@ -47,15 +47,21 @@
 
 // Inherit from STM version if using an STM mcu
 #if defined(__STM32F1__)
+
+
 class Guitft : public Adafruit_ILI9341_STM{
-public:
+	public:
 	Guitft(int8_t TFT_CS, int8_t TFT_DC):Adafruit_ILI9341_STM(TFT_CS, TFT_DC, -1){};
 
 //Otherwise inherit from standard library
 #else
+
+
 class Guitft : public Adafruit_ILI9341{
-public:
+	public:
 	Guitft(int8_t TFT_CS, int8_t TFT_DC):Adafruit_ILI9341(TFT_CS, TFT_DC, -1){};
+
+
 #endif	
 	~Guitft();
 
