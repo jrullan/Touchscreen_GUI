@@ -238,14 +238,14 @@ bool Numkey::checkTouch(Point* p){
 	bool pressed = false;
 	if(lastMillis + debounceTime < millis()){ 
 		if((p->x > x+borderWidth) && (p->x < x+w-borderWidth) && (p->y > y+borderWidth) && (p->y < y+h-borderWidth)){
-			Serial.println("Numkey event within bounds");
+			//Serial.println("Numkey event within bounds");
 			//backspace coordinates
 			boundX1 = x+btnWidth*2;
 			boundX2 = x+w;
 			boundY1 = y+borderWidth;
 			boundY2 = y+btnHeight;
 			if((p->x > boundX1) && (p->x < boundX2) && (p->y > boundY1) && (p->y < boundY2)){
-				Serial.println("Backspace pressed");
+				//Serial.println("Backspace pressed");
 				deleteChar();
 				pressed = true;
 			}
@@ -261,19 +261,19 @@ bool Numkey::checkTouch(Point* p){
 					int num = 3*(r - 1) + c;
 
 					if((p->x > boundX1) && (p->x < boundX2) && (p->y > boundY1) && (p->y < boundY2)){
-						Serial.print(num); Serial.println();
-						Serial.println("A number has been pressed");
+						//Serial.print(num); Serial.println();
+						//Serial.println("A number has been pressed");
 						
 						if(num==11){
-							Serial.println("0 pressed");
+							//Serial.println("0 pressed");
 							num = 0;
 						}
 						
 						if(num==10){
-							Serial.println(". pressed");
+							//Serial.println(". pressed");
 							append(".");
 						}else if(num==12){
-							Serial.println("= pressed");
+							//Serial.println("= pressed");
 							entry = getNum();
 							eventHandler(this);		// <<<------ Event handler called when = signed is pressed
 							if(autoremove){

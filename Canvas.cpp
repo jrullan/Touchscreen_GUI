@@ -102,18 +102,11 @@ void Canvas::setScreen(Screen* screen){
 // according to the currently set orientation mode.
 Point* Canvas::getTouchedPoint(){
 	Point p;
-	/*
-	if(ts->touched()){
-		p = ts->getPoint();
-	}else{
-		return NULL;
-	}
-	*/
 		
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
 		
 		p = ts->getPoint();
-		Serial.print("getPoint x: ");Serial.print(p.x);Serial.print(" readX: ");Serial.println(((Adafruit_STMPE610*)ts)->readX());
+		//Serial.print("getPoint x: ");Serial.print(p.x);Serial.print(" readX: ");Serial.println(((Adafruit_STMPE610*)ts)->readX());
 		
 		if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
 			if(Tft.layoutMode == TFT_PORTRAIT){
@@ -183,12 +176,12 @@ bool Canvas::scan(){
 				return false;
 			}
 			
-			
+			/*
 			Serial.print("Inbounds! Canvas.scan touched point: x=");
 			Serial.print(tP->x);
 			Serial.print(" y=");
 			Serial.println(tP->y);		
-			
+			*/
 			
 			// Send event to canvas widgets, then to screen widgets
 			// if no canvas widget blocks the event.
