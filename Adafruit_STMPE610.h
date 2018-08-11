@@ -166,6 +166,8 @@ class Adafruit_STMPE610 : public Touch
   uint8_t readRegister8(uint8_t reg);
   void readData(uint16_t *x, uint16_t *y, uint8_t *z);
   uint16_t getVersion();
+	
+	uint16_t readX();
   
   //boolean touched(void);
   

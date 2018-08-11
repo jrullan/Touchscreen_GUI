@@ -61,6 +61,7 @@
 
 #define DEBOUNCE 0
 #define TOUCH_SAMPLING_TIME 100
+#define SCAN_SAMPLING_TIME 100
 #define TOUCH_BUFFER_SIZE 5
 
 // Forward declaration of class Widget to solve issue with mutual 
@@ -86,7 +87,7 @@ public:
 	bool touchWidgets(Point* p);
 	bool scan();
 	void redraw();
-	void setDebounce(unsigned int d);
+	void setScanSampling(unsigned int d);
 	void setScreen(Screen* screen);
 	void updateTouch(Point* p);
 	bool inBounds(Point* p);
@@ -111,7 +112,8 @@ public:
 private:
 	unsigned long lastMillis;
 	unsigned long touchSampling;
-	unsigned int debounceTime;
+	unsigned int scanSampling;
+	unsigned int scanSampleDelay;
 };
 
 #endif //CANVAS_H

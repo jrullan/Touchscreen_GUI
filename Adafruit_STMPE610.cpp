@@ -77,7 +77,6 @@ boolean Adafruit_STMPE610::begin(uint8_t i2caddr) {
     // hardware SPI
     pinMode(_CS, OUTPUT);
     digitalWrite(_CS, HIGH);
-    
 #if defined (SPI_HAS_TRANSACTION)
     SPI.begin();
     mySPISettings = SPISettings(1000000, MSBFIRST, SPI_MODE0);
@@ -133,7 +132,8 @@ boolean Adafruit_STMPE610::begin(uint8_t i2caddr) {
       return false;
     }
   }
-  writeRegister8(STMPE_SYS_CTRL1, STMPE_SYS_CTRL1_RESET);
+  
+	writeRegister8(STMPE_SYS_CTRL1, STMPE_SYS_CTRL1_RESET);
   delay(10);
   
   for (uint8_t i=0; i<65; i++) {
@@ -142,18 +142,22 @@ boolean Adafruit_STMPE610::begin(uint8_t i2caddr) {
   
   writeRegister8(STMPE_SYS_CTRL2, 0x0); // turn on clocks!
   writeRegister8(STMPE_TSC_CTRL, STMPE_TSC_CTRL_XYZ | STMPE_TSC_CTRL_EN); // XYZ and enable!
-  //writeRegister8(STMPE_TSC_CTRL, STMPE_TSC_CTRL_XY | STMPE_TSC_CTRL_EN); // XY and enable!
+	
   //Serial.println(readRegister8(STMPE_TSC_CTRL), HEX);
   writeRegister8(STMPE_INT_EN, STMPE_INT_EN_TOUCHDET);
   writeRegister8(STMPE_ADC_CTRL1, STMPE_ADC_CTRL1_10BIT | (0x6 << 4)); // 96 clocks per conversion
   writeRegister8(STMPE_ADC_CTRL2, STMPE_ADC_CTRL2_6_5MHZ);
+	
   writeRegister8(STMPE_TSC_CFG, STMPE_TSC_CFG_4SAMPLE | STMPE_TSC_CFG_DELAY_1MS | STMPE_TSC_CFG_SETTLE_5MS);
   writeRegister8(STMPE_TSC_FRACTION_Z, 0x6);
-  writeRegister8(STMPE_FIFO_TH, 1);
+  
+	writeRegister8(STMPE_FIFO_TH, 1);
   writeRegister8(STMPE_FIFO_STA, STMPE_FIFO_STA_RESET);
   writeRegister8(STMPE_FIFO_STA, 0);    // unreset
-  writeRegister8(STMPE_TSC_I_DRIVE, STMPE_TSC_I_DRIVE_50MA);
+  
+	writeRegister8(STMPE_TSC_I_DRIVE, STMPE_TSC_I_DRIVE_50MA);
   writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
+	
   writeRegister8(STMPE_INT_CTRL, STMPE_INT_CTRL_POL_HIGH | STMPE_INT_CTRL_ENABLE);
 
 #if defined (__AVR__) && !defined (SPI_HAS_TRANSACTION)
@@ -187,12 +191,9 @@ void Adafruit_STMPE610::readData(uint16_t *x, uint16_t *y, uint8_t *z) {
   uint8_t data[4];
   
   for (uint8_t i=0; i<4; i++) {
-		//data[i] = readRegister8(0xD7); 	//non-autoincrement
-    data[i] = readRegister8(0x57); 		//autoincrement  
-    
+    data[i] = readRegister8(0xD7); //SPI.transfer(0x00); 
    // Serial.print("0x"); Serial.print(data[i], HEX); Serial.print(" / ");
   }
-  
   *x = data[0];
   *x <<= 4;
   *x |= (data[1] >> 4);
@@ -201,8 +202,12 @@ void Adafruit_STMPE610::readData(uint16_t *x, uint16_t *y, uint8_t *z) {
   *y |= data[2]; 
   *z = data[3];
 
-  if (bufferEmpty())
-    writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
+  //if (bufferEmpty())
+    //writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
+}
+
+uint16_t Adafruit_STMPE610::readX(){
+	return readRegister16(0x4D);
 }
 
 uint8_t Adafruit_STMPE610::spiIn() {
@@ -339,13 +344,14 @@ void Adafruit_STMPE610::writeRegister8(uint8_t reg, uint8_t val) {
 Point Adafruit_STMPE610::getPoint(void) {
   uint16_t x, y;
   uint8_t z;
-  
-  while (! bufferEmpty()) {
-		readData(&x, &y, &z);
+	if(bufferSize()>=1){
+		while(!bufferEmpty()){
+			readData(&x,&y,&z);
+		}
 	}
-	
-  //readData(&x, &y, &z);
-  return Point(x, y, z);
+	if (bufferEmpty())
+    writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
+	return Point(x, y, z);
 }
 
 uint8_t Adafruit_STMPE610::touched(void){

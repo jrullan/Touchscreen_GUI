@@ -24,23 +24,7 @@ Canvas::Canvas(){
 Canvas::Canvas(int mode, int color, int touch_type, int touch_cs){
 	_mode = mode;
 	bgColor = color;
-	touchType = touch_type;
-	if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
-		ts = new SeeedstudioTouch(XP,YP,XM,YM);
-	}
-	if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
-		ts = new Adafruit_FT6206();
-		ts->begin(FT62XX_DEFAULT_THRESHOLD);
-	}
-	if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){
-		if(touch_cs == -1){
-			touch_cs = STMPE_CS;
-		}
-		ts = new Adafruit_STMPE610(touch_cs);
-		ts->begin(STMPE_ADDR);
-	}
-	
-
+	touchType = touch_type;	
 }
 
 Canvas::~Canvas(){
@@ -50,24 +34,36 @@ Canvas::~Canvas(){
 // Initializes the LCD screen (Tft) and sets debounce and lastmillis variables.
 // Last millis is used for the Canvas-wide debounce of touch events.
 void Canvas::init(){
-	
-	/*
-	#ifdef ADAFRUIT_FT6206_LIBRARY
-		Serial.println("FT6206 library IS defined!");
-		ts.begin();
-	#else
-		Serial.println("FT6206 library NOT defined...");
-	#endif
-	*/
-	
 	Tft.begin();
 	Tft.fillScreen(BLACK);
 	lastMillis = millis();
-	debounceTime = DEBOUNCE;
-	//portrait();
-	//return;
+	touchSampling = millis();
+	scanSampling = millis();
+	scanSampleDelay = SCAN_SAMPLING_TIME;
+
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
+	
+	if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
+		ts = new SeeedstudioTouch(XP,YP,XM,YM);
+	}
+	if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
+		ts = new Adafruit_FT6206();
+		ts->begin(FT62XX_DEFAULT_THRESHOLD);
+	}
+	if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){
+		ts = new Adafruit_STMPE610(STMPE_CS);
+		/* 	
+				Wait until the touchscreen is started.
+				Original driver has an apparent bug,
+				sometimes it did start other times it didn't.
+		*/
+		while(!ts->begin(STMPE_ADDR)){
+			;
+		}
+		//Serial.println("Touchscreen successfully started");
+	}
+	
 }
 
 // This method sets the TFT orientation mode to landscape.
@@ -105,9 +101,19 @@ void Canvas::setScreen(Screen* screen){
 // This method calculates the x,y coordinates of the touched point
 // according to the currently set orientation mode.
 Point* Canvas::getTouchedPoint(){
-	
-	if(millis() > touchSampling + TOUCH_SAMPLING_TIME){
-		Point p = ts->getPoint();
+	Point p;
+	/*
+	if(ts->touched()){
+		p = ts->getPoint();
+	}else{
+		return NULL;
+	}
+	*/
+		
+	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
+		
+		p = ts->getPoint();
+		Serial.print("getPoint x: ");Serial.print(p.x);Serial.print(" readX: ");Serial.println(((Adafruit_STMPE610*)ts)->readX());
 		
 		if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
 			if(Tft.layoutMode == TFT_PORTRAIT){
@@ -127,8 +133,8 @@ Point* Canvas::getTouchedPoint(){
 		}		
 
 		if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
-			p.x = map(p.x, TS_MINX, TS_MAXX, 0, 240);
-			p.y = map(p.y, TS_MINY, TS_MAXY, 0, 320);			
+			p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.width());
+			p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.height());			
 			if(Tft.layoutMode == TFT_LANDSCAPE){
 				p.toLandscape();
 			}
@@ -155,59 +161,43 @@ Widget* Canvas::pop(){
 // This method scans the touchscreen for touch events.
 // If an event is detected, all registered widgets are notified of the event by
 // calling its event handler function.
-bool Canvas::scan(){
-	
-	if(millis()>lastMillis + debounceTime){ //Debouncing of the touchscreen resistance
-		
-		//Early exits
-		if(!ts->touched()){
-			return false;
-		}
-		
-		/*
-		if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){
-			if(ts->touched()){
-				Point* tP = getTouchedPoint();
-				if(tP != NULL){
-					Serial.print("RAW Canvas.scan touched point: x=");
-					Serial.print(tP->x);
-					Serial.print(" y=");
-					Serial.println(tP->y);
+bool Canvas::scan(){		
+
+	if(millis() > (scanSampling + scanSampleDelay)){
+			scanSampling = millis();
+			//Early exits
+			if(!ts->touched()){
+				//Serial.println("!touched()");
+				return false;
+			}
+			
+			Point* tP = getTouchedPoint();
+			if(tP == NULL){
+				Serial.println("tp == NULL");
+				return false;
+			}
+			
+			if(!inBounds(tP)){
+				Serial.println("!inBounds(tP)");
+				//Serial.print("tP.x = ");Serial.println(tP->x);
+				return false;
+			}
+			
+			
+			Serial.print("Inbounds! Canvas.scan touched point: x=");
+			Serial.print(tP->x);
+			Serial.print(" y=");
+			Serial.println(tP->y);		
+			
+			
+			// Send event to canvas widgets, then to screen widgets
+			// if no canvas widget blocks the event.
+			if(touchWidgets(tP)){
+				//Serial.println("Sent touch event to all widgets");
+				if(currentScreen != NULL){
+					currentScreen->touchWidgets(tP);
 				}
 			}
-		}
-		*/
-		
-		Point* tP = getTouchedPoint();
-		if(tP == NULL){
-			//Serial.println("tp == NULL");
-			return false;
-		}
-		
-		if(!inBounds(tP)){
-			//Serial.println("!inBounds(tP)");
-			//Serial.print("tP.x = ");Serial.println(tP->x);
-			return false;
-		}
-		
-		Serial.print("Inbounds! Canvas.scan touched point: x=");
-		Serial.print(tP->x);
-		Serial.print(" y=");
-		Serial.println(tP->y);		
-
-		
-		
-		// Send event to canvas widgets, then to screen widgets
-		// if no canvas widget blocks the event.
-		if(touchWidgets(tP)){
-			if(currentScreen != NULL){
-				currentScreen->touchWidgets(tP);
-			}
-		}
-		
-		lastMillis=millis();
-	}else{
-		return false;
 	}
   return true;
 }
@@ -220,13 +210,18 @@ bool Canvas::inBounds(Point* tP){
 	}else{
 		if(tP->x > 239 || tP->y > 319) return false;
 	}
+	
+	if(tP->x < 0 || tP->y < 0) return false;
+	
 	return true;
 }
 
 // This method sets the canvas debouncing time to a value. By default it is 0.
+/*
 void Canvas::setDebounce(unsigned int d){
 	this->debounceTime = d;
 }
+*/
 
 /**
  * Checks for a touch event and notifies all subscribed widgets. The notification
@@ -255,4 +250,8 @@ void Canvas::showWidgets(){
 	for(int i=0; i<widgets.count(); i++){
 		if(widgets[i]->visible) widgets[i]->show();
 	}
+}
+
+void Canvas::setScanSampling(unsigned int d){
+	scanSampleDelay = d;
 }

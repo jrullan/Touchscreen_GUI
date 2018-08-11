@@ -52,7 +52,7 @@ public:
 	unsigned long lastMillis;
 	
 protected:	
-	unsigned int debounceTime;	
+	unsigned int debounceTime = DEBOUNCE;	
 	bool isRound;
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)

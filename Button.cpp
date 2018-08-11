@@ -47,7 +47,6 @@ void Button::init(){
 	isButton = true;
 	touched = false;
 	borderWidth = 2;
-	debounceTime = DEBOUNCE;
 	lastMillis = millis();	
 }
 
@@ -219,6 +218,7 @@ bool Button::checkTouch(Point* p){
 	}  
 	//Serial.print("Checking button ");Serial.println(text);
 	if(lastMillis + debounceTime < millis()){ 
+		//Serial.print("Checking button ");Serial.print(contents.text);Serial.print(" at ");Serial.print(debounceTime); Serial.println(" ms");
 		if((p->x > xl) && (p->x < xl+w) && (p->y > y) && (p->y < y+h)){
 			touched = !touched;
 			eventHandler(this);
