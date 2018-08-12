@@ -98,51 +98,6 @@ void Canvas::setScreen(Screen* screen){
 	showWidgets();
 }
 
-// This method calculates the x,y coordinates of the touched point
-// according to the currently set orientation mode.
-Point* Canvas::getTouchedPoint(){
-	Point p;
-		
-	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
-		
-		p = ts->getPoint();
-		//Serial.print("getPoint x: ");Serial.print(p.x);Serial.print(" readX: ");Serial.println(((Adafruit_STMPE610*)ts)->readX());
-		
-		if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
-			if(Tft.layoutMode == TFT_PORTRAIT){
-				p.rotate(POINT_PORTRAIT2);
-			}
-			if(Tft.layoutMode == TFT_LANDSCAPE){
-				p.rotate(POINT_LANDSCAPE2);
-			}
-		}
-		
-		if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){				
-			p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
-			p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);			
-			if(_mode == TFT_LANDSCAPE){
-				p.rotate(POINT_LANDSCAPE1_INVY);
-			}
-		}		
-
-		if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
-			p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.width());
-			p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.height());			
-			if(Tft.layoutMode == TFT_LANDSCAPE){
-				p.toLandscape();
-			}
-		}
-
-		touchedPoint.x = p.x;
-		touchedPoint.y = p.y;
-		touchSampling = millis();
-		
-		return &touchedPoint;
-	}
-	
-	return NULL;
-}
- 
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
 	Widget* widget = widgets.pop();
@@ -176,13 +131,6 @@ bool Canvas::scan(){
 				return false;
 			}
 			
-			/*
-			Serial.print("Inbounds! Canvas.scan touched point: x=");
-			Serial.print(tP->x);
-			Serial.print(" y=");
-			Serial.println(tP->y);		
-			*/
-			
 			// Send event to canvas widgets, then to screen widgets
 			// if no canvas widget blocks the event.
 			if(touchWidgets(tP)){
@@ -195,6 +143,48 @@ bool Canvas::scan(){
   return true;
 }
 
+// This method calculates the x,y coordinates of the touched point
+// according to the currently set orientation mode.
+Point* Canvas::getTouchedPoint(){
+	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
+		Point p = ts->getPoint();
+		
+		if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
+			if(Tft.layoutMode == TFT_PORTRAIT){
+				p.rotate(POINT_PORTRAIT2);
+			}
+			if(Tft.layoutMode == TFT_LANDSCAPE){
+				p.rotate(POINT_LANDSCAPE2);
+			}
+		}
+		
+		if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){				
+			p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
+			p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);			
+			if(_mode == TFT_LANDSCAPE){
+				p.rotate(POINT_STMPE610_LANDSCAPE);
+			}
+			if(_mode == TFT_PORTRAIT){
+				p.rotate(POINT_STMPE610_PORTRAIT);
+			}
+		}		
+
+		if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
+			p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.width());
+			p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.height());			
+			if(Tft.layoutMode == TFT_LANDSCAPE){
+				p.toLandscape();
+			}
+		}
+
+		touchedPoint.x = p.x;
+		touchedPoint.y = p.y;
+		touchSampling = millis();
+		return &touchedPoint;
+	}
+	return NULL;
+}
+ 
 // Determines if the given point falls
 // within the Bounds of the layout chosen
 bool Canvas::inBounds(Point* tP){

@@ -38,11 +38,15 @@ void Point::rotate(char dir){
 			x = 320 - y;
 			y = oldX;
 			break;
-		case(POINT_LANDSCAPE1_INVY):
+		case(POINT_STMPE610_LANDSCAPE):
 			oldX = x;
 			x = 320 - y;
 			y = 240-oldX;
 			break;
+		case(POINT_STMPE610_PORTRAIT):
+			x = 240-x;
+			//y = 320-y;
+			break;	
 		case(POINT_PORTRAIT2):
 			x = 240-x;
 			y = 320-y;

@@ -206,12 +206,6 @@ void Adafruit_STMPE610::readData(uint16_t *x, uint16_t *y, uint8_t *z) {
     //writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
 }
 
-/*
-uint16_t Adafruit_STMPE610::readX(){
-	return readRegister16(0x4D);
-}
-*/
-
 uint8_t Adafruit_STMPE610::spiIn() {
   if (_CLK == -1) {
 #if defined (SPI_HAS_TRANSACTION)
@@ -347,13 +341,11 @@ Point Adafruit_STMPE610::getPoint(void) {
   uint16_t x, y;
   uint8_t z;
 	
-	/* Making sure that the buffer has enough data
-			and that we are reading all data before leaving */
-	if(bufferSize()>=1){
-		while(!bufferEmpty()){
-			readData(&x,&y,&z);
-		}
+	/* Making sure that we are reading all data before leaving */
+	while(!bufferEmpty()){
+		readData(&x,&y,&z);
 	}
+
 	if (bufferEmpty())
     writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
 	
