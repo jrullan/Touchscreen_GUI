@@ -72,13 +72,13 @@ class Screen;
 class Canvas
 {
 public:
+
 	// Constructors and Destructor
 	Canvas();
 	Canvas(int mode, int color, int touch_type=TOUCHTYPE_SEEEDSTUDIO_RESISTIVE, int touch_cs = -1);
 	virtual ~Canvas();
 	
 	// Methods
-	void init();
 	void portrait();
 	void landscape();
 	void add(Widget* widget, int x, int y);
@@ -91,7 +91,11 @@ public:
 	void setScreen(Screen* screen);
 	void updateTouch(Point* p);
 	bool inBounds(Point* p);
-	Point* getTouchedPoint();
+	
+	// Converted this class to abstract by making these
+	// methods virtual. 
+	virtual	void init()=0;
+	virtual Point* getTouchedPoint()=0;
 	
 	// Attributes
 	int x;
@@ -109,7 +113,7 @@ public:
 	StackArray<Widget*> widgets;
 	unsigned int _mode;
 	
-private:
+protected:
 	unsigned long lastMillis;
 	unsigned long touchSampling;
 	unsigned int scanSampling;

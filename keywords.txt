@@ -1,5 +1,8 @@
 // Classes
 Canvas	KEYWORD1
+Canvas_Seeedtouch	KEYWORD1
+Canvas_FT6206	KEYWORD1
+Canvas_STMPE610	KEYWORD1
 Button	KEYWORD1
 Buttongrid	KEYWORD1
 Dial	KEYWORD1

@@ -13,9 +13,9 @@
 #include "Screen.h"
 
 // Touch drivers includes
-#include "Seeedtouch.h"
-#include "Adafruit_FT6206.h"
-#include "Adafruit_STMPE610.h"
+//#include "Seeedtouch.h"
+//#include "Adafruit_FT6206.h"
+//#include "Adafruit_STMPE610.h"
 
 Canvas::Canvas(){
 
@@ -33,6 +33,7 @@ Canvas::~Canvas(){
 
 // Initializes the LCD screen (Tft) and sets debounce and lastmillis variables.
 // Last millis is used for the Canvas-wide debounce of touch events.
+/*
 void Canvas::init(){
 	Tft.begin();
 	Tft.fillScreen(BLACK);
@@ -43,29 +44,29 @@ void Canvas::init(){
 
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
-	
+
 	if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
 		ts = new SeeedstudioTouch(XP,YP,XM,YM);
 	}
+	
 	if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
 		ts = new Adafruit_FT6206();
 		ts->begin(FT62XX_DEFAULT_THRESHOLD);
 	}
 	if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){
 		ts = new Adafruit_STMPE610(STMPE_CS);
-		/* 	
-				Wait until the touchscreen is started.
-				Original driver has an apparent bug,
-				sometimes it did start other times it didn't.
-		*/
+
+		//Wait until the touchscreen is started.
+		//Original driver has an apparent bug,
+		//sometimes it did start other times it didn't.
 		while(!ts->begin(STMPE_ADDR)){
 			;
 		}
 		//Serial.println("Touchscreen successfully started");
 	}
-	
 }
-
+*/
+	
 // This method sets the TFT orientation mode to landscape.
 void Canvas::landscape(){
 	Tft.layoutMode = TFT_LANDSCAPE;
@@ -127,9 +128,12 @@ bool Canvas::scan(){
 			
 			if(!inBounds(tP)){
 				Serial.println("!inBounds(tP)");
-				//Serial.print("tP.x = ");Serial.println(tP->x);
+				Serial.print("tP.x = ");Serial.println(tP->x);
+				Serial.print("tP.y = ");Serial.println(tP->y);
 				return false;
 			}
+			
+			//Serial.print("tP.x = ");Serial.println(tP->x);
 			
 			// Send event to canvas widgets, then to screen widgets
 			// if no canvas widget blocks the event.
@@ -145,6 +149,7 @@ bool Canvas::scan(){
 
 // This method calculates the x,y coordinates of the touched point
 // according to the currently set orientation mode.
+/*
 Point* Canvas::getTouchedPoint(){
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
 		Point p = ts->getPoint();
@@ -176,7 +181,7 @@ Point* Canvas::getTouchedPoint(){
 				p.toLandscape();
 			}
 		}
-
+		
 		touchedPoint.x = p.x;
 		touchedPoint.y = p.y;
 		touchSampling = millis();
@@ -184,6 +189,7 @@ Point* Canvas::getTouchedPoint(){
 	}
 	return NULL;
 }
+*/
  
 // Determines if the given point falls
 // within the Bounds of the layout chosen
