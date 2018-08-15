@@ -20,7 +20,7 @@
 
 class Canvas_STMPE610: public Canvas{
 	public:
-	Canvas_STMPE610(int mode, int color, int touch_type, int touch_cs=STMPE_CS):Canvas(mode, color, touch_type, STMPE_CS){};
+	Canvas_STMPE610(int mode, int color):Canvas(mode, color){};
 	~Canvas_STMPE610(){};
 	void init();
 	Point* getTouchedPoint();
@@ -40,6 +40,9 @@ void Canvas_STMPE610::init(){
 	touchSampling = millis();
 	scanSampling = millis();
 	scanSampleDelay = SCAN_SAMPLING_TIME;
+
+	if(_mode == TFT_PORTRAIT) portrait();
+	if(_mode == TFT_LANDSCAPE) landscape();	
 	
 	ts = new Adafruit_STMPE610(STMPE_CS);
 	// Wait until the touchscreen is started.

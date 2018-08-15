@@ -23,24 +23,29 @@
 // TouchscreenGUI includes
 #include <Button.h>
 #include <Display.h>
-
+#include <Canvas_SEEEDTOUCH.h>
+//#include <Canvas_FT6206.h>
+//#include <Canvas_STMPE610.h>
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
-Button btnLed = Button(20,BLACK,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
+Canvas_SEEEDTOUCH canvas = Canvas_SEEEDTOUCH(TFT_LANDSCAPE,BLACK); 
+//Canvas_FT6206 canvas = Canvas_FT6206(TFT_LANDSCAPE,BLACK); 
+//Canvas_STMPE610 canvas = Canvas_STMPE610(TFT_LANDSCAPE,BLACK);
 Button btnLeft = Button(80,80,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button btnRight = Button(80,80,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button btnHazard = Button(80,80,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
-
 Button btnPlus = Button(40,40,BLUE,WHITE,GRAY2);
 Button btnMinus = Button(40,40,BLUE,WHITE,GRAY2);
 Display disp = Display();
 
+Button btnLedRight = Button(20,BLACK,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
+Button btnLedLeft = Button(20,BLACK,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
+
 // Available Analog Pins: A4,A5
 // Available Digital Pins: 0,1,2,3,8,9,10
-#define LPIN 10
-#define RPIN 2
+#define LPIN 12
+#define RPIN 13
 
 #define MAX_RATE 500
 #define MIN_RATE 100
@@ -50,6 +55,8 @@ Display disp = Display();
 #define MIN_FREQ 1
 #define F_INC 1
 
+#define LEDOFF GRAY2
+#define LEDON ILI9341_ORANGE
 
 // Global variables
 bool leftActive = false;
@@ -64,42 +71,43 @@ void setup() {
   Serial.begin(9600);
   pinMode(LPIN,OUTPUT);
   pinMode(RPIN,OUTPUT);
-  pinMode(7,OUTPUT);
-  digitalWrite(7,HIGH);
   
   canvas.init();
 
   //Configure the widgets
   //=========================================  
-    //button.setSize(80,40);
-    //button.setColors(GRAY1,BLACK,WHITE);
-    
-    btnLed.init();
-    
-    btnLeft.setText("<-");
-    btnLeft.setEventHandler(&btnLeftEventHandler);
-    btnLeft.init();
-    
-    btnRight.setText("->");
-    btnRight.setEventHandler(&btnRightEventHandler);
-    btnRight.init();
-    
-    btnHazard.setText("<->");
-    btnHazard.setEventHandler(&btnHazardEventHandler);
-    btnHazard.init();
+  btnLedLeft.setColors(GRAY2,GRAY2,GRAY2);
+  btnLedLeft.setText("");
+  btnLedLeft.init();
 
-    btnPlus.setText("+");
-    btnPlus.setEventHandler(&btnPlusEventHandler);
-    btnPlus.init();
+  btnLedRight.setColors(GRAY2,GRAY2,GRAY2);
+  btnLedRight.setText("");
+  btnLedRight.init();
 
-    btnMinus.setText("-");
-    btnMinus.setEventHandler(&btnMinusEventHandler);
-    btnMinus.init();
+  btnLeft.setText("<-");
+  btnLeft.setEventHandler(&btnLeftEventHandler);
+  btnLeft.init();
+  
+  btnRight.setText("->");
+  btnRight.setEventHandler(&btnRightEventHandler);
+  btnRight.init();
+  
+  btnHazard.setText("<->");
+  btnHazard.setEventHandler(&btnHazardEventHandler);
+  btnHazard.init();
 
-    disp.setSize(80,40);
-    disp.setColors(BLACK,BLUE,GRAY2);
-    disp.setText("");
-    disp.init();    
+  btnPlus.setText("+");
+  btnPlus.setEventHandler(&btnPlusEventHandler);
+  btnPlus.init();
+
+  btnMinus.setText("-");
+  btnMinus.setEventHandler(&btnMinusEventHandler);
+  btnMinus.init();
+
+  disp.setSize(80,40);
+  disp.setColors(BLACK,BLUE,GRAY2);
+  disp.setText("");
+  disp.init();    
 
   // Add widgets to canvas
   // (Use layout template for coordinates)
@@ -108,10 +116,11 @@ void setup() {
   canvas.add(&btnLeft,10,70);
   canvas.add(&btnRight,230,70);
   canvas.add(&btnHazard,120,150);
-
   canvas.add(&btnMinus,80,10);
   canvas.add(&disp,120,10);
   canvas.add(&btnPlus,200,10);
+  canvas.add(&btnLedLeft,0,0);
+  canvas.add(&btnLedRight,280,0);
 
   disp.setNum(freq);
   lastTime = millis();
@@ -119,7 +128,6 @@ void setup() {
 
 
 void loop() {
-  
   canvas.scan();  
   
   if(btnLeft.touched == true){
@@ -133,7 +141,6 @@ void loop() {
   if(btnHazard.touched == true){
     blinkHazard(&hazardActive,LPIN,RPIN);
   }
-
 }
 
 
@@ -146,6 +153,7 @@ void btnLeftEventHandler(Button* btn){
     setBackground(btn,GREEN);
   }else{
     setBackground(btn,GRAY1);
+    setBackground(&btnLedLeft,LEDOFF);
     digitalWrite(LPIN,LOW);
   }
   
@@ -154,6 +162,7 @@ void btnLeftEventHandler(Button* btn){
   setBackground(&btnRight,GRAY1);  
   btnHazard.touched = false;
   setBackground(&btnHazard,GRAY1);
+  setBackground(&btnLedRight,LEDOFF);
   
   //Turn off the other LED
   digitalWrite(RPIN,LOW);
@@ -165,6 +174,7 @@ void btnRightEventHandler(Button* btn){
     setBackground(btn,GREEN);
   }else{
     setBackground(btn,GRAY1);
+    setBackground(&btnLedRight,LEDOFF);
     digitalWrite(RPIN,LOW);
   }
   
@@ -173,6 +183,7 @@ void btnRightEventHandler(Button* btn){
   setBackground(&btnLeft,GRAY1);
   btnHazard.touched = false;
   setBackground(&btnHazard,GRAY1);  
+  setBackground(&btnLedLeft,LEDOFF);
   
   //Turn off the other LED
   digitalWrite(LPIN,LOW);
@@ -183,6 +194,10 @@ void btnHazardEventHandler(Button* btn){
     setBackground(btn,GREEN);
   }else{
     setBackground(btn,GRAY1);
+    
+    setBackground(&btnLedLeft,LEDOFF);
+    setBackground(&btnLedRight,LEDOFF);
+    
     digitalWrite(LPIN,LOW);
     digitalWrite(RPIN,LOW);
   }
@@ -213,10 +228,16 @@ void btnMinusEventHandler(Button* btn){
 void blinkSignal(bool* signal, int pin){
   if(millis() > lastTime + blinkSpeed){
     if(*signal){
-      digitalWrite(pin,HIGH);
+      digitalWrite(pin,HIGH);      
+      if(pin==LPIN) btnLedLeft.bgColor = LEDON;
+      if(pin==RPIN) btnLedRight.bgColor = LEDON;
     }else{
       digitalWrite(pin,LOW);
+      if(pin==LPIN) btnLedLeft.bgColor = LEDOFF;
+      if(pin==RPIN) btnLedRight.bgColor = LEDOFF;
     }
+    btnLedLeft.show();
+    btnLedRight.show();
     *signal = !*signal;
     lastTime = millis();
   }
@@ -227,10 +248,16 @@ void blinkHazard(bool* signal, int pin1, int pin2){
     if(*signal){
       digitalWrite(pin1,HIGH);
       digitalWrite(pin2,HIGH);
+      btnLedLeft.bgColor = LEDON;
+      btnLedRight.bgColor = LEDON;
     }else{
       digitalWrite(pin1,LOW);
       digitalWrite(pin2,LOW);
+      btnLedLeft.bgColor = LEDOFF;
+      btnLedRight.bgColor = LEDOFF;
     }
+    btnLedLeft.show();
+    btnLedRight.show();
     *signal = !*signal;
     lastTime = millis();
   }

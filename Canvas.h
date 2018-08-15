@@ -75,7 +75,7 @@ public:
 
 	// Constructors and Destructor
 	Canvas();
-	Canvas(int mode, int color, int touch_type=TOUCHTYPE_SEEEDSTUDIO_RESISTIVE, int touch_cs = -1);
+	Canvas(int mode, int color);
 	virtual ~Canvas();
 	
 	// Methods

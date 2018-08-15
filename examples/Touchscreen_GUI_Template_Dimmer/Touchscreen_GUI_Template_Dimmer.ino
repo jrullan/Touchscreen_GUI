@@ -37,10 +37,15 @@
 #include <Display.h>
 #include <Gauge.h>
 #include <Numkey.h>
+#include <Canvas_SEEEDTOUCH.h>
+//#include <Canvas_FT6206.h>
+//#include <Canvas_STMPE610.h>
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
+Canvas_SEEEDTOUCH canvas = Canvas_SEEEDTOUCH(TFT_LANDSCAPE,BLACK); 
+//Canvas_FT6206 canvas = Canvas_FT6206(TFT_LANDSCAPE,BLACK); 
+//Canvas_STMPE610 canvas = Canvas_STMPE610(TFT_LANDSCAPE,BLACK);
 Button button = Button(); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Dial dial = Dial();       // Memory used: (storage/ram: 4,760/64)  11756/355
 Display disp = Display(); // Memory used: (storage/ram: 484/37)    12,240/392
@@ -52,8 +57,8 @@ Button btnMinus = Button(20,GRAY1,BLACK,WHITE); //Initialization version for rou
 // Global variables
 // If you need global variables in your program put them here,
 // before the setup() routine.
-const int rightPin = 45;  //Using Mega PWM pin
-const int leftPin = 44;   //Using Mega PWM pin
+const int rightPin = 13;// 45;  //Using Mega PWM pin
+const int leftPin =12;// 44;   //Using Mega PWM pin
 int lightVal = 0;
 bool passLock = true;
 

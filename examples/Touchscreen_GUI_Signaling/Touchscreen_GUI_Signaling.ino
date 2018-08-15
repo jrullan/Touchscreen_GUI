@@ -22,11 +22,15 @@
 
 // TouchscreenGUI includes
 #include <Button.h>
-
+#include <Canvas_SEEEDTOUCH.h>
+//#include <Canvas_FT6206.h>
+//#include <Canvas_STMPE610.h>
 
 // Create the objects
 //==========================================
-Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // Memory used: (storage/ram: 1,676/36)  3,372/228
+Canvas_SEEEDTOUCH canvas = Canvas_SEEEDTOUCH(TFT_LANDSCAPE,BLACK); 
+//Canvas_FT6206 canvas = Canvas_FT6206(TFT_LANDSCAPE,BLACK); 
+//Canvas_STMPE610 canvas = Canvas_STMPE610(TFT_LANDSCAPE,BLACK);
 Button btnLed = Button(20,BLACK,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button btnLeft = Button(80,40,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
 Button btnRight = Button(80,40,GRAY1,BLACK,GRAY2); // Memory used: (storage/ram: 3,624/63)  6,996/291
@@ -40,8 +44,8 @@ Button btnMinus = Button(40,40,GRAY1,BLACK,GRAY2);
 #define MIN_RATE 100
 
 // Global variables
-const int leftPin = 3;
-const int rightPin = 2;
+const int leftPin = 12;
+const int rightPin = 13;
 bool leftActive = false;
 bool rightActive = false;
 bool hazardActive = false;
@@ -53,8 +57,6 @@ void setup() {
   Serial.begin(9600);
   pinMode(leftPin,OUTPUT);
   pinMode(rightPin,OUTPUT);
-  pinMode(7,OUTPUT);
-  digitalWrite(7,HIGH);
   
   canvas.init();
 

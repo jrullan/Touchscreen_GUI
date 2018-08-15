@@ -42,10 +42,17 @@
 #include <Gauge.h>
 #include <Numkey.h>
 
+#include <Canvas_SEEEDTOUCH.h>
+//#include <Canvas_FT6206.h>
+//#include <Canvas_STMPE610.h>
+
 // Create the objects
 //==========================================
-//Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK); // or Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_SEEEDSTUDIO_RESISTIVE)
-Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK,TOUCHTYPE_ADAFRUIT_CAPACITIVE); 
+
+Canvas_SEEEDTOUCH canvas = Canvas_SEEEDTOUCH(TFT_LANDSCAPE,BLACK); 
+//Canvas_FT6206 canvas = Canvas_FT6206(TFT_LANDSCAPE,BLACK); 
+//Canvas_STMPE610 canvas = Canvas_STMPE610(TFT_LANDSCAPE,BLACK); 
+
 Button button = Button();
 Dial dial = Dial();       
 Display disp = Display(); 

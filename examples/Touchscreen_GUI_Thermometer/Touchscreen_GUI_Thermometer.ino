@@ -19,13 +19,6 @@
 #include <SPI.h>
 #include <math.h>
 
-// TouchscreenGUI includes
-#include <Dial.h>
-#include <Gauge.h>
-#include <Numkey.h>
-#include <Buttongrid.h>
-#include <Trend.h>
-
 // --Constants
 #define LED1 10
 #define LED2 2
@@ -36,11 +29,27 @@
 #define trendUpdate 300000
 #define backLightOffDelay 100
 
-Canvas canvas = Canvas(TFT_LANDSCAPE,BLACK);
+// TouchscreenGUI includes
+#include <Dial.h>
+#include <Gauge.h>
+#include <Numkey.h>
+#include <Buttongrid.h>
+#include <Trend.h>
+#include <Canvas_SEEEDTOUCH.h>
+//#include <Canvas_FT6206.h>
+//#include <Canvas_STMPE610.h>
+
+// Create the objects
+//==========================================
+Canvas_SEEEDTOUCH canvas = Canvas_SEEEDTOUCH(TFT_LANDSCAPE,BLACK); 
+//Canvas_FT6206 canvas = Canvas_FT6206(TFT_LANDSCAPE,BLACK); 
+//Canvas_STMPE610 canvas = Canvas_STMPE610(TFT_LANDSCAPE,BLACK);
 Dial dial;
 Numkey numkey;
 Buttongrid grid = Buttongrid(3,1);
 Trend trend;
+
+
 
 float tempF;
 long lastUpdate,lastTrendUpdate, backLightOffUpdate;

@@ -21,10 +21,9 @@ Canvas::Canvas(){
 
 }
 
-Canvas::Canvas(int mode, int color, int touch_type, int touch_cs){
+Canvas::Canvas(int mode, int color){
 	_mode = mode;
 	bgColor = color;
-	touchType = touch_type;	
 }
 
 Canvas::~Canvas(){
@@ -144,6 +143,7 @@ bool Canvas::scan(){
 				}
 			}
 	}
+	
   return true;
 }
 

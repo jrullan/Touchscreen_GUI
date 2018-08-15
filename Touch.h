@@ -25,10 +25,6 @@
  #include "Arduino.h"
  #include "Point.h"
  
- #define TOUCHTYPE_SEEEDSTUDIO_RESISTIVE 	0
- #define TOUCHTYPE_ADAFRUIT_FT6206 		1
- #define TOUCHTYPE_ADAFRUIT_STMPE610 		2
- 
  class Touch
  {
 	public:

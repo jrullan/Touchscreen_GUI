@@ -20,7 +20,7 @@
 
 class Canvas_FT6206: public Canvas{
 	public:
-	Canvas_FT6206(int mode, int color, int touch_type, int touch_cs=-1):Canvas(mode, color, touch_type, -1){};
+	Canvas_FT6206(int mode, int color):Canvas(mode, color){};
 	~Canvas_FT6206(){};
 	void init();
 	Point* getTouchedPoint();

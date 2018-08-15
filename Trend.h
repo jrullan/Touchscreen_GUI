@@ -14,7 +14,7 @@
 #define TREND_H
 
 #ifndef MAX_TREND_VALUES
-#if defined(__STM32F1__)
+#if defined(__STM32F1__) || defined(ESP32)
 #define MAX_TREND_VALUES 32
 #else
 #define MAX_TREND_VALUES 16
