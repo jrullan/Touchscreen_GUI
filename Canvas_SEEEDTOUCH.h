@@ -60,7 +60,10 @@ Point* Canvas_SEEEDTOUCH::getTouchedPoint(){
 		p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.height());
 		p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.width());			
 		if(Tft.layoutMode == TFT_LANDSCAPE){
-			p.toLandscape();
+			int oldX = p.x;
+			p.x = 320 - p.y;
+			p.y = oldX;			
+			//p.toLandscape();
 		}
 		/*
 		Serial.print("X: ");Serial.println(p.x);

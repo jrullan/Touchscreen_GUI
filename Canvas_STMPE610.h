@@ -55,15 +55,19 @@ void Canvas_STMPE610::init(){
 
 Point* Canvas_STMPE610::getTouchedPoint(){
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
-		Point p = ts->getPoint();
-				
+		Point p = ts->getPoint();		
 		p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
-		p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);			
-		if(_mode == TFT_LANDSCAPE){
-			p.rotate(POINT_STMPE610_LANDSCAPE);
+		p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);	
+				
+		if(_mode == TFT_LANDSCAPE){			
+			int oldX = p.x;
+			p.x = 320 - p.y;
+			p.y = 240 - oldX;
+			//p.rotate(POINT_STMPE610_LANDSCAPE);
 		}
 		if(_mode == TFT_PORTRAIT){
-			p.rotate(POINT_STMPE610_PORTRAIT);
+			p.x = 240 - p.x;
+			//p.rotate(POINT_STMPE610_PORTRAIT);
 		}
 		
 		//Serial.print("X: ");Serial.println(p.x);

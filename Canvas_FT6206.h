@@ -53,10 +53,15 @@ Point* Canvas_FT6206::getTouchedPoint(){
 		Point p = ts->getPoint();
 		
 		if(Tft.layoutMode == TFT_PORTRAIT){
-			p.rotate(POINT_PORTRAIT2);
+			p.x = 240 - p.x;
+			p.y = 320 - p.y;
+			//p.rotate(POINT_PORTRAIT2);
 		}
 		if(Tft.layoutMode == TFT_LANDSCAPE){
-			p.rotate(POINT_LANDSCAPE2);
+			int oldX = p.x;
+			p.x = p.y;
+			p.y = 240-oldX;	
+			//p.rotate(POINT_LANDSCAPE2);
 		}
 
 		touchedPoint.x = p.x;
