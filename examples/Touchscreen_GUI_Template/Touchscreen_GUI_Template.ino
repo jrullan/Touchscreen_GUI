@@ -42,6 +42,7 @@
 #include <Gauge.h>
 #include <Numkey.h>
 
+#include <neotimer.h>
 #include <Canvas_SEEEDTOUCH.h>
 //#include <Canvas_FT6206.h>
 //#include <Canvas_STMPE610.h>
@@ -61,7 +62,9 @@ Numkey numkey = Numkey();
 Button btnPlus = Button(20,GRAY1,BLACK,WHITE);	//Initialization version for round buttons
 Button btnMinus = Button(20,GRAY1,BLACK,WHITE); //Initialization version for round buttons
 
+Neotimer timer = Neotimer(0);
 const char increment = 1;
+bool direction = false;
 
 void setup() {
   Serial.begin(115200);
@@ -138,6 +141,31 @@ void setup() {
 
 void loop() {
   canvas.scan();
+
+  /* 
+   *  Demonstration:
+   *  Simulate plus and minus buttons being pressed
+   *  
+   *  DELETE OR COMMENT OUT code below
+   *  to interact with the GUI yourself
+   */
+   
+  /* -------------------------------------------- */
+  if(timer.repeat()){
+    
+    if(dial.getCV() >= 100 || dial.getCV() <= 0){
+      direction = !direction;
+      Serial.print("Now pressing ");
+      Serial.println(direction ? "+" : "-");
+    }
+    
+    if(direction){
+      btnPlusEventHandler(&btnPlus);
+    }else{
+      btnMinusEventHandler(&btnMinus);      
+    }    
+  }
+  /* -------------------------------------------- */
 }
 
 
