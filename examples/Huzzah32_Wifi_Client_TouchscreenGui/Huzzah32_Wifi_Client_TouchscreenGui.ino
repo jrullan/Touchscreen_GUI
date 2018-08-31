@@ -24,9 +24,9 @@ void setup()
     canvas.add(&terminal,0,0);
     
     // We start by connecting to a WiFi network
-    WiFiMulti.addAP("Linksys03507", "4antgxupkm");
-    WiFiMulti.addAP("Samsung Galaxy Note9_2618", "hvdl9798");
-    WiFiMulti.addAP("frulrom2319", "familiarullan2319");
+    WiFiMulti.addAP("ssid1", "pass1");
+    WiFiMulti.addAP("ssid2", "pass2");
+    WiFiMulti.addAP("ssid3", "pass3");
 
     terminal.print("Trying to connect to Wifi...");
 
