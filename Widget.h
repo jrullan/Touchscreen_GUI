@@ -72,6 +72,7 @@ public:
 	 * 
 	 * Widget - 		0x00
 	 * 	Display - 		0x10
+	 * 	Terminal -		0x15
 	 * 	Indicator - 	0x20
 	 * 		Dial -		0x21
 	 * 		Gauge -		0x22
@@ -87,6 +88,8 @@ public:
 			return "widget";
 		}else if ((w->type & 0xFF) == 0x10){
 			return "display";
+		}else if ((w->type & 0xFF) == 0x15){
+			return "terminal";
 		}else if ((w->type & 0xFF) == 0x20){
 			return "indicator";
 		}else if ((w->type & 0xFF) == 0x21){
