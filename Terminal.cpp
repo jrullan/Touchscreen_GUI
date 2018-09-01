@@ -32,13 +32,16 @@ Terminal::Terminal(int width, int height, uint8_t dir, int fontSize){
  
 Terminal::~Terminal(){}
  
-void Terminal::print(char* string){
+void Terminal::print(char* string,uint16_t highColor){
+	highlightColor = highColor;
 	int length = Widget::getTextLength(string);
 	length = (length > maxCharacters) ? maxCharacters : length;
 	
 	scroll();
 	
 	char lineIndex = (direction) ? 0 : lines - 1;
+	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
+	
 	for(int i=0; i<length; i++){
 		linesBuffer[lineIndex][i] = string[i];
 	}
@@ -47,7 +50,9 @@ void Terminal::print(char* string){
 	update();
 }
 
-void Terminal::print(char* string, int num){
+/*
+void Terminal::print(char* string, int num, uint16_t highColor){
+	highlightColor = highColor;
 	char numChar[DISPLAY_SIZE];
 	char numStr[DISPLAY_SIZE];
 	char chars = 0;
@@ -83,7 +88,8 @@ void Terminal::print(char* string, int num){
 	update();	
 }
 
-void Terminal::print(int num){
+void Terminal::print(int num, uint16_t highColor){
+	highlightColor = highColor;
 	char numChar[DISPLAY_SIZE];
 	char chars = 0;
 	
@@ -107,6 +113,7 @@ void Terminal::print(int num){
 	update();
 }
 
+*/
 
 void Terminal::scroll(){
 	if(direction){
@@ -122,6 +129,7 @@ void Terminal::scrollDown(){
 		for(int i=0; i<maxCharacters; i++){
 			linesBuffer[line][i] = linesBuffer[line-1][i];
 		}
+		linesColors[line] = linesColors[line-1];
 	}
 }
 
@@ -131,6 +139,7 @@ void Terminal::scrollUp(){
 		for(int i=0; i<maxCharacters; i++){
 			linesBuffer[line][i] = linesBuffer[line+1][i];
 		}
+		linesColors[line] = linesColors[line+1];
 	}
 }
 
@@ -157,12 +166,17 @@ void Terminal::show(){
 
 void Terminal::update(){
 	clear();
-
+	//uint16_t color =  this->fgColor;
+	//highlightColor = (highlightColor == NULL) ? color : highlightColor;
+	
 	//Calculate position for first line
 	int lineX = this->x + borderWidth + horizontalBleed;
 	int lineY = this->y + borderWidth + verticalBleed;
 
+	char lineIndex = (direction) ? 0 : lines - 1;
+	
 	for(int i=0; i<lines; i++){
-		Tft.drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, this->fgColor);
+		//if(i==lineIndex) color = highlightColor;
+		Tft.drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, linesColors[i]);//color);
 	}
 }

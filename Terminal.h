@@ -26,17 +26,19 @@ class Terminal : public Widget {
 		int verticalBleed=1;
 		int horizontalBleed=1;
 		int maxCharacters;
+		uint16_t highlightColor;
+		uint16_t linesColors[MAX_LINES];
 		char* linesBuffer[MAX_LINES];
 		//char** linesBuffer;
 		
 		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
 		~Terminal();
-		void print(char* string);
-		void print(const char* string){
-			print((char*) string);
+		void print(char* string,uint16_t highColor = NULL);
+		void print(const char* string,uint16_t highColor = NULL){
+			print((char*) string, highColor);
 		}
-		void print(char* string, int num);
-		void print(int num);
+		//void print(char* string, int num,uint16_t highColor = NULL);
+		//void print(int num,uint16_t highColor = NULL);
 		void clear();
 		void scroll();
 		void scrollDown();
