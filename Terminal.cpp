@@ -144,7 +144,13 @@ void Terminal::scrollUp(){
 	}
 }
 
+	/*
+	* Clears the terminal and all lines text are cleared
+	*/
 void Terminal::clear(){
+	for(int i=0;i<lines;i++){
+		linesBuffer[i][0]=0;
+	}
 	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 }
 
@@ -166,9 +172,8 @@ void Terminal::show(){
 }
 
 void Terminal::update(){
-	clear();
+	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 	uint16_t color;
-	//highlightColor = (highlightColor == NULL) ? color : highlightColor;
 	
 	//Calculate position for first line
 	int lineX = this->x + borderWidth + horizontalBleed;
