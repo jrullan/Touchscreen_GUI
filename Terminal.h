@@ -20,6 +20,7 @@ class Terminal : public Widget {
 		char type = 0x15;
 		
 		uint8_t direction;
+		uint8_t keepColors;
 		int lines;
 		int lineSpace;
 		int fontHeight;
@@ -33,8 +34,8 @@ class Terminal : public Widget {
 		
 		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
 		~Terminal();
-		void print(char* string,uint16_t highColor = NULL);
-		void print(const char* string,uint16_t highColor = NULL){
+		void print(char* string, uint16_t highColor = NULL);
+		void print(const char* string, uint16_t highColor = NULL){
 			print((char*) string, highColor);
 		}
 		//void print(char* string, int num,uint16_t highColor = NULL);

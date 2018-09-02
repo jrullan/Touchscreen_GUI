@@ -5,6 +5,7 @@ Terminal::Terminal(int width, int height, uint8_t dir, int fontSize){
 	this->h = height;
 	this->fontSize = fontSize;
 	direction = dir;
+	keepColors = true;
 	borderWidth = 1;
 	horizontalBleed = horizontalBleed * fontSize*FONT_X;
 	verticalBleed = verticalBleed * fontSize*FONT_Y / 2;
@@ -166,7 +167,7 @@ void Terminal::show(){
 
 void Terminal::update(){
 	clear();
-	//uint16_t color =  this->fgColor;
+	uint16_t color;
 	//highlightColor = (highlightColor == NULL) ? color : highlightColor;
 	
 	//Calculate position for first line
@@ -176,7 +177,11 @@ void Terminal::update(){
 	char lineIndex = (direction) ? 0 : lines - 1;
 	
 	for(int i=0; i<lines; i++){
-		//if(i==lineIndex) color = highlightColor;
-		Tft.drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, linesColors[i]);//color);
+		if(i==lineIndex){
+			color = linesColors[i];
+		}else{
+			color = (keepColors)?linesColors[i]:fgColor;
+		}
+		Tft.drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, color);//color);
 	}
 }
