@@ -275,13 +275,13 @@ bool Numkey::checkTouch(Point* p){
 						}else if(num==12){
 							//Serial.println("= pressed");
 							entry = getNum();
-							eventHandler(this);		// <<<------ Event handler called when = signed is pressed
 							if(autoremove){
 								if(myCanvas->widgets.peek() == this){ // check if top widget is this numkey
 									myCanvas->pop();				  // Remove this numkey from the canvas...
 									//this->hide();
 								}
 							}
+							eventHandler(this);		// <<<------ Event handler called when = signed is pressed
 						}else{
 							appendNum(char(num));//setNum(num);
 						}
@@ -330,7 +330,7 @@ void Numkey::hide(){
 void Numkey::update(){
   int btnWidth = w / 3;
   int btnHeight = h / 5;
-  Tft.fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
+  
   //Count characters to center on the button - Nice trick from the Tft2 library
   if(*text){
     char* chars = text;
@@ -342,6 +342,7 @@ void Numkey::update(){
     //Calculate centered position of the text
     int stringX = getCenterTextX(x,btnWidth*2,size);//x+(btnWidth*2-size*FONT_SPACE*borderWidth)/2;
     int stringY = getCenterTextY(y,btnHeight);//y+(btnHeight-FONT_Y*borderWidth)/2;
+		Tft.fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
     Tft.drawString(text,stringX,stringY,borderWidth,GREEN);
   }	
 }

@@ -216,15 +216,22 @@ bool Button::checkTouch(Point* p){
 	}else{
 		xl = x + labelSize;
 	}  
-	//Serial.print("Checking button ");Serial.println(text);
+	//Serial.print("Checking button ");Serial.println(contents.getText());
 	if(lastMillis + debounceTime < millis()){ 
-		//Serial.print("Checking button ");Serial.print(contents.text);Serial.print(" at ");Serial.print(debounceTime); Serial.println(" ms");
+		//Serial.print("Checking button ");Serial.println(contents.getText());
+		//Serial.print("p->x: ");Serial.println(p->x);
+		//Serial.print("xl: ");Serial.println(xl);
+		//Serial.print("xl+w: ");Serial.println(xl+w);
+		//Serial.print("p->y: ");Serial.println(p->y);
+		//Serial.print("y: ");Serial.println(y);
+		//Serial.print("y+h: ");Serial.println(y+h);
+	
 		if((p->x > xl) && (p->x < xl+w) && (p->y > y) && (p->y < y+h)){
 			touched = !touched;
 			eventHandler(this);
 			lastMillis = millis();
 			//block = true;
-			//Serial.print("Button ");Serial.print(text);Serial.println(" pressed");
+			//Serial.print("Button ");Serial.print(contents.getText());Serial.println(" pressed");
 			return false;
 		}
 	}

@@ -45,22 +45,28 @@ void Dial::setSize(int radius){
 }
 
 void Dial::drawBorder(){
-	int color = fgColor;
+	int color = this->fgColor;
+	/*
 	if(currentValue >= hiLimit) color = hiLimitColor;
 	if(currentValue <= lowLimit) color = lowLimitColor;
 
-	for(int i=0; i<borderWidth; i++)
+	/*
+	for(int i=0; i < this->borderWidth; i++)
 	{
   	Tft.drawCircle(x,y,radius-i,color);
   }
+	*/
+	Tft.fillCircle(x,y,radius,color);
+	//Tft.fillCircle(x,y,radius-borderWidth,bgColor);
+	//drawFace();
 }
 
 void Dial::drawFace(){
 	// Draw face
-	Tft.fillCircle(x,y,radius,bgColor);
+	Tft.fillCircle(x,y,radius - this->borderWidth,this->bgColor);
 	
 	// Draw border  
-	drawBorder();
+	//drawBorder();
 
 	int X1,Y1,X2,Y2;
 	  
@@ -173,6 +179,7 @@ int Dial::getY(int cY, int deg, int radius){
 //Overriden virtual methods
 void Dial::show(){
 	// Draw face
+	drawBorder();
 	drawFace();
 	update();
 }
@@ -186,6 +193,7 @@ void Dial::update(){
 	int color = fgColor;
 	
 	// Limit crossing forces border to redraw
+	/*
 	if(previousValue < hiLimit && previousValue > lowLimit){
 		if(currentValue >= hiLimit || currentValue <= lowLimit) drawBorder();
 	}
@@ -195,6 +203,7 @@ void Dial::update(){
 	if(previousValue <= lowLimit){
 		if(currentValue > lowLimit) drawBorder();
 	}
+	*/
 	
 	// Draw needle
 	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);

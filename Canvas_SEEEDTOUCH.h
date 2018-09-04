@@ -50,25 +50,31 @@ void Canvas_SEEEDTOUCH::init(){
 Point* Canvas_SEEEDTOUCH::getTouchedPoint(){
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
 		Point p = ts->getPoint();
-		/*
-		Serial.println("-----------");
-		Serial.print("x: ");Serial.println(p.x);
-		Serial.print("y: ");Serial.println(p.y);
-		Serial.print("Tft.width(): ");Serial.println(Tft.width());
-		Serial.print("Tft.height(): ");Serial.println(Tft.height());
-		*/
-		p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.height());
-		p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.width());			
-		if(Tft.layoutMode == TFT_LANDSCAPE){
+		
+		//Serial.println("-----------");
+		//Serial.print("x: ");Serial.println(p.x);
+		//Serial.print("y: ");Serial.println(p.y);
+		//Serial.print("Tft.width(): ");Serial.println(Tft.width());
+		//Serial.print("Tft.height(): ");Serial.println(Tft.height());
+		
+		if(Tft.layoutMode == TFT_PORTRAIT){
+			p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.width());
+			p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.height());
+		}else{ // Landscape:
 			int oldX = p.x;
-			p.x = 320 - p.y;
-			p.y = oldX;			
-			//p.toLandscape();
+			p.x = map(p.y, TS_MAXY, TS_MINY, 0, Tft.width());
+			p.y = map(oldX, TS_MINX, TS_MAXX, 0, Tft.height());
 		}
-		/*
-		Serial.print("X: ");Serial.println(p.x);
-		Serial.print("Y: ");Serial.println(p.y);
-		*/
+
+		//Serial.print("TS_MINX: ");Serial.println(TS_MINX);
+		//Serial.print("TS_MAXX: ");Serial.println(TS_MAXX);
+		//Serial.print("TS_MINY: ");Serial.println(TS_MINY);
+		//Serial.print("TS_MAXY: ");Serial.println(TS_MAXY);
+		//Serial.print("X: ");Serial.println(p.x);
+		//Serial.print("Y: ");Serial.println(p.y);
+		//Serial.print("Tft.width(): ");Serial.println(Tft.width());
+		//Serial.print("Tft.height(): ");Serial.println(Tft.height());
+		
 		touchedPoint.x = p.x;
 		touchedPoint.y = p.y;
 		touchSampling = millis();

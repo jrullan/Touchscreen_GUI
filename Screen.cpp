@@ -41,11 +41,14 @@ void Screen::setCanvas(Canvas* c){
 }
 
 void Screen::touchWidgets(Point* p){
+	//Serial.println("Screen touchWidgets()");
 	byte cnt = widgets.count();
 	char j;
 	for(int i=1; i<=cnt; i++){
 		j = cnt-i;
+		//Serial.print("Touching widget ");Serial.println(Widget::getType(widgets[j]));
 		if(widgets[j]->isButton && widgets[j]->visible){
+			//Serial.print("Checking touch for widget: ");Serial.println(Widget::getType(widgets[j]));
 			if(!widgets[j]->checkTouch(p)) break;  //Break if widget blocks event after handling it.
 		}
 	}

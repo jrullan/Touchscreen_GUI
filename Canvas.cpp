@@ -121,14 +121,14 @@ bool Canvas::scan(){
 			
 			Point* tP = getTouchedPoint();
 			if(tP == NULL){
-				Serial.println("tp == NULL");
+				//Serial.println("tp == NULL");
 				return false;
 			}
 			
 			if(!inBounds(tP)){
-				Serial.println("!inBounds(tP)");
-				Serial.print("tP.x = ");Serial.println(tP->x);
-				Serial.print("tP.y = ");Serial.println(tP->y);
+				//Serial.println("!inBounds(tP)");
+				//Serial.print("tP.x = ");Serial.println(tP->x);
+				//Serial.print("tP.y = ");Serial.println(tP->y);
 				return false;
 			}
 			
@@ -139,6 +139,7 @@ bool Canvas::scan(){
 			if(touchWidgets(tP)){
 				//Serial.println("Sent touch event to all widgets");
 				if(currentScreen != NULL){
+					//Serial.println("Sending touch to current screen...");
 					currentScreen->touchWidgets(tP);
 				}
 			}

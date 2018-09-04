@@ -4,6 +4,11 @@ Terminal::Terminal(int width, int height, uint8_t dir, int fontSize){
 	this->w = width;
 	this->h = height;
 	this->fontSize = fontSize;
+	
+	bgColor = BLACK;
+	fgColor = GRAY1;
+	borderColor = GRAY1;
+	
 	direction = dir;
 	keepColors = true;
 	borderWidth = 1;
