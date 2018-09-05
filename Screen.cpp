@@ -4,26 +4,31 @@ Screen::Screen(){
 	this->init();
 }
 
-Screen::Screen(Canvas* c){
+Screen::Screen(Canvas* c, int _x, int _y, int _w, int _h){
 	canvas = c;
+	this->x = _x;
+	this->y = _y;
+	this->w = _w;
+	this->h = _h;
+	this->bgColor = canvas->bgColor;
 	this->init();
 }
 
 Screen::~Screen(){}
 
 void Screen::init(){
-	x=0;
-	y=42;
-	w = (canvas->_mode) ? 320 : 240;
-	h = (canvas->_mode) ? 157 : 237;
-	bgColor = canvas->bgColor;
+	//x=0;
+	//y=42;
+	//w = (canvas->_mode == TFT_LANDSCAPE) ? 320 : 240;
+	//h = (canvas->_mode == TFT_PORTRAIT) ? 157 : 237;
+	//bgColor = canvas->bgColor;
 }
 
-void Screen::add(Widget* w, int x, int y){
-	widgets.push(w);
-	w->setCanvas(canvas);
-	w->x = x;
-	w->y = y;
+void Screen::add(Widget* widget, int wX, int wY){
+	widgets.push(widget);
+	widget->setCanvas(canvas);
+	widget->x = wX + this->x;
+	widget->y = wY + this->y;
 }
 
 void Screen::show(){

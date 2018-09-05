@@ -13,6 +13,7 @@
 
 #define BUF_SIZE 8
 
+#include <Arduino.h>
 #include "Canvas.h"
 #include "Widget.h"
 
@@ -38,7 +39,7 @@ class Indicator : public Widget{
 		// Methods
 		void init();
 		void clear();		
-		void setCV(int cv);
+		void setCV(int cv, boolean show = true);
 		void setHiLimit(unsigned int h, int color);		
 		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
 		void setLowLimit(unsigned int l, int color);

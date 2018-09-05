@@ -131,6 +131,6 @@ void Display::show(){
 }
 
 void Display::update(){
-	Tft.fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth)+1,h-(2*borderWidth)+1,bgColor);
+	Tft.fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
 	drawText(fgColor);
 }

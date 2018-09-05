@@ -26,10 +26,12 @@ void Indicator::init(){
 	borderWidth=3;
 }
 
-void Indicator::setCV(int cv){
+void Indicator::setCV(int cv, boolean show){
 	previousValue = currentValue;
 	currentValue = constrain(cv,scaleMin,scaleMax);
-	update();
+	if(show){
+		update();
+	}
 }
 
 void Indicator::setHiLimit(unsigned int h, int color){

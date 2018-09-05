@@ -84,18 +84,20 @@ void Canvas::portrait(){
 
 // This method adds a widget to the widgets array and places it in the X,Y
 // position of the canvas. The value passed is the address of the widget object.
-void Canvas::add(Widget* widget, int x, int y){
+void Canvas::add(Widget* widget, int x, int y, uint8_t show){
 	widgets.push(widget);
 	widget->setCanvas(this);
 	widget->x = x;
 	widget->y = y;
-	if(widget->visible) widget->show();
+	if(widget->visible && show) widget->show();
 }
 
-void Canvas::setScreen(Screen* screen){
+void Canvas::setScreen(Screen* screen, uint8_t show){
 	currentScreen = screen;
-	currentScreen->show();
-	showWidgets();
+	if(show){
+		currentScreen->show();
+		showWidgets();
+	}
 }
 
 // This method can be invoked to remove the last widget added to the canvas.

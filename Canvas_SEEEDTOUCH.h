@@ -20,7 +20,9 @@
 
 class Canvas_SEEEDTOUCH: public Canvas{
 	public:
-	Canvas_SEEEDTOUCH(int mode, int color):Canvas(mode, color){};
+	Canvas_SEEEDTOUCH(int mode, int color):Canvas(mode, color){
+
+	};
 	~Canvas_SEEEDTOUCH(){};
 	void init();
 	Point* getTouchedPoint();
@@ -33,9 +35,8 @@ class Canvas_SEEEDTOUCH: public Canvas{
  */
 void Canvas_SEEEDTOUCH::init(){
 	Serial.println("Seeedtouch init");
-	
 	Tft.begin();
-	Tft.fillScreen(BLACK);
+	Tft.fillScreen(BLACK);		
 	lastMillis = millis();
 	touchSampling = millis();
 	scanSampling = millis();
@@ -44,7 +45,7 @@ void Canvas_SEEEDTOUCH::init(){
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
 	
-	ts = new SeeedstudioTouch(XP,YP,XM,YM);
+	ts = new SeeedstudioTouch(XP,YP,XM,YM);	
 }
 
 Point* Canvas_SEEEDTOUCH::getTouchedPoint(){

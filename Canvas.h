@@ -81,14 +81,14 @@ public:
 	// Methods
 	void portrait();
 	void landscape();
-	void add(Widget* widget, int x, int y);
+	void add(Widget* widget, int x, int y, uint8_t show = true);
 	Widget* pop();
 	void showWidgets();
 	bool touchWidgets(Point* p);
 	bool scan();
 	void redraw();
 	void setScanSampling(unsigned int d);
-	void setScreen(Screen* screen);
+	void setScreen(Screen* screen, uint8_t show = true);
 	void updateTouch(Point* p);
 	bool inBounds(Point* p);
 	

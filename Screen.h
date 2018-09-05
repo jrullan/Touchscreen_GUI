@@ -21,7 +21,7 @@ class Screen{
 	public:
 		//Constructor
 		Screen();
-		Screen(Canvas* c);
+		Screen(Canvas* c, int _x, int _y, int _w, int _h);
 		~Screen();
 		
 		//Methods
