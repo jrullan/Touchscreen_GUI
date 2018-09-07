@@ -11,7 +11,7 @@
 #include <Canvas.h>
 #include <Widget.h>
 
-#define MAX_LINES 5
+#define MAX_LINES 10
 #define TERMINAL_SCROLL_UP 0
 #define TERMINAL_SCROLL_DOWN 1
 
@@ -37,6 +37,11 @@ class Terminal : public Widget {
 		void print(char* string, uint16_t highColor = NULL);
 		void print(const char* string, uint16_t highColor = NULL){
 			print((char*) string, highColor);
+		}
+		void print(String str, uint16_t highColor = NULL){
+			char buffer[str.length()];
+			str.toCharArray(buffer,str.length()+1);
+			print(buffer,highColor);
 		}
 		//void print(char* string, int num,uint16_t highColor = NULL);
 		//void print(int num,uint16_t highColor = NULL);
