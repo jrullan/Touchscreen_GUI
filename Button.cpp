@@ -117,7 +117,7 @@ void Button::drawBorder(){
 	}	
 }
 
-void Button::drawText(){
+void Button::drawLabel(){
 	int xl=0;
 	int yl=0;
 	int labelSize=getLabelSize();
@@ -136,8 +136,12 @@ void Button::drawText(){
 			yl = y+(h-FONT_Y*fontSize)/2;	
 		}
 		Tft.drawString(label,xl,yl,fontSize,~this->myCanvas->bgColor);
-	}
-	
+	}	
+}
+
+void Button::drawText(){
+	this->drawLabel();
+	int labelSize=getLabelSize();
 	// Draw contents text
 	if(*contents.text){
 		char length = getTextLength(contents.text);//contents.getTextSize();

@@ -8,6 +8,7 @@ Buttongrid	KEYWORD1
 Dial	KEYWORD1
 Display	KEYWORD1
 Gauge	KEYWORD1
+IconButton	KEYWORD1
 Indicator KEYWORD1
 Numkey	KEYWORD1
 Point	KEYWORD1

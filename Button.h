@@ -26,6 +26,7 @@ public:
 	void init();	
 	void drawBackground(int color);
 	void drawBorder();
+	void drawLabel();
 	void drawText();
 	void setEventHandler(void (*functionPointer)(Button *));
 	void fitToText();

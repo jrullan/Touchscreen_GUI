@@ -82,6 +82,7 @@ public:
 	 * 		Numkey -	0x32
 	 * 		Popup - 	0x33
 	 * 		Option - 	0x34
+	 *		IconButton - 0x35
 	 */ 
 	static char* getType(Widget* w){
 		if((w->type & 0xFF) == 0x00){ 
