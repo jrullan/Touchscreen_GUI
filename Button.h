@@ -50,6 +50,7 @@ public:
 	char labelPos=0; //label position: 0-left, 1-top, 2-right, 3-bottom
 	bool touched;
 	bool block = false;
+	uint8_t cornerRadius = 0;
 	unsigned long lastMillis;
 	
 protected:	

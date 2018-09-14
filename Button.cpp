@@ -12,6 +12,9 @@ Button::Button(unsigned char textLength){
 	contents = Text(textLength);
 }
 
+/**
+ * Constructor for a typical rectangle button
+ */
 Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textLength){
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
 	x = 0;
@@ -23,9 +26,11 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
 	init();
 }
 
+/**
+ * Constructor for a round button
+ */
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
-
 	x = radius;
 	y = radius;	
 	contents = Text(8);
@@ -39,7 +44,7 @@ Button::~Button(){
 	free(contents.text);
 }
 
-/*
+/**
  * Initialization of several common parameters
  */
 void Button::init(){
@@ -50,13 +55,9 @@ void Button::init(){
 	lastMillis = millis();	
 }
 
-int Button::getLabelSize(){
-	if(*label){
-		return getTextLength(label)*FONT_X*fontSize;// + 6;
-	}
-	return 0;
-}
-
+/**
+ * Draws the background of the button
+ */
 void Button::drawBackground(int color){
 	int labelSize = getLabelSize();
 	int xl;
@@ -77,13 +78,20 @@ void Button::drawBackground(int color){
 
 	// Button background	
 	if(!this->isRound){
-		Tft.fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
+		if(cornerRadius > 0){
+			Tft.fillRoundRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),cornerRadius,color);
+		}else{
+			Tft.fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
+		}
 	}else{
 		int radius = (w>>1)-borderWidth;
 		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);//radius-borderWidth/2,color);
 	}
 }
 
+/**
+ * Draws the border of the button
+ */
 void Button::drawBorder(){
 	int labelSize = getLabelSize();
 	int xl;
@@ -97,7 +105,6 @@ void Button::drawBorder(){
 		
 	}else{
 		xl = x + labelSize;
-		
 	}  
 	
 	int xPos = xl;	
@@ -107,7 +114,11 @@ void Button::drawBorder(){
   
 	for(byte i=borderWidth; i!=0;i--){
 		if(!this->isRound){
-			Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
+			if(cornerRadius > 0){
+				Tft.drawRoundRect(xPos++,yPos++,width--,height--,cornerRadius,borderColor);
+			}else{
+				Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
+			}
 			width--;
 			height--;
 		}else{
@@ -117,6 +128,10 @@ void Button::drawBorder(){
 	}	
 }
 
+/**
+ * Draws a label for the button if one is set
+ * Maximum length is DISPLAY_SIZE
+ */
 void Button::drawLabel(){
 	int xl=0;
 	int yl=0;
@@ -139,6 +154,9 @@ void Button::drawLabel(){
 	}	
 }
 
+/**
+ * Draws the text inside the button
+ */
 void Button::drawText(){
 	this->drawLabel();
 	int labelSize=getLabelSize();
@@ -151,18 +169,6 @@ void Button::drawText(){
 	}
 }
 
-void Button::setDebounce(unsigned int d){
-	debounceTime = d;
-}
-
-/**
- * Sets the event handler: The function that should be called whenever the touched
- * event is detected.
- */
-void Button::setEventHandler(void (*functionPointer)(Button *)){
-	eventHandler = functionPointer;
-}
-
 /**
  * Shows the widget on the screen. This method must be overriden by the widget to
  * show the particular widget. It should be a pure virtual function: (i.e. virtual
@@ -173,39 +179,16 @@ void Button::show(){
 	update();
 }
 
-void Button::setNum(int num){
-	if(contents.getNum()==num)return;
-	contents.clear();
-	contents.setNum(num);
-}
-
-void Button::setText(char* _text){
-  contents.text = _text;
-}
-
-void Button::setLabel(char* _label){
-  label = _label;
-}
-
-char* Button::getText(){
-  return contents.text;
-}
-
-long Button::getNum(){
-	return contents.getNum();
-}
-
-void Button::fitToText(){
-  if(*contents.text){
-	char length = getTextLength(contents.text);//contents.getTextSize();
-    w = length * FONT_X * fontSize + FONT_SPACE;
-    h = FONT_Y * fontSize + FONT_Y;
-  }
-}
-
-//Overriden methods
 /**
- * Check if the touched point is within bounds of this widget.
+ * OVERRIDEN - This is the update() method.
+ */
+void Button::update(){
+	drawText();
+	drawBorder();
+}
+
+/**
+ * OVERRIDEN - Check if the touched point is within bounds of this widget.
  */
 bool Button::checkTouch(Point* p){
 	int labelSize = getLabelSize();
@@ -244,10 +227,59 @@ bool Button::checkTouch(Point* p){
 	return !block; 
 }
 
-/*
- * This is the update() method.
+/**
+ * Gets the label size, used for redrawing
  */
-void Button::update(){
-	drawText();
-	drawBorder();
+int Button::getLabelSize(){
+	if(*label){
+		return getTextLength(label)*FONT_X*fontSize;// + 6;
+	}
+	return 0;
 }
+
+/**
+ * Sets the button debouncing delay
+ */
+void Button::setDebounce(unsigned int d){
+	debounceTime = d;
+}
+
+/**
+ * Sets the event handler: The function that should be called whenever the touched
+ * event is detected.
+ */
+void Button::setEventHandler(void (*functionPointer)(Button *)){
+	eventHandler = functionPointer;
+}
+
+void Button::setNum(int num){
+	if(contents.getNum()==num)return;
+	contents.clear();
+	contents.setNum(num);
+}
+
+void Button::setText(char* _text){
+  contents.text = _text;
+}
+
+void Button::setLabel(char* _label){
+  label = _label;
+}
+
+char* Button::getText(){
+  return contents.text;
+}
+
+long Button::getNum(){
+	return contents.getNum();
+}
+
+void Button::fitToText(){
+  if(*contents.text){
+	char length = getTextLength(contents.text);//contents.getTextSize();
+    w = length * FONT_X * fontSize + FONT_SPACE;
+    h = FONT_Y * fontSize + FONT_Y;
+  }
+}
+
+
