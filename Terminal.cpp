@@ -42,10 +42,15 @@ void Terminal::print(char* string,uint16_t highColor){
 	highlightColor = highColor;
 	int length = Widget::getTextLength(string);
 	length = (length > maxCharacters) ? maxCharacters : length;
+	char lineIndex = (direction == TERMINAL_SCROLL_DOWN) ? 0 : lines - 1;
 	
-	scroll();
+	// Only scroll if:
+	if(direction==TERMINAL_SCROLL_UP && linesIndex <= lines -1){
+		lineIndex = linesIndex++;
+	}else{
+		scroll();
+	}
 	
-	char lineIndex = (direction) ? 0 : lines - 1;
 	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
 	
 	for(int i=0; i<length; i++){
@@ -156,6 +161,7 @@ void Terminal::clear(){
 	for(int i=0;i<lines;i++){
 		linesBuffer[i][0]=0;
 	}
+	linesIndex = 0;
 	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 }
 

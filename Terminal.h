@@ -27,6 +27,7 @@ class Terminal : public Widget {
 		int verticalBleed=1;
 		int horizontalBleed=1;
 		int maxCharacters;
+		int linesIndex = 0;
 		uint16_t highlightColor;
 		uint16_t linesColors[MAX_LINES];
 		char* linesBuffer[MAX_LINES];
