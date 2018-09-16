@@ -48,9 +48,11 @@ public:
 	
 	void show();
 	void update();
+	void drawRGBABitmap(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, int16_t h, uint16_t transparentColor);
 	
 	const uint16_t* imageUnpressed;
 	const uint16_t* imagePressed;
+	int16_t transparentColor = -1; // Not a color
 	
 private:
 
