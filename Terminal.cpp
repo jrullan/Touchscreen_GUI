@@ -127,6 +127,8 @@ void Terminal::print(int num, uint16_t highColor){
 */
 
 void Terminal::scroll(){
+	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
+
 	if(direction){
 		scrollDown();
 	}else{
@@ -183,7 +185,6 @@ void Terminal::show(){
 }
 
 void Terminal::update(){
-	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 	uint16_t color;
 	
 	//Calculate position for first line
