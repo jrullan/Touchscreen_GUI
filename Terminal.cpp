@@ -181,6 +181,7 @@ void Terminal::drawFrame(){
 
 void Terminal::show(){
 	drawFrame();
+	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 	update();
 }
 

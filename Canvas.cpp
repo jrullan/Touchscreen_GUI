@@ -94,10 +94,7 @@ void Canvas::add(Widget* widget, int x, int y, uint8_t show){
 
 void Canvas::setScreen(Screen* screen, uint8_t show){
 	currentScreen = screen;
-	if(show){
-		currentScreen->show();
-		showWidgets();
-	}
+	if(show) currentScreen->show();
 }
 
 // This method can be invoked to remove the last widget added to the canvas.

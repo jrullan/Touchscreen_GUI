@@ -21,7 +21,7 @@
 class Canvas_SEEEDTOUCH: public Canvas{
 	public:
 	Canvas_SEEEDTOUCH(int mode, int color):Canvas(mode, color){
-
+		
 	};
 	~Canvas_SEEEDTOUCH(){};
 	void init();
@@ -36,7 +36,7 @@ class Canvas_SEEEDTOUCH: public Canvas{
 void Canvas_SEEEDTOUCH::init(){
 	Serial.println("Seeedtouch init");
 	Tft.begin();
-	Tft.fillScreen(BLACK);		
+	Tft.fillScreen(bgColor);		
 	lastMillis = millis();
 	touchSampling = millis();
 	scanSampling = millis();

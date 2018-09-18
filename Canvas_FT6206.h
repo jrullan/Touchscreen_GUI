@@ -35,7 +35,7 @@ void Canvas_FT6206::init(){
 	Serial.println("FT6206 init");
 	
 	Tft.begin();
-	Tft.fillScreen(BLACK);
+	Tft.fillScreen(bgColor);
 	lastMillis = millis();
 	touchSampling = millis();
 	scanSampling = millis();

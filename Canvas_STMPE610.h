@@ -35,7 +35,7 @@ void Canvas_STMPE610::init(){
 	Serial.println("STMPE init");
 	
 	Tft.begin();
-	Tft.fillScreen(BLACK);
+	Tft.fillScreen(bgColor);
 	lastMillis = millis();
 	touchSampling = millis();
 	scanSampling = millis();
