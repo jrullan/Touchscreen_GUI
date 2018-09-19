@@ -141,22 +141,25 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
 
 	int pX1,pY1,pX2,pY2,pX3,pY3;
 
-	pX1 = getX(cX,degree-90,2);
-	pY1 = getY(cY,degree-90,2);
-	pX2 = getX(cX,degree+90,2);
-	pY2 = getY(cY,degree+90,2);
+	pX1 = getX(cX,degree-90,4);
+	pY1 = getY(cY,degree-90,4);
+	pX2 = getX(cX,degree+90,4);
+	pY2 = getY(cY,degree+90,4);
 	pX3 = getX(cX,degree,radius);
 	pY3 = getY(cY,degree,radius);
 
+	Tft.fillTriangle(pX1,pY1,pX2,pY2,pX3,pY3,color);
+	Tft.fillCircle(cX,cY,4,color);
+	/*
 	// Outer triangle
 	Tft.drawLine(pX1,pY1,pX2,pY2,color);
 	Tft.drawLine(pX1,pY1,pX3,pY3,color);
 	Tft.drawLine(pX2,pY2,pX3,pY3,color);
 
-	pX1 = getX(cX,degree-90,1);
-	pY1 = getY(cY,degree-90,1);
-	pX2 = getX(cX,degree+90,1);
-	pY2 = getY(cY,degree+90,1);
+	pX1 = getX(cX,degree-90,2);
+	pY1 = getY(cY,degree-90,2);
+	pX2 = getX(cX,degree+90,2);
+	pY2 = getY(cY,degree+90,2);
 
 	// Inner Triangle
 	Tft.drawLine(pX1,pY1,pX2,pY2,color);
@@ -165,6 +168,7 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
 
 	// Center Line
 	Tft.drawLine(cX,cY,pX3,pY3,color);
+	*/
 }
 
 int Dial::getX(int cX,int deg, int radius){
