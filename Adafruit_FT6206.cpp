@@ -45,7 +45,7 @@ Adafruit_FT6206::Adafruit_FT6206() {
     @returns True if an FT6206 is found, false on any failure
 */
 /**************************************************************************/
-boolean Adafruit_FT6206::begin(uint8_t thresh) {
+bool Adafruit_FT6206::begin(uint8_t thresh) {
   Wire.begin();
 
 #ifdef FT6206_DEBUG

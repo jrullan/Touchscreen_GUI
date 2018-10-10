@@ -79,13 +79,13 @@ void Button::drawBackground(int color){
 	// Button background	
 	if(!this->isRound){
 		if(cornerRadius > 0){
-			Tft.fillRoundRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),cornerRadius,color);
+			myCanvas->tft->fillRoundRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),cornerRadius,color);
 		}else{
-			Tft.fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
+			myCanvas->tft->fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
 		}
 	}else{
 		int radius = (w>>1)-borderWidth;
-		Tft.fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);//radius-borderWidth/2,color);
+		myCanvas->tft->fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);//radius-borderWidth/2,color);
 	}
 }
 
@@ -115,15 +115,15 @@ void Button::drawBorder(){
 	for(byte i=borderWidth; i!=0;i--){
 		if(!this->isRound){
 			if(cornerRadius > 0){
-				Tft.drawRoundRect(xPos++,yPos++,width--,height--,cornerRadius,borderColor);
+				myCanvas->tft->drawRoundRect(xPos++,yPos++,width--,height--,cornerRadius,borderColor);
 			}else{
-				Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
+				myCanvas->tft->drawRect(xPos++,yPos++,width--,height--,borderColor);
 			}
 			width--;
 			height--;
 		}else{
 			int radius = width>>1;
-			Tft.drawCircle(xl+radius,y+radius,(radius)-i,borderColor);
+			myCanvas->tft->drawCircle(xl+radius,y+radius,(radius)-i,borderColor);
 		}
 	}	
 }
@@ -150,7 +150,7 @@ void Button::drawLabel(){
 			xl = x;
 			yl = y+(h-FONT_Y*fontSize)/2;	
 		}
-		Tft.drawString(label,xl,yl,fontSize,~this->myCanvas->bgColor);
+		myCanvas->tft->drawString(label,xl,yl,fontSize,~this->myCanvas->bgColor);
 	}	
 }
 
@@ -165,7 +165,7 @@ void Button::drawText(){
 		char length = getTextLength(contents.text);//contents.getTextSize();
 		int stringX = getCenterTextX(x+labelSize,w,length);
 		int stringY = getCenterTextY(y,h);
-		Tft.drawString(contents.text,stringX,stringY,fontSize,fgColor);
+		myCanvas->tft->drawString(contents.text,stringX,stringY,fontSize,fgColor);
 	}
 }
 

@@ -32,7 +32,7 @@ void Popup::init(){
 void Popup::drawFrame(int pX, int pY, int wW, int hH){
 	for(unsigned char i=0; i<borderWidth; i++)
 	{
-		Tft.drawRect(pX+i,pY+i,wW-i*2,hH-i*2,borderColor);
+		myCanvas->tft->drawRect(pX+i,pY+i,wW-i*2,hH-i*2,borderColor);
 	}
 	//Serial.println("Drew frame");
 }
@@ -41,7 +41,7 @@ void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
 	if(!t) return;
 	int stringX = getCenterTextX(pX,wW,getTextLength(t));//pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
 	int stringY = getCenterTextY(pY,hH);//pY+hH/2-(FONT_Y*fontSize)/2;
-	Tft.drawString(t,stringX,stringY,fontSize,fgColor);
+	myCanvas->tft->drawString(t,stringX,stringY,fontSize,fgColor);
 }
 
 void Popup::draw(){
@@ -62,7 +62,7 @@ void Popup::draw(){
 		
 	// Draw enclosing frame and background
 	drawFrame(x,y,w,h);
-	Tft.fillRect(x+borderWidth,y+borderWidth,w-borderWidth*2,h-borderWidth*2,bgColor);
+	myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-borderWidth*2,h-borderWidth*2,bgColor);
 	
 	// Draw message
 	this->drawText(x,y,w,h-getBtnHeight(),text);
@@ -74,19 +74,19 @@ void Popup::draw(){
 		btnPoX = x+w/2-(getBtnWidth()*2+10)/2;
 		//Button 1
 		drawFrame(btnPoX, btnPoY, getBtnWidth(), getBtnHeight());
-		Tft.fillRect(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GREEN);
+		myCanvas->tft->fillRect(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,GREEN);
 		drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),btn1Text);
 			
 		//Button 2
 		drawFrame(btnPoX+getBtnWidth()+10,btnPoY,getBtnWidth(),getBtnHeight());
-		Tft.fillRect(btnPoX+borderWidth+getBtnWidth()+10,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0xf888); //Redish
+		myCanvas->tft->fillRect(btnPoX+borderWidth+getBtnWidth()+10,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0xf888); //Redish
 		drawText(btnPoX+getBtnWidth()+10,btnPoY,getBtnWidth(),getBtnHeight(),btn2Text);
 	
 	}else{ // One button
 		btnPoX = x+w/2-(getBtnWidth())/2;		
 		//Button 1
 		drawFrame(btnPoX,btnPoY,getBtnWidth(),getBtnHeight());
-		Tft.fillRect(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0x551f); // 0x001f Bluish
+		myCanvas->tft->fillRect(btnPoX+borderWidth,btnPoY+borderWidth,getBtnWidth()-borderWidth*2,getBtnHeight()-borderWidth*2,0x551f); // 0x001f Bluish
 			// Btn1 Message
 			drawText(btnPoX,btnPoY,getBtnWidth(),getBtnHeight(),btn1Text);
 	}
@@ -197,7 +197,7 @@ void Popup::show(){
 
 void Popup::hide(){
 	this->visible = false;	
-	Tft.fillRect(x,y,w,h,myCanvas->bgColor);
+	myCanvas->tft->fillRect(x,y,w,h,myCanvas->bgColor);
 	myCanvas->redraw();
 }
 

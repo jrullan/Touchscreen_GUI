@@ -17,25 +17,34 @@
 //#include "Adafruit_FT6206.h"
 //#include "Adafruit_STMPE610.h"
 
-Canvas::Canvas(){
 
-}
-
-Canvas::Canvas(int mode, int color){
+Canvas::Canvas(int mode, int color, int tft_cs, int tft_ds, int ts){
 	_mode = mode;
 	bgColor = color;
+	ts_cs = ts;
+	tft = new Guitft(tft_cs,tft_ds);
+	
+	/*
+	#if defined(ESP32)
+		tft = new Guitft(15, 33); // Use hardware SPI
+	#elif defined(ESP8266)
+		tft = new Guitft(16,15);
+	#else
+		tft = new Guitft(5, 6); // Use hardware SPI
+	#endif
+	*/
 }
 
 Canvas::~Canvas(){
 
 }
 
-// Initializes the LCD screen (Tft) and sets debounce and lastmillis variables.
+// Initializes the LCD screen (tft) and sets debounce and lastmillis variables.
 // Last millis is used for the Canvas-wide debounce of touch events.
 /*
 void Canvas::init(){
-	Tft.begin();
-	Tft.fillScreen(BLACK);
+	tft->begin();
+	tft->fillScreen(BLACK);
 	lastMillis = millis();
 	touchSampling = millis();
 	scanSampling = millis();
@@ -68,16 +77,16 @@ void Canvas::init(){
 	
 // This method sets the TFT orientation mode to landscape.
 void Canvas::landscape(){
-	Tft.layoutMode = TFT_LANDSCAPE;
-	Tft.setRotation(3);
+	tft->layoutMode = TFT_LANDSCAPE;
+	tft->setRotation(3);
 	w=320;
 	h=240;
 }
 
 // This method sets the TFT orientation mode to portrait.
 void Canvas::portrait(){
-	Tft.layoutMode = TFT_PORTRAIT;
-	Tft.setRotation(0);
+	tft->layoutMode = TFT_PORTRAIT;
+	tft->setRotation(0);
 	w=240;
 	h=320;
 }
@@ -100,7 +109,7 @@ void Canvas::setScreen(Screen* screen, uint8_t show){
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
 	Widget* widget = widgets.pop();
-	Tft.fillRect(widget->x,widget->y,widget->w,widget->h,this->bgColor);
+	tft->fillRect(widget->x,widget->y,widget->w,widget->h,this->bgColor);
 	redraw();
 	return widget;
 }
@@ -155,10 +164,10 @@ Point* Canvas::getTouchedPoint(){
 		Point p = ts->getPoint();
 		
 		if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
-			if(Tft.layoutMode == TFT_PORTRAIT){
+			if(tft->layoutMode == TFT_PORTRAIT){
 				p.rotate(POINT_PORTRAIT2);
 			}
-			if(Tft.layoutMode == TFT_LANDSCAPE){
+			if(tft->layoutMode == TFT_LANDSCAPE){
 				p.rotate(POINT_LANDSCAPE2);
 			}
 		}
@@ -175,9 +184,9 @@ Point* Canvas::getTouchedPoint(){
 		}		
 
 		if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
-			p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.width());
-			p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.height());			
-			if(Tft.layoutMode == TFT_LANDSCAPE){
+			p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft->width());
+			p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft->height());			
+			if(tft->layoutMode == TFT_LANDSCAPE){
 				p.toLandscape();
 			}
 		}
@@ -194,7 +203,7 @@ Point* Canvas::getTouchedPoint(){
 // Determines if the given point falls
 // within the Bounds of the layout chosen
 bool Canvas::inBounds(Point* tP){
-	if(Tft.layoutMode == TFT_LANDSCAPE){
+	if(tft->layoutMode == TFT_LANDSCAPE){
 		if(tP->x > 319 || tP->y > 239) return false;
 	}else{
 		if(tP->x > 239 || tP->y > 319) return false;

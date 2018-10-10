@@ -72,7 +72,7 @@ Adafruit_STMPE610::Adafruit_STMPE610() {
     @brief  Setups the HW
 */
 /**************************************************************************/
-boolean Adafruit_STMPE610::begin(uint8_t i2caddr) {
+bool Adafruit_STMPE610::begin(uint8_t i2caddr) {
   if (_CS != -1 && _CLK == -1) {
     // hardware SPI
     pinMode(_CS, OUTPUT);

@@ -127,7 +127,7 @@ void Terminal::print(int num, uint16_t highColor){
 */
 
 void Terminal::scroll(){
-	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
+	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 
 	if(direction){
 		scrollDown();
@@ -164,7 +164,7 @@ void Terminal::clear(){
 		linesBuffer[i][0]=0;
 	}
 	linesIndex = 0;
-	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
+	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 }
 
 void Terminal::drawFrame(){
@@ -173,7 +173,7 @@ void Terminal::drawFrame(){
   int yPos = y;
   int height = h;
   for(int i=borderWidth; i!=0;i--){
-    Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
+    myCanvas->tft->drawRect(xPos++,yPos++,width--,height--,borderColor);
     width--;
     height--;
   }
@@ -181,7 +181,7 @@ void Terminal::drawFrame(){
 
 void Terminal::show(){
 	drawFrame();
-	Tft.fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
+	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 	update();
 }
 
@@ -200,6 +200,6 @@ void Terminal::update(){
 		}else{
 			color = (keepColors)?linesColors[i]:fgColor;
 		}
-		Tft.drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, color);//color);
+		myCanvas->tft->drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, color);//color);
 	}
 }

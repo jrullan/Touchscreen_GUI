@@ -42,33 +42,33 @@ void Gauge::drawScale(){
 	int lineX = x + textWidth - 1; //to separate from border
 	
 	// Draw background
-	//Tft.fillRect(x,y,yScaleWidth-borderWidth+1,h+borderWidth,bgColor);
+	//myCanvas->tft->fillRect(x,y,yScaleWidth-borderWidth+1,h+borderWidth,bgColor);
 	
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
-	Tft.drawString(buf,x,getYVal(scaleMax),1,borderColor);
-	Tft.drawHorizontalLine(lineX,getYVal(scaleMax),10,borderColor);
+	myCanvas->tft->drawString(buf,x,getYVal(scaleMax),1,borderColor);
+	myCanvas->tft->drawHorizontalLine(lineX,getYVal(scaleMax),10,borderColor);
 	
 	// Draw Setpoint value and line
 	setNum(setpoint); // Sets buf with setpoint value
-	Tft.drawString(buf,x,getYVal(setpoint)-(FONT_Y/2),1,setpointColor);
-	Tft.drawHorizontalLine(lineX,getYVal(setpoint),10,setpointColor);
+	myCanvas->tft->drawString(buf,x,getYVal(setpoint)-(FONT_Y/2),1,setpointColor);
+	myCanvas->tft->drawHorizontalLine(lineX,getYVal(setpoint),10,setpointColor);
 	
 	// Draw Min value and line
 	setNum(scaleMin); // Sets buf with scaleMin value
-	Tft.drawString(buf,x,getYVal(scaleMin)-(FONT_Y),1,borderColor);
-	Tft.drawHorizontalLine(lineX,getYVal(scaleMin),10,borderColor);
+	myCanvas->tft->drawString(buf,x,getYVal(scaleMin)-(FONT_Y),1,borderColor);
+	myCanvas->tft->drawHorizontalLine(lineX,getYVal(scaleMin),10,borderColor);
 
 	// Draw HI and LOW limits values and lines
 	if(hiLimit < scaleMax){
 		setNum(hiLimit);
-		Tft.drawString(buf,x,getYVal(hiLimit)-(FONT_Y/2),1,hiLimitColor);
-		Tft.drawHorizontalLine(lineX,getYVal(hiLimit),10,hiLimitColor);
+		myCanvas->tft->drawString(buf,x,getYVal(hiLimit)-(FONT_Y/2),1,hiLimitColor);
+		myCanvas->tft->drawHorizontalLine(lineX,getYVal(hiLimit),10,hiLimitColor);
 	}
 	if(lowLimit > scaleMin){
 		setNum(lowLimit);
-		Tft.drawString(buf,x,getYVal(lowLimit)-(FONT_Y/2),1,lowLimitColor);
-		Tft.drawHorizontalLine(lineX,getYVal(lowLimit),10,lowLimitColor);
+		myCanvas->tft->drawString(buf,x,getYVal(lowLimit)-(FONT_Y/2),1,lowLimitColor);
+		myCanvas->tft->drawHorizontalLine(lineX,getYVal(lowLimit),10,lowLimitColor);
 	}	
 }
 
@@ -83,7 +83,7 @@ int Gauge::getYVal(int value){
 //Overriden virtual methods
 void Gauge::show(){
 	if(this->visible){
-		Tft.fillRect(x,y,w,h,bgColor);
+		myCanvas->tft->fillRect(x,y,w,h,bgColor);
 		this->drawScale();
 		this->drawBorder();
 		this->update();
@@ -99,7 +99,7 @@ void Gauge::drawBorder(){
 	//Draw the Vertical Bar
 	//--border
 	for(byte i=borderWidth; i!=0;i--){
-		Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
+		myCanvas->tft->drawRect(xPos++,yPos++,width--,height--,borderColor);
 		width--;
 		height--;
 	}
@@ -113,12 +113,12 @@ void Gauge::drawFill(){
 	unsigned int val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
 
 	//--background fill
-	Tft.fillRect(x+borderWidth+yScaleWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
+	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
 	//--bar fill
 	int color=fgColor;
 	if(currentValue > this->hiLimit) color = hiLimitColor;
 	if(currentValue < this->lowLimit) color = lowLimitColor;
-	Tft.fillRect(x+borderWidth+yScaleWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);	
+	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);	
 }
 
 void Gauge::update(){

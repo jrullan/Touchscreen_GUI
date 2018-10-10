@@ -48,7 +48,7 @@ class Adafruit_FT6206 : public Touch
  public:
 
   Adafruit_FT6206(void);
-  boolean begin(uint8_t thresh = FT62XX_DEFAULT_THRESHOLD);  
+  bool begin(uint8_t thresh = FT62XX_DEFAULT_THRESHOLD);  
   uint8_t touched(void);
   Point getPoint(uint8_t n = 0);
   Point getPoint(void);

@@ -37,15 +37,15 @@ void Numkey::drawFrame(){
   btnHeight = h / 5;
   
   //--display background
-  Tft.fillRect(xPos,yPos,btnWidth*2,btnHeight,BLACK);
+  myCanvas->tft->fillRect(xPos,yPos,btnWidth*2,btnHeight,BLACK);
   //--backspace background
-  Tft.fillRect(xPos+btnWidth*2,yPos,btnWidth,btnHeight,bgColor);
+  myCanvas->tft->fillRect(xPos+btnWidth*2,yPos,btnWidth,btnHeight,bgColor);
   //--nums background rectangle
-  Tft.fillRect(xPos,yPos+btnHeight,width,height-btnHeight,bgColor);
+  myCanvas->tft->fillRect(xPos,yPos+btnHeight,width,height-btnHeight,bgColor);
   
 	//-- outer border
   for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRect(xPos,yPos,width,height,borderColor);
+    myCanvas->tft->drawRect(xPos,yPos,width,height,borderColor);
     xPos++;
     yPos++;
     width--;
@@ -56,7 +56,7 @@ void Numkey::drawFrame(){
   for(byte j=1;j<5;j++)
   {
   	for(byte i=0; i<borderWidth;i++){
-    	Tft.drawHorizontalLine(x,y+btnHeight*j-1+i,width+borderWidth,borderColor);
+    	myCanvas->tft->drawHorizontalLine(x,y+btnHeight*j-1+i,width+borderWidth,borderColor);
   	}
   }
   
@@ -64,7 +64,7 @@ void Numkey::drawFrame(){
   for(byte j=1;j<3;j++)
   {
   	for(byte i=0; i<borderWidth;i++){
-    	Tft.drawVerticalLine(x+btnWidth*j-1+i,y+btnHeight,height-btnHeight+borderWidth,borderColor);
+    	myCanvas->tft->drawVerticalLine(x+btnWidth*j-1+i,y+btnHeight,height-btnHeight+borderWidth,borderColor);
   	}
   }
 
@@ -73,18 +73,18 @@ void Numkey::drawFrame(){
   yPos = btnHeight/2 - FONT_Y;
   byte xF=0;
   byte yF=1;
-  Tft.drawString("<-",x+xPos+2*btnWidth-6,y+yPos,fontSize,BLACK); 
+  myCanvas->tft->drawString("<-",x+xPos+2*btnWidth-6,y+yPos,fontSize,BLACK); 
   for(byte number=1; number<10; number++)
   {
-  	Tft.drawNumber(number,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
+  	myCanvas->tft->drawNumber(number,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
   	if(number == 3 || number == 6 || number == 9){
   		yF++;
   		xF = 0;
   	}
   }
-  Tft.drawString(".",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);  
-  Tft.drawNumber(0,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
-  Tft.drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
+  myCanvas->tft->drawString(".",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);  
+  myCanvas->tft->drawNumber(0,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
+  myCanvas->tft->drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
 }
 
 void Numkey::append(char* c){
@@ -322,7 +322,7 @@ void Numkey::reset(){
  */
 void Numkey::hide(){
 	//Widget::hide();
-	Tft.fillRect(x,y,w,h,this->myCanvas->bgColor);
+	myCanvas->tft->fillRect(x,y,w,h,this->myCanvas->bgColor);
 	visible = false;
 	this->myCanvas->redraw();
 }
@@ -331,7 +331,7 @@ void Numkey::update(){
   int btnWidth = w / 3;
   int btnHeight = h / 5;
   
-  //Count characters to center on the button - Nice trick from the Tft2 library
+  //Count characters to center on the button - Nice trick from the myCanvas->tft2 library
   if(*text){
     char* chars = text;
     int size = 0;
@@ -342,7 +342,7 @@ void Numkey::update(){
     //Calculate centered position of the text
     int stringX = getCenterTextX(x,btnWidth*2,size);//x+(btnWidth*2-size*FONT_SPACE*borderWidth)/2;
     int stringY = getCenterTextY(y,btnHeight);//y+(btnHeight-FONT_Y*borderWidth)/2;
-		Tft.fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
-    Tft.drawString(text,stringX,stringY,borderWidth,GREEN);
+		myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
+    myCanvas->tft->drawString(text,stringX,stringY,borderWidth,GREEN);
   }	
 }

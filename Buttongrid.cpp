@@ -78,7 +78,7 @@ void Buttongrid::drawGrid(){
 
 	//-- outer border
 	for(byte i=borderWidth; i!=0;i--){
-		Tft.drawRect(xPos,yPos,width,height,borderColor);
+		myCanvas->tft->drawRect(xPos,yPos,width,height,borderColor);
 		xPos += 1;
 		yPos += 1;
 		width -= 2;
@@ -86,14 +86,14 @@ void Buttongrid::drawGrid(){
 	}
 	
 	//--nums background rectangle
-	Tft.fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,bgColor);
+	myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,bgColor);
 
 	//-- vertical lines
 	for(byte j=1;j<columns;j++)
 	{
 		// draw # of vertical lines depending on borderWidth
 		for(byte i=0; i<borderWidth;i++){
-			Tft.drawVerticalLine(x + j*(btnWidth + borderWidth) + i,y+borderWidth,h-2*borderWidth,borderColor);
+			myCanvas->tft->drawVerticalLine(x + j*(btnWidth + borderWidth) + i,y+borderWidth,h-2*borderWidth,borderColor);
 		}	
 	}
 	
@@ -102,7 +102,7 @@ void Buttongrid::drawGrid(){
 	{
 		// draw # horizontal lines depending on borderWidth
 		for(byte i=0; i<borderWidth;i++){
-			Tft.drawHorizontalLine(x+borderWidth, y + j*(btnHeight + borderWidth) + i,w-2*borderWidth,borderColor);
+			myCanvas->tft->drawHorizontalLine(x+borderWidth, y + j*(btnHeight + borderWidth) + i,w-2*borderWidth,borderColor);
 		}
 	}
 	
@@ -128,16 +128,16 @@ void Buttongrid::drawLabel(unsigned char id){
 	if((config&BUTTONGRID_USELABELS) && (labels[id] != 0)){
 		length = getTextLength(labels[id]);
 	}else{
-		length = Tft.Get_Digits(id);
+		length = myCanvas->tft->Get_Digits(id);
 	}
 
 	xPos = getCenterTextX(x+(colIndex*btnWidth)+borderWidth*(1+colIndex), btnWidth, length);
 	yPos = getCenterTextY(y+(rowIndex*btnHeight)+borderWidth*(1+rowIndex), btnHeight);
 
 	if((config&BUTTONGRID_USELABELS) && (labels[id] != 0)){
-		Tft.drawString(labels[id],xPos,yPos,fontSize,fgColor);
+		myCanvas->tft->drawString(labels[id],xPos,yPos,fontSize,fgColor);
 	}else{
-		Tft.drawNumber(id,xPos,yPos,fontSize,fgColor);
+		myCanvas->tft->drawNumber(id,xPos,yPos,fontSize,fgColor);
 	}
 	return;
 }
@@ -209,7 +209,7 @@ bool Buttongrid::checkTouch(Point* p){
 						if(config & BUTTONGRID_MAINTAINED){
 							states[id] = (states[id])?0:1;
 							if(config&BUTTONGRID_HIGHLIGHT){
-								Tft.fillRect(boundX1,boundY1,btnWidth,btnHeight,(states[id])?highlightColor:bgColor);
+								myCanvas->tft->fillRect(boundX1,boundY1,btnWidth,btnHeight,(states[id])?highlightColor:bgColor);
 								drawLabel(id);
 							}
 						}else{
@@ -219,9 +219,9 @@ bool Buttongrid::checkTouch(Point* p){
 								char rIndex = getRow(lastPressed) - 1;
 								int lastX = x + btnWidth*cIndex + borderWidth*(cIndex + 1);
 								int lastY = y + btnHeight*rIndex + borderWidth*(rIndex + 1);
-								Tft.fillRect(lastX,lastY,btnWidth,btnHeight,bgColor);
+								myCanvas->tft->fillRect(lastX,lastY,btnWidth,btnHeight,bgColor);
 								drawLabel(lastPressed);
-								Tft.fillRect(boundX1,boundY1,btnWidth,btnHeight,highlightColor);
+								myCanvas->tft->fillRect(boundX1,boundY1,btnWidth,btnHeight,highlightColor);
 								drawLabel(id);
 							}
 						}

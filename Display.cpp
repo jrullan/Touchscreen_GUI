@@ -32,7 +32,7 @@ void Display::drawFrame(){
   byte yPos = y;
   byte height = h;
   for(byte i=borderWidth; i!=0;i--){
-    Tft.drawRect(xPos++,yPos++,width--,height--,borderColor);
+    myCanvas->tft->drawRect(xPos++,yPos++,width--,height--,borderColor);
     width--;
     height--;
   }
@@ -43,7 +43,7 @@ void Display::drawText(int color){
 		char size = contents->getTextSize();
 		int stringX = getCenterTextX(x,w,size);
 		int stringY = getCenterTextY(y,h);
-		Tft.drawString(contents->text,stringX,stringY,fontSize,color);
+		myCanvas->tft->drawString(contents->text,stringX,stringY,fontSize,color);
 	}
 }
 
@@ -131,6 +131,6 @@ void Display::show(){
 }
 
 void Display::update(){
-	Tft.fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
+	myCanvas->tft->fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
 	drawText(fgColor);
 }

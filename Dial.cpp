@@ -53,17 +53,17 @@ void Dial::drawBorder(){
 	/*
 	for(int i=0; i < this->borderWidth; i++)
 	{
-  	Tft.drawCircle(x,y,radius-i,color);
+  	myCanvas->tft->drawCircle(x,y,radius-i,color);
   }
 	*/
-	Tft.fillCircle(x,y,radius,color);
-	//Tft.fillCircle(x,y,radius-borderWidth,bgColor);
+	myCanvas->tft->fillCircle(x,y,radius,color);
+	//myCanvas->tft->fillCircle(x,y,radius-borderWidth,bgColor);
 	//drawFace();
 }
 
 void Dial::drawFace(){
 	// Draw face
-	Tft.fillCircle(x,y,radius - this->borderWidth,this->bgColor);
+	myCanvas->tft->fillCircle(x,y,radius - this->borderWidth,this->bgColor);
 	
 	// Draw border  
 	//drawBorder();
@@ -78,7 +78,7 @@ void Dial::drawFace(){
 			Y1 = getY(y,i,radius-tickSize);
 			X2 = getX(x,i,radius-borderWidth);
 			Y2 = getY(y,i,radius-borderWidth);    
-			Tft.drawLine(X1,Y1,X2,Y2,borderColor);
+			myCanvas->tft->drawLine(X1,Y1,X2,Y2,borderColor);
 		}
 	}else{
 		int i = minDegree;
@@ -86,14 +86,14 @@ void Dial::drawFace(){
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
 		Y2 = getY(y,i,radius-borderWidth);    
-		Tft.drawLine(X1,Y1,X2,Y2,borderColor);
+		myCanvas->tft->drawLine(X1,Y1,X2,Y2,borderColor);
 		
 		i = maxDegree;
 		X1 = getX(x,i,radius-tickSize);
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
 		Y2 = getY(y,i,radius-borderWidth);    
-		Tft.drawLine(X1,Y1,X2,Y2,borderColor);	
+		myCanvas->tft->drawLine(X1,Y1,X2,Y2,borderColor);	
 	}
 	
 	// Draw Setpoint line
@@ -103,7 +103,7 @@ void Dial::drawFace(){
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
 		Y2 = getY(y,i,radius-borderWidth);    
-		Tft.drawLine(X1,Y1,X2,Y2,setpointColor);
+		myCanvas->tft->drawLine(X1,Y1,X2,Y2,setpointColor);
 	} 
 	
 	// Draw High limit line
@@ -113,7 +113,7 @@ void Dial::drawFace(){
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
 		Y2 = getY(y,i,radius-borderWidth);    
-		Tft.drawLine(X1,Y1,X2,Y2,hiLimitColor);
+		myCanvas->tft->drawLine(X1,Y1,X2,Y2,hiLimitColor);
 	}  	
 	
 	// Draw Low Limit line
@@ -123,16 +123,16 @@ void Dial::drawFace(){
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
 		Y2 = getY(y,i,radius-borderWidth);    
-		Tft.drawLine(X1,Y1,X2,Y2,lowLimitColor);
+		myCanvas->tft->drawLine(X1,Y1,X2,Y2,lowLimitColor);
 	}  	  
 	
 	// Draw min value
 	setNum(scaleMin);
-	Tft.drawString(buf,x-radius+FONT_SPACE,y+radius-FONT_Y,1,borderColor);
+	myCanvas->tft->drawString(buf,x-radius+FONT_SPACE,y+radius-FONT_Y,1,borderColor);
 
 	// Draw max value
 	setNum(scaleMax);
-	Tft.drawString(buf,getX(x,maxDegree,radius-tickSize),y+radius-FONT_Y,1,borderColor);
+	myCanvas->tft->drawString(buf,getX(x,maxDegree,radius-tickSize),y+radius-FONT_Y,1,borderColor);
 
 }
 
@@ -148,13 +148,13 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
 	pX3 = getX(cX,degree,radius);
 	pY3 = getY(cY,degree,radius);
 
-	Tft.fillTriangle(pX1,pY1,pX2,pY2,pX3,pY3,color);
-	Tft.fillCircle(cX,cY,4,color);
+	myCanvas->tft->fillTriangle(pX1,pY1,pX2,pY2,pX3,pY3,color);
+	myCanvas->tft->fillCircle(cX,cY,4,color);
 	/*
 	// Outer triangle
-	Tft.drawLine(pX1,pY1,pX2,pY2,color);
-	Tft.drawLine(pX1,pY1,pX3,pY3,color);
-	Tft.drawLine(pX2,pY2,pX3,pY3,color);
+	myCanvas->tft->drawLine(pX1,pY1,pX2,pY2,color);
+	myCanvas->tft->drawLine(pX1,pY1,pX3,pY3,color);
+	myCanvas->tft->drawLine(pX2,pY2,pX3,pY3,color);
 
 	pX1 = getX(cX,degree-90,2);
 	pY1 = getY(cY,degree-90,2);
@@ -162,12 +162,12 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
 	pY2 = getY(cY,degree+90,2);
 
 	// Inner Triangle
-	Tft.drawLine(pX1,pY1,pX2,pY2,color);
-	Tft.drawLine(pX1,pY1,pX3,pY3,color);
-	Tft.drawLine(pX2,pY2,pX3,pY3,color);  
+	myCanvas->tft->drawLine(pX1,pY1,pX2,pY2,color);
+	myCanvas->tft->drawLine(pX1,pY1,pX3,pY3,color);
+	myCanvas->tft->drawLine(pX2,pY2,pX3,pY3,color);  
 
 	// Center Line
-	Tft.drawLine(cX,cY,pX3,pY3,color);
+	myCanvas->tft->drawLine(cX,cY,pX3,pY3,color);
 	*/
 }
 
@@ -222,7 +222,7 @@ void Dial::update(){
 		if(currentValue<10) dSpace = 3 * fontSize;
 		if(currentValue>=10) dSpace = 6 * fontSize;
 		if(currentValue>99) dSpace = 9 * fontSize;
-		Tft.fillRect(x-9*fontSize,y+radius-12*fontSize,18*fontSize,8*fontSize,bgColor);
-		Tft.drawNumber(currentValue,x-dSpace,y+radius-12*fontSize,fontSize,color);
+		myCanvas->tft->fillRect(x-9*fontSize,y+radius-12*fontSize,18*fontSize,8*fontSize,bgColor);
+		myCanvas->tft->drawNumber(currentValue,x-dSpace,y+radius-12*fontSize,fontSize,color);
 	}
 }

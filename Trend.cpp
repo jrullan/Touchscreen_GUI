@@ -50,33 +50,33 @@ void Trend::drawYScale(){
 	int lineX = x + textWidth - 1; //to separate from border
 
 	// Draw background
-	Tft.fillRect(x,y,yScaleWidth-borderWidth+1,h-xScaleHeight+borderWidth,bgColor);
+	myCanvas->tft->fillRect(x,y,yScaleWidth-borderWidth+1,h-xScaleHeight+borderWidth,bgColor);
 	
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
-	Tft.drawString(buf,x,getYVal(scaleMax),1,borderColor);
-	Tft.drawHorizontalLine(lineX,getYVal(scaleMax),10,borderColor);
+	myCanvas->tft->drawString(buf,x,getYVal(scaleMax),1,borderColor);
+	myCanvas->tft->drawHorizontalLine(lineX,getYVal(scaleMax),10,borderColor);
 	
 	// Draw Setpoint value and line
 	setNum(setpoint); // Sets buf with setpoint value
-	Tft.drawString(buf,x,getYVal(setpoint)-(FONT_Y/2),1,setpointColor);
-	Tft.drawHorizontalLine(lineX,getYVal(setpoint),10,setpointColor);
+	myCanvas->tft->drawString(buf,x,getYVal(setpoint)-(FONT_Y/2),1,setpointColor);
+	myCanvas->tft->drawHorizontalLine(lineX,getYVal(setpoint),10,setpointColor);
 	
 	// Draw Min value and line
 	setNum(scaleMin); // Sets buf with scaleMin value
-	Tft.drawString(buf,x,getYVal(scaleMin)-(FONT_Y),1,borderColor);
-	Tft.drawHorizontalLine(lineX,getYVal(scaleMin),10,borderColor);
+	myCanvas->tft->drawString(buf,x,getYVal(scaleMin)-(FONT_Y),1,borderColor);
+	myCanvas->tft->drawHorizontalLine(lineX,getYVal(scaleMin),10,borderColor);
 
 	// Draw HI and LOW limits values and lines
 	if(hiLimit < scaleMax){
 		setNum(hiLimit);
-		Tft.drawString(buf,x,getYVal(hiLimit)-(FONT_Y/2),1,hiLimitColor);
-		Tft.drawHorizontalLine(lineX,getYVal(hiLimit),10,hiLimitColor);
+		myCanvas->tft->drawString(buf,x,getYVal(hiLimit)-(FONT_Y/2),1,hiLimitColor);
+		myCanvas->tft->drawHorizontalLine(lineX,getYVal(hiLimit),10,hiLimitColor);
 	}
 	if(lowLimit > scaleMin){
 		setNum(lowLimit);
-		Tft.drawString(buf,x,getYVal(lowLimit)-(FONT_Y/2),1,lowLimitColor);
-		Tft.drawHorizontalLine(lineX,getYVal(lowLimit),10,lowLimitColor);
+		myCanvas->tft->drawString(buf,x,getYVal(lowLimit)-(FONT_Y/2),1,lowLimitColor);
+		myCanvas->tft->drawHorizontalLine(lineX,getYVal(lowLimit),10,lowLimitColor);
 	}
 }
 
@@ -90,12 +90,12 @@ void Trend::drawXScale(){
 	int yPos = y + h + borderWidth - xScaleHeight;
 	int xWidth = w - yScaleWidth;
 	int xHeight = xScaleHeight;
-	Tft.fillRect(xPos-yScaleWidth-1,yPos,w,xHeight+1,bgColor);
+	myCanvas->tft->fillRect(xPos-yScaleWidth-1,yPos,w,xHeight+1,bgColor);
 	yPos += borderWidth;
 
 	//--right
 	setNum(0);
-	Tft.drawString(buf,xPos+xWidth-FONT_X,yPos+10+FONT_Y,1,borderColor);
+	myCanvas->tft->drawString(buf,xPos+xWidth-FONT_X,yPos+10+FONT_Y,1,borderColor);
 
 	xWidth -= borderWidth;
 	int xp = xPos + xWidth;
@@ -113,14 +113,14 @@ void Trend::drawXScale(){
 		if(i>0 && !(i%((int)xWidth/10))){
 		#endif
 
-			Tft.drawVerticalLine(xp,yPos,10,borderColor);
+			myCanvas->tft->drawVerticalLine(xp,yPos,10,borderColor);
 			//setNum(map(i,0,maxValues,0,maxX));
 			setNum(i);
 			byte size = getTextLength(buf);
-			Tft.drawString(buf,xp - size*(FONT_X>>1),yPos+10+FONT_Y,1,borderColor);	
+			myCanvas->tft->drawString(buf,xp - size*(FONT_X>>1),yPos+10+FONT_Y,1,borderColor);	
 		//}else{
 		}else if(i>0 && !(i%(int)(xWidth/15))){
-			Tft.drawVerticalLine(xp,yPos,5,borderColor);
+			myCanvas->tft->drawVerticalLine(xp,yPos,5,borderColor);
 		}
 	}
 	
@@ -144,9 +144,9 @@ void Trend::drawValues(uint16_t color){
 		
 		//if(j<maxValues-1){
 		if(j<trendWindow.maxValue){
-			Tft.drawLine(x2,y2-1,x1,y1-1,color);
-			Tft.drawLine(x2,y2,x1,y1,color);
-			Tft.drawLine(x2,y2+1,x1,y1+1,color);
+			myCanvas->tft->drawLine(x2,y2-1,x1,y1-1,color);
+			myCanvas->tft->drawLine(x2,y2,x1,y1,color);
+			myCanvas->tft->drawLine(x2,y2+1,x1,y1+1,color);
 		}
 	}
 }
@@ -161,7 +161,7 @@ void Trend::drawBorder(){
 
 	//--border
 	for(byte i=borderWidth; i!=0; i--){
-		Tft.drawRect(xPos,yPos,borderW,borderH,borderColor);
+		myCanvas->tft->drawRect(xPos,yPos,borderW,borderH,borderColor);
 		xPos++;
 		yPos++;
 		borderW -= 2;
@@ -174,13 +174,13 @@ void Trend::drawThresholdLines(bool colors){
 	int width = w-yScaleWidth-2*borderWidth;
   
 	if(hiLimit < scaleMax){
-		Tft.drawHorizontalLine(xPos+1,getYVal(hiLimit),width,!colors?bgColor:hiLimitColor);
+		myCanvas->tft->drawHorizontalLine(xPos+1,getYVal(hiLimit),width,!colors?bgColor:hiLimitColor);
 	}
 	
-	Tft.drawHorizontalLine(xPos+1,getYVal(setpoint),width,!colors?bgColor:setpointColor);
+	myCanvas->tft->drawHorizontalLine(xPos+1,getYVal(setpoint),width,!colors?bgColor:setpointColor);
 	
 	if(lowLimit > scaleMin){
-		Tft.drawHorizontalLine(xPos+1,getYVal(lowLimit),width,!colors?bgColor:lowLimitColor);
+		myCanvas->tft->drawHorizontalLine(xPos+1,getYVal(lowLimit),width,!colors?bgColor:lowLimitColor);
 	}
 }
 
@@ -296,7 +296,7 @@ void Trend::addValue(uint8_t val){
 void Trend::show(){
 	//Serial.print("Show");Serial.println();
 	if(this->visible){
-	  Tft.fillRect(x,y,w,h,bgColor);
+	  myCanvas->tft->fillRect(x,y,w,h,bgColor);
 	  this->drawYScale();
 	  this->drawXScale();
 	  this->drawBorder();

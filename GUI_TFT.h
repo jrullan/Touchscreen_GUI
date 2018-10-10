@@ -52,7 +52,6 @@
 class Guitft : public Adafruit_ILI9341_STM{
 	public:
 	Guitft(int8_t TFT_CS, int8_t TFT_DC):Adafruit_ILI9341_STM(TFT_CS, TFT_DC, -1){};
-
 //Otherwise inherit from standard library
 #else
 
@@ -60,9 +59,8 @@ class Guitft : public Adafruit_ILI9341_STM{
 class Guitft : public Adafruit_ILI9341{
 	public:
 	Guitft(int8_t TFT_CS, int8_t TFT_DC):Adafruit_ILI9341(TFT_CS, TFT_DC, -1){};
-
-
 #endif	
+
 	~Guitft();
 
 	void drawString(char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor);
@@ -93,4 +91,4 @@ class Guitft : public Adafruit_ILI9341{
 // Needed to declare here as extern
 // and instance it in the GUI_TFT.cpp
 // to avoid compiler issues with redeclarations
-extern Guitft Tft;
+//extern Guitft Tft;

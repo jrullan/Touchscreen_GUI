@@ -20,7 +20,7 @@
 
 class Canvas_FT6206: public Canvas{
 	public:
-	Canvas_FT6206(int mode, int color):Canvas(mode, color){};
+	Canvas_FT6206(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){};
 	~Canvas_FT6206(){};
 	void init();
 	Point* getTouchedPoint();
@@ -34,8 +34,8 @@ class Canvas_FT6206: public Canvas{
 void Canvas_FT6206::init(){
 	Serial.println("FT6206 init");
 	
-	Tft.begin();
-	Tft.fillScreen(bgColor);
+	tft->begin();
+	tft->fillScreen(bgColor);
 	lastMillis = millis();
 	touchSampling = millis();
 	scanSampling = millis();
@@ -52,12 +52,12 @@ Point* Canvas_FT6206::getTouchedPoint(){
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
 		Point p = ts->getPoint();
 		
-		if(Tft.layoutMode == TFT_PORTRAIT){
+		if(tft->layoutMode == TFT_PORTRAIT){
 			p.x = 240 - p.x;
 			p.y = 320 - p.y;
 			//p.rotate(POINT_PORTRAIT2);
 		}
-		if(Tft.layoutMode == TFT_LANDSCAPE){
+		if(tft->layoutMode == TFT_LANDSCAPE){
 			int oldX = p.x;
 			p.x = p.y;
 			p.y = 240-oldX;	

@@ -20,9 +20,7 @@
 
 class Canvas_SEEEDTOUCH: public Canvas{
 	public:
-	Canvas_SEEEDTOUCH(int mode, int color):Canvas(mode, color){
-		
-	};
+	Canvas_SEEEDTOUCH(int mode, int color, int tft_cs=5, int tft_ds=6):Canvas(mode, color, tft_cs, tft_ds){};
 	~Canvas_SEEEDTOUCH(){};
 	void init();
 	Point* getTouchedPoint();
@@ -35,8 +33,8 @@ class Canvas_SEEEDTOUCH: public Canvas{
  */
 void Canvas_SEEEDTOUCH::init(){
 	Serial.println("Seeedtouch init");
-	Tft.begin();
-	Tft.fillScreen(bgColor);		
+	tft->begin();
+	tft->fillScreen(bgColor);		
 	lastMillis = millis();
 	touchSampling = millis();
 	scanSampling = millis();
@@ -55,16 +53,16 @@ Point* Canvas_SEEEDTOUCH::getTouchedPoint(){
 		//Serial.println("-----------");
 		//Serial.print("x: ");Serial.println(p.x);
 		//Serial.print("y: ");Serial.println(p.y);
-		//Serial.print("Tft.width(): ");Serial.println(Tft.width());
-		//Serial.print("Tft.height(): ");Serial.println(Tft.height());
+		//Serial.print("tft->width(): ");Serial.println(tft->width());
+		//Serial.print("tft->height(): ");Serial.println(tft->height());
 		
-		if(Tft.layoutMode == TFT_PORTRAIT){
-			p.x = map(p.x, TS_MINX, TS_MAXX, 0, Tft.width());
-			p.y = map(p.y, TS_MINY, TS_MAXY, 0, Tft.height());
+		if(tft->layoutMode == TFT_PORTRAIT){
+			p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft->width());
+			p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft->height());
 		}else{ // Landscape:
 			int oldX = p.x;
-			p.x = map(p.y, TS_MAXY, TS_MINY, 0, Tft.width());
-			p.y = map(oldX, TS_MINX, TS_MAXX, 0, Tft.height());
+			p.x = map(p.y, TS_MAXY, TS_MINY, 0, tft->width());
+			p.y = map(oldX, TS_MINX, TS_MAXX, 0, tft->height());
 		}
 
 		//Serial.print("TS_MINX: ");Serial.println(TS_MINX);
@@ -73,8 +71,8 @@ Point* Canvas_SEEEDTOUCH::getTouchedPoint(){
 		//Serial.print("TS_MAXY: ");Serial.println(TS_MAXY);
 		//Serial.print("X: ");Serial.println(p.x);
 		//Serial.print("Y: ");Serial.println(p.y);
-		//Serial.print("Tft.width(): ");Serial.println(Tft.width());
-		//Serial.print("Tft.height(): ");Serial.println(Tft.height());
+		//Serial.print("tft->width(): ");Serial.println(tft->width());
+		//Serial.print("tft->height(): ");Serial.println(tft->height());
 		
 		touchedPoint.x = p.x;
 		touchedPoint.y = p.y;

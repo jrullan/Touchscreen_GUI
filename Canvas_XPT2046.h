@@ -12,16 +12,16 @@
 	
 	*/
 	
-#if !defined(__CANVAS_STMPE610__)
-#define __CANVAS_STMPE610__
+#if !defined(__CANVAS_XPT2046__)
+#define __CANVAS_XPT2046__
 
 #include "Canvas.h"
-#include "Adafruit_STMPE610.h" 
+#include "XPT2046_Touchscreen.h" 
 
-class Canvas_STMPE610: public Canvas{
+class Canvas_XPT2046: public Canvas{
 	public:
-	Canvas_STMPE610(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){};
-	~Canvas_STMPE610(){};
+	Canvas_XPT2046(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){};
+	~Canvas_XPT2046(){};
 	void init();
 	Point* getTouchedPoint();
 };
@@ -31,8 +31,8 @@ class Canvas_STMPE610: public Canvas{
  * the TFT, the touch chipset
  * and other timing variables
  */
-void Canvas_STMPE610::init(){
-	Serial.println("STMPE init");
+void Canvas_XPT2046::init(){
+	Serial.println("XPT2046 init");
 	
 	tft->begin();
 	tft->fillScreen(bgColor);
@@ -44,18 +44,21 @@ void Canvas_STMPE610::init(){
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
 	
-	ts = new Adafruit_STMPE610(STMPE_CS);
+	ts = new XPT2046_Touchscreen(ts_cs);
+	ts->begin(0);
+	
 	// Wait until the touchscreen is started.
 	// Original driver has an apparent bug,
 	// sometimes it did start other times it didn't.
-	while(!ts->begin(STMPE_ADDR)){
-		Serial.print(".");
-	}
+	//while(!ts->begin(0)){
+	//	Serial.print(".");
+	//}
 }
 
-Point* Canvas_STMPE610::getTouchedPoint(){
+Point* Canvas_XPT2046::getTouchedPoint(){
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
-		Point p = ts->getPoint();		
+		Point p = ts->getPoint();	
+		/*
 		p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
 		p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);	
 				
@@ -63,12 +66,13 @@ Point* Canvas_STMPE610::getTouchedPoint(){
 			int oldX = p.x;
 			p.x = 320 - p.y;
 			p.y = 240 - oldX;
-			//p.rotate(POINT_STMPE610_LANDSCAPE);
+			//p.rotate(POINT_XPT2046_LANDSCAPE);
 		}
 		if(_mode == TFT_PORTRAIT){
 			p.x = 240 - p.x;
-			//p.rotate(POINT_STMPE610_PORTRAIT);
+			//p.rotate(POINT_XPT2046_PORTRAIT);
 		}
+		*/
 		
 		//Serial.print("X: ");Serial.println(p.x);
 		//Serial.print("Y: ");Serial.println(p.y);

@@ -159,7 +159,7 @@ class Adafruit_STMPE610 : public Touch
   Adafruit_STMPE610(uint8_t cspin, uint8_t mosipin, uint8_t misopin, uint8_t clkpin);
   Adafruit_STMPE610(uint8_t cs);
   Adafruit_STMPE610(void);
-  boolean begin(uint8_t i2caddr = STMPE_ADDR);  
+  bool begin(uint8_t i2caddr = STMPE_ADDR);  
 
   void writeRegister8(uint8_t reg, uint8_t val);
   uint16_t readRegister16(uint8_t reg);

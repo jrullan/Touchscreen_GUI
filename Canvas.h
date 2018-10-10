@@ -74,8 +74,7 @@ class Canvas
 public:
 
 	// Constructors and Destructor
-	Canvas();
-	Canvas(int mode, int color);
+	Canvas(int mode, int color, int tft_cs = -1, int tft_ds = -1, int ts_cs = -1);
 	virtual ~Canvas();
 	
 	// Methods
@@ -107,11 +106,13 @@ public:
 	int xTouchBuffer[TOUCH_BUFFER_SIZE];
 	int yTouchBuffer[TOUCH_BUFFER_SIZE];
 	int touchType;
+	int ts_cs;
+	Guitft* tft;
 	Touch* ts;
 	Point touchedPoint;	
 	Screen* currentScreen = NULL;
 	StackArray<Widget*> widgets;
-	unsigned int _mode;
+	unsigned int _mode;	
 	
 protected:
 	unsigned long lastMillis;
