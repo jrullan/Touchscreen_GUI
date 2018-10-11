@@ -116,8 +116,8 @@ void Gauge::drawFill(){
 	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
 	//--bar fill
 	int color=fgColor;
-	if(currentValue > this->hiLimit) color = hiLimitColor;
-	if(currentValue < this->lowLimit) color = lowLimitColor;
+	if(currentValue >= this->hiLimit) color = hiLimitColor;
+	if(currentValue <= this->lowLimit) color = lowLimitColor;
 	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);	
 }
 

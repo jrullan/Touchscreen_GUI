@@ -204,17 +204,26 @@ void Numkey::setText(char* _text){
 */
 
 void Numkey::deleteChar(){
+	int btnWidth = w / 3;
+  int btnHeight = h / 5;
 	byte textSize = getTextSize();
-	//Serial.print("Size is ");Serial.println(textSize);
-	if(textSize){
-		for(int i = textSize-1; i >= 0; i--)
-		{
-			if(text[i] != 0){
-				text[i] = 0;
-				break;
-			}
+	Serial.print("Size is ");Serial.println(textSize);
+	if(!textSize) return;
+
+	// last character, forcefully erase it now because update wont
+	if(textSize==1){
+		myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);  
+	}
+
+	// clear character in last position
+	for(int i = textSize-1; i >= 0; i--)
+	{
+		if(text[i] != 0){
+			text[i] = 0;
+			break;
 		}
 	}
+	
 	update();
 }
 
@@ -331,18 +340,23 @@ void Numkey::update(){
   int btnWidth = w / 3;
   int btnHeight = h / 5;
   
-  //Count characters to center on the button - Nice trick from the myCanvas->tft2 library
   if(*text){
     char* chars = text;
+		
+		//Count characters to center on the button - Nice trick from the myCanvas->tft2 library
     int size = 0;
     while(*chars){
       *chars++;
       size++;
     }
     //Calculate centered position of the text
-    int stringX = getCenterTextX(x,btnWidth*2,size);//x+(btnWidth*2-size*FONT_SPACE*borderWidth)/2;
-    int stringY = getCenterTextY(y,btnHeight);//y+(btnHeight-FONT_Y*borderWidth)/2;
-		myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
-    myCanvas->tft->drawString(text,stringX,stringY,borderWidth,GREEN);
-  }	
+    int stringX = getCenterTextX(x,btnWidth*2,size);
+    int stringY = getCenterTextY(y,btnHeight);
+
+		// clear area
+		myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);  
+
+    // draw remaining characters
+		myCanvas->tft->drawString(text,stringX,stringY,borderWidth,GREEN);
+  }
 }
