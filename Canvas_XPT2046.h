@@ -18,6 +18,12 @@
 #include "Canvas.h"
 #include "XPT2046_Touchscreen.h" 
 
+#define XPT2046_MIN_X 3894
+#define XPT2046_MAX_X 261
+#define XPT2046_MIN_Y 3891
+#define XPT2046_MAX_Y 320
+
+
 class Canvas_XPT2046: public Canvas{
 	public:
 	Canvas_XPT2046(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){};
@@ -57,11 +63,13 @@ void Canvas_XPT2046::init(){
 
 Point* Canvas_XPT2046::getTouchedPoint(){
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
-		Point p = ts->getPoint();	
-		/*
-		p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
-		p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);	
-				
+		Point p = ts->getPoint();
+		
+		int oldX = p.x;
+		p.x = map(p.y, XPT2046_MIN_X, XPT2046_MAX_X, 0, 240);
+		p.y = map(oldX, XPT2046_MIN_Y, XPT2046_MAX_Y, 0, 320);	
+		
+		/*		
 		if(_mode == TFT_LANDSCAPE){			
 			int oldX = p.x;
 			p.x = 320 - p.y;
@@ -76,6 +84,7 @@ Point* Canvas_XPT2046::getTouchedPoint(){
 		
 		//Serial.print("X: ");Serial.println(p.x);
 		//Serial.print("Y: ");Serial.println(p.y);
+		//Serial.println();
 
 		touchedPoint.x = p.x;
 		touchedPoint.y = p.y;

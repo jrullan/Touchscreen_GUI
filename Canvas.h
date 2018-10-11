@@ -21,12 +21,6 @@
 	#include <avr/pgmspace.h>
 #endif
 
-// Required includes:
-#include "StackArray.h"
-#include "Point.h"
-#include "GUI_TFT.h"
-#include "Touch.h"
-
 #if defined(__STM32F1__)
 	#define YP 17//A2   // must be an analog pin, use "An" notation!
 	#define XM 16//A1   // must be an analog pin, use "An" notation!
@@ -63,6 +57,13 @@
 #define TOUCH_SAMPLING_TIME 25
 #define SCAN_SAMPLING_TIME 100
 #define TOUCH_BUFFER_SIZE 5
+
+
+// Required includes:
+#include "StackArray.h"
+#include "Point.h"
+#include "GUI_TFT.h"
+#include "Touch.h"
 
 // Forward declaration of class Widget to solve issue with mutual 
 // includes

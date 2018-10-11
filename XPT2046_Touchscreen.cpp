@@ -43,9 +43,12 @@ void isrPin(void);
 
 bool XPT2046_Touchscreen::begin(uint8_t threshold)
 {
+	//Serial.println("XPT2046_Touchscreen::begin");
+	
 	SPI.begin();
 	pinMode(csPin, OUTPUT);
 	digitalWrite(csPin, HIGH);
+
 	if (255 != tirqPin) {
 		pinMode( tirqPin, INPUT );
 		attachInterrupt( tirqPin, isrPin, FALLING );
@@ -107,6 +110,8 @@ static int16_t besttwoavg( int16_t x , int16_t y , int16_t z ) {
 
 void XPT2046_Touchscreen::update()
 {
+	//Serial.println("XPT2046_Touchscreen::update");
+	
 	int16_t data[6];
 
 	if (!isrWake) return;
