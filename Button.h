@@ -12,13 +12,20 @@
 #include "Text.h"
 
 #define DEBOUNCE 200
+#define LABEL_LEFT		0
+#define LABEL_TOP			1
+#define LABEL_RIGHT		2
+#define LABEL_BOTTOM	3
+
 
 class Button : public Widget
 {
 
 public:
 
-	Button(unsigned char textLength = 8);
+	//Button(unsigned char textLength = 8);
+	Button();
+	Button(char* text, char* label = 0);
 	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char textLength = 8);
 	Button(unsigned int radius, int backgroundColor, int textColor, int borderColor);
 	virtual ~Button();
@@ -46,8 +53,8 @@ public:
 	
 	//Attributes
 	Text contents;
-	char* label;
-	char labelPos=0; //label position: 0-left, 1-top, 2-right, 3-bottom
+	char* label = 0;	// had to initilize to zero to avoid trying to get it in getLabelSize if not initialized
+	char labelPos = 0; //label position: 0-left, 1-top, 2-right, 3-bottom
 	bool touched;
 	bool block = false;
 	uint8_t cornerRadius = 0;

@@ -2,15 +2,15 @@
 
 Numkey::Numkey(){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
+	this->init();
 }
 
 Numkey::Numkey(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
-	x = 0;
-	y = 0;
+	this->init();
+
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
-	this->init();
 }
 
 Numkey::~Numkey(){
@@ -22,6 +22,8 @@ void Numkey::init(){
 	type = 0x32;
 	borderWidth = 2;
 	charPos = 0;
+	setSize(120,180);
+	debounceTime = 100;
 	autoremove = true;
 }
 
@@ -73,18 +75,18 @@ void Numkey::drawFrame(){
   yPos = btnHeight/2 - FONT_Y;
   byte xF=0;
   byte yF=1;
-  myCanvas->tft->drawString("<-",x+xPos+2*btnWidth-6,y+yPos,fontSize,BLACK); 
+  myCanvas->tft->drawString("<-",x+xPos+2*btnWidth-6,y+yPos,fontSize,fgColor); 
   for(byte number=1; number<10; number++)
   {
-  	myCanvas->tft->drawNumber(number,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
+  	myCanvas->tft->drawNumber(number,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,fgColor);
   	if(number == 3 || number == 6 || number == 9){
   		yF++;
   		xF = 0;
   	}
   }
-  myCanvas->tft->drawString(".",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);  
-  myCanvas->tft->drawNumber(0,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
-  myCanvas->tft->drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,BLACK);
+  myCanvas->tft->drawString(".",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,fgColor);  
+  myCanvas->tft->drawNumber(0,x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,fgColor);
+  myCanvas->tft->drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,fgColor);
 }
 
 void Numkey::append(char* c){

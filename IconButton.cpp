@@ -5,10 +5,8 @@
 ///////////////////////////////////////////////////////////
 #include "IconButton.h"
 
-IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed){
-	
+IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed){	
 	this->type = 0x35;
-	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
 	this->labelPos = 2;
 	this->isButton = true;
 	this->touched = false;
