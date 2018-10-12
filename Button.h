@@ -54,7 +54,7 @@ public:
 	//Attributes
 	Text contents;
 	char* label = 0;	// had to initilize to zero to avoid trying to get it in getLabelSize if not initialized
-	char labelPos = 0; //label position: 0-left, 1-top, 2-right, 3-bottom
+	char labelPos = LABEL_LEFT; //label position: 0-left, 1-top, 2-right, 3-bottom
 	bool touched;
 	bool block = false;
 	uint8_t cornerRadius = 0;

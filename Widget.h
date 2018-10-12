@@ -19,6 +19,9 @@
 #define FONT_X 6
 #define FONT_Y 8
 
+
+#include <Arduino.h>
+
 // Forward declarations
 class Canvas;
 class Point;
@@ -112,14 +115,14 @@ public:
 		}		
 	};
 	
-	static unsigned char getTextLength(char* c){
-		char size = 0;
+	static uint8_t getTextLength(char* c){
+		uint8_t size = 0;
 		if(*c){
-		char* chars = c;
-		while(*chars){
-		  *chars++;
-		  size++;
-		}
+			char* chars = c;
+			while(*chars){
+				*chars++; // equivalent to *(chars++), returns the value of *chars and then it increments the pointer
+				size++;
+			}
 	  }
 	  return size;
 	}

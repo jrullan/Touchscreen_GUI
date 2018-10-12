@@ -39,12 +39,11 @@ Button::Button(char* text, char* _label){
 	contents = Text(Widget::getTextLength(text));
 	this->isRound = false;
 	init();
-
-	setText(text);
 	
 	if(_label){
 		setLabel(_label);
-	}	
+	}
+	setText(text);
 }
 
 /**
@@ -120,13 +119,32 @@ void Button::drawBackground(int color){
 	// Button background	
 	if(!this->isRound){
 		if(cornerRadius > 0){
-			myCanvas->tft->fillRoundRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),cornerRadius,color);
+			//myCanvas->tft->fillRoundRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),cornerRadius,color);
+			myCanvas->tft->fillRoundRect(x+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),cornerRadius,color);
 		}else{
-			myCanvas->tft->fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
+			//myCanvas->tft->fillRect(xl+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
+			myCanvas->tft->fillRect(x+borderWidth, y+borderWidth, wl-(2*borderWidth),h-(2*borderWidth),color);
 		}
 	}else{
 		int radius = (w>>1)-borderWidth;
-		myCanvas->tft->fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);//radius-borderWidth/2,color);
+		//myCanvas->tft->fillCircle(xl+radius+borderWidth,y+radius+borderWidth,radius,color);//radius-borderWidth/2,color);
+		myCanvas->tft->fillCircle(x+radius+borderWidth,y+radius+borderWidth,radius,color);//radius-borderWidth/2,color);
+	}
+}
+
+/**
+ * Draws the text inside the button
+ */
+void Button::drawText(){
+
+	int labelWidth=getLabelSize();
+	// Draw contents text
+	if(*contents.text){
+		char length = getTextLength(contents.text);//contents.getTextSize();
+		//int stringX = getCenterTextX(x+labelWidth,w,length);
+		int stringX = getCenterTextX(x,w,length);
+		int stringY = getCenterTextY(y,h);
+		myCanvas->tft->drawString(contents.text,stringX,stringY,fontSize,fgColor);
 	}
 }
 
@@ -148,7 +166,8 @@ void Button::drawBorder(){
 		xl = x + labelWidth;
 	}  
 	
-	int xPos = xl;	
+	//int xPos = xl;	
+	int xPos = x;	
 	int width = w;
 	int yPos = y;
 	uint8_t height = h;
@@ -197,24 +216,9 @@ void Button::drawLabel(){
 		if(xl > 0 && xl <= (myCanvas->w - labelWidth) && yl>0 && yl <= (myCanvas->h - labelHeight)){
 			myCanvas->tft->drawString(label,xl,yl,fontSize,~this->myCanvas->bgColor);
 		}else{	// if not within screen area draw a red rectangle around the button as a warning
-			myCanvas->tft->drawRect(x-4,y-4,w+4,h+4,RED);
+			myCanvas->tft->fillRect(x-4,y-4,w+8,h+8,RED);
 		}
 	}	
-}
-
-/**
- * Draws the text inside the button
- */
-void Button::drawText(){
-	this->drawLabel();
-	int labelWidth=getLabelSize();
-	// Draw contents text
-	if(*contents.text){
-		char length = getTextLength(contents.text);//contents.getTextSize();
-		int stringX = getCenterTextX(x+labelWidth,w,length);
-		int stringY = getCenterTextY(y,h);
-		myCanvas->tft->drawString(contents.text,stringX,stringY,fontSize,fgColor);
-	}
 }
 
 /**
@@ -223,6 +227,7 @@ void Button::drawText(){
  * void function() = 0;
  */
 void Button::show(){
+	drawLabel();	
 	drawBackground(bgColor);
 	update();
 }
