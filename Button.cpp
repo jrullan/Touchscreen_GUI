@@ -16,12 +16,6 @@
 
 #include "Button.h"
 
-/*
-Button::Button(unsigned char textLength){
-	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
-	contents = Text(textLength);
-}
-*/
 
 /*
  * Basic Constructor, no parameters

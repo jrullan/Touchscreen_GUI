@@ -7,20 +7,18 @@
 
 IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed){	
 	this->type = 0x35;
-	this->labelPos = 2;
-	this->isButton = true;
-	this->touched = false;
+	Button::init();
 	this->borderWidth = 0;
 	this->setSize(_w,_h);
 	this->debounceTime = DEBOUNCE;
 	this->imageUnpressed = _imageUnpressed;
 	this->imagePressed = _imagePressed;
-	lastMillis = millis();
 }
 
 IconButton::~IconButton(){}
 
 void IconButton::show(){
+	drawLabel();
 	update();
 }
 
@@ -30,7 +28,6 @@ void IconButton::show(){
  * color
  */
 void IconButton::update(){
-	drawLabel();
 	if(this->imagePressed != NULL && this->touched){
 		drawRGBABitmap(this->x,this->y,this->imagePressed,this->w,this->h, (uint16_t) transparentColor);
 	}else{

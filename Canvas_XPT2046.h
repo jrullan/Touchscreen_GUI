@@ -64,23 +64,19 @@ void Canvas_XPT2046::init(){
 Point* Canvas_XPT2046::getTouchedPoint(){
 	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
 		Point p = ts->getPoint();
+		// Invert x and y
+		int oldX = p.x;		
+		p.x = p.y;
+		p.y = oldX;
 		
-		int oldX = p.x;
-		p.x = map(p.y, XPT2046_MIN_X, XPT2046_MAX_X, 0, 240);
-		p.y = map(oldX, XPT2046_MIN_Y, XPT2046_MAX_Y, 0, 320);	
-		
-		/*		
-		if(_mode == TFT_LANDSCAPE){			
-			int oldX = p.x;
-			p.x = 320 - p.y;
-			p.y = 240 - oldX;
-			//p.rotate(POINT_XPT2046_LANDSCAPE);
-		}
 		if(_mode == TFT_PORTRAIT){
-			p.x = 240 - p.x;
-			//p.rotate(POINT_XPT2046_PORTRAIT);
+			p.x = map(p.x, XPT2046_MIN_X, XPT2046_MAX_X, 0, w);
+			p.y = map(p.y, XPT2046_MIN_Y, XPT2046_MAX_Y, 0, h);	
+		}else{
+			oldX = p.x;
+			p.x = map(p.y, XPT2046_MAX_Y, XPT2046_MIN_Y, 0, w);
+			p.y = map(oldX, XPT2046_MIN_X, XPT2046_MAX_X, 0, h);				
 		}
-		*/
 		
 		//Serial.print("X: ");Serial.println(p.x);
 		//Serial.print("Y: ");Serial.println(p.y);
