@@ -190,7 +190,7 @@ void Numkey::setNum(int num){
 	//update();
 }
 
-void Numkey::setNumkeyEventHandler(void (*functionPointer)(Numkey *)){
+void Numkey::setEventHandler(void (*functionPointer)(Numkey *)){
 	eventHandler = functionPointer;
 }
 

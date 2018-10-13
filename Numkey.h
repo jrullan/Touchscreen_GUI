@@ -28,7 +28,7 @@ public:
 	void init();
 	
 	void setNum(int num);
-	void setNumkeyEventHandler(void (*functionPointer)(Numkey*));
+	void setEventHandler(void (*functionPointer)(Numkey*));
 	void deleteChar();
 	void clear();
 	void hide();
