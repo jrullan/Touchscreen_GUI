@@ -97,7 +97,8 @@ void Display::setNum(int num, bool now){
 
 void Display::setText(char* _text, bool now){
 	if(now) drawText(bgColor);
-	contents->setText(_text);
+	//contents->setText(_text);
+	contents->text = _text; // changed from calling setText to just passing the pointer, reduced 4 bytes in program memory
 	if(now) drawText(fgColor);
 }
 

@@ -21,7 +21,7 @@
  * Basic Constructor, no parameters
  */
 Button::Button(){
-	contents = Text(8);
+	contents = new Text(8);
 	this->isRound = false;
 	init();
 }
@@ -30,7 +30,7 @@ Button::Button(){
  * Constructor with initial "Text" and optional "Label"
  */
 Button::Button(char* text, char* _label){
-	contents = Text(Widget::getTextLength(text));
+	contents = new Text(Widget::getTextLength(text));
 	this->isRound = false;
 	init();
 	
@@ -44,7 +44,7 @@ Button::Button(char* text, char* _label){
  * Constructor for a typical rectangle button
  */
 Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textLength){
-	contents = Text(textLength);
+	contents = new Text(textLength);
 	this->isRound = false;
 	init();
 	
@@ -56,7 +56,7 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
  * Constructor for a round button
  */
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
-	contents = Text(8);
+	contents = new Text(8);
 	this->isRound = true;
 	init();
 	
@@ -67,7 +67,8 @@ Button::Button(unsigned int radius, int backgroundColor, int textColor, int bord
 }
 
 Button::~Button(){
-	free(contents.text);
+	free(contents->text);
+	free(label);
 }
 
 /**
@@ -133,12 +134,12 @@ void Button::drawText(){
 
 	int labelWidth=getLabelSize();
 	// Draw contents text
-	if(*contents.text){
-		char length = getTextLength(contents.text);//contents.getTextSize();
+	if(*contents->text){
+		char length = getTextLength(contents->text);//contents.getTextSize();
 		//int stringX = getCenterTextX(x+labelWidth,w,length);
 		int stringX = getCenterTextX(x,w,length);
 		int stringY = getCenterTextY(y,h);
-		myCanvas->tft->drawString(contents.text,stringX,stringY,fontSize,fgColor);
+		myCanvas->tft->drawString(contents->text,stringX,stringY,fontSize,fgColor);
 	}
 }
 
@@ -295,13 +296,14 @@ void Button::setEventHandler(void (*functionPointer)(Button *)){
 }
 
 void Button::setNum(int num){
-	if(contents.getNum()==num)return;
-	contents.clear();
-	contents.setNum(num);
+	if(contents->getNum()==num)return;
+	contents->clear();
+	contents->setNum(num);
 }
 
 void Button::setText(char* _text){
-  contents.text = _text;
+  contents->text = _text;
+	//contents->setText(_text);
 }
 
 void Button::setLabel(char* _label){
@@ -313,16 +315,16 @@ void Button::setLabel(char* _label){
 }
 
 char* Button::getText(){
-  return contents.text;
+  return contents->text;
 }
 
 long Button::getNum(){
-	return contents.getNum();
+	return contents->getNum();
 }
 
 void Button::fitToText(){
-  if(*contents.text){
-	char length = getTextLength(contents.text);//contents.getTextSize();
+  if(*contents->text){
+	char length = getTextLength(contents->text);//contents.getTextSize();
     w = length * FONT_X * fontSize + FONT_SPACE;
     h = FONT_Y * fontSize + FONT_Y;
   }
