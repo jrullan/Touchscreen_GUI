@@ -102,6 +102,9 @@ void Canvas::add(Widget* widget, int x, int y, uint8_t show){
 }
 
 void Canvas::setScreen(Screen* screen, uint8_t show){
+	if(currentScreen != NULL){
+		currentScreen->hide();
+	}
 	currentScreen = screen;
 	if(show) currentScreen->show();
 }

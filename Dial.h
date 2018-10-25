@@ -50,6 +50,7 @@ class Dial : public Indicator{
 		void drawBorder();
 		void drawFace();
 		void drawNeedle(int cX, int cY, int degree, int radius, int color);
+		void drawNeedleAndValue();
 		int getX(int cX, int deg, int radius);
 		int getY(int cY, int deg, int radius);
 		

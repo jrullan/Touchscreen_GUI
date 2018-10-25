@@ -26,8 +26,8 @@ public:
 	void drawFrame();
 	void drawText(int color);
 	void fitToText();
-	void setNum(int num, bool now = true);
-	void setText(char* _text, bool now = true);
+	void setNum(int num, bool force = false);
+	void setText(char* _text, bool force = false);
 	void append(char* c);
 	
 	//new testing out...

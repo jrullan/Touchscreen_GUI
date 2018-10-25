@@ -29,15 +29,26 @@ void Screen::add(Widget* widget, int wX, int wY){
 	widget->setCanvas(canvas);
 	widget->x = wX + this->x;
 	widget->y = wY + this->y;
+	widget->visible = false;	// added to make the widgets not visible by default if in a screen to avoid accidentaly updating them
+}
+
+void Screen::hide(){
+	//canvas->tft->fillRect(x,y,w,h,canvas->bgColor);
+	byte cnt = this->widgets.count();
+	for(int i=0;i<cnt;i++){
+		//if(this->widgets[i]->visible) this->widgets[i]->hide();
+		this->widgets[i]->visible = false;
+	}	
 }
 
 void Screen::show(){
 	if(this->canvas->currentScreen != this) return; // Do not draw if not canvas' current screen.
-	
 	canvas->tft->fillRect(x,y,w,h,bgColor);
 	byte cnt = this->widgets.count();
 	for(int i=0;i<cnt;i++){
-		if(this->widgets[i]->visible) this->widgets[i]->show();
+		//if(this->widgets[i]->visible) this->widgets[i]->show();
+		this->widgets[i]->visible = true;
+		this->widgets[i]->show();
 	}	
 }
 

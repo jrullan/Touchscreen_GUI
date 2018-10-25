@@ -171,43 +171,8 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
 	*/
 }
 
-int Dial::getX(int cX,int deg, int radius){
-	return (cX + radius * cos(deg*PI/180));
-}
-
-int Dial::getY(int cY, int deg, int radius){
-	return (cY - radius * sin(deg*PI/180));
-}
-
-
-//Overriden virtual methods
-void Dial::show(){
-	// Draw face
-	drawBorder();
-	drawFace();
-	update();
-}
-
-void Dial::update(){
-	if(!forcedUpdate){	
-		if(!visible) return;
-		if(previousValue == currentValue) return;
-	}
-	
+void Dial::drawNeedleAndValue(){
 	int color = fgColor;
-	
-	// Limit crossing forces border to redraw
-	/*
-	if(previousValue < hiLimit && previousValue > lowLimit){
-		if(currentValue >= hiLimit || currentValue <= lowLimit) drawBorder();
-	}
-	if(previousValue >= hiLimit){
-		if(currentValue < hiLimit) drawBorder();
-	}
-	if(previousValue <= lowLimit){
-		if(currentValue > lowLimit) drawBorder();
-	}
-	*/
 	
 	// Draw needle
 	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);
@@ -224,5 +189,45 @@ void Dial::update(){
 		if(currentValue>99) dSpace = 9 * fontSize;
 		myCanvas->tft->fillRect(x-9*fontSize,y+radius-12*fontSize,18*fontSize,8*fontSize,bgColor);
 		myCanvas->tft->drawNumber(currentValue,x-dSpace,y+radius-12*fontSize,fontSize,color);
+	}	
+}
+
+int Dial::getX(int cX,int deg, int radius){
+	return (cX + radius * cos(deg*PI/180));
+}
+
+int Dial::getY(int cY, int deg, int radius){
+	return (cY - radius * sin(deg*PI/180));
+}
+
+
+//Overriden virtual methods
+void Dial::show(){
+	// Draw face
+	drawBorder();
+	drawFace();
+	drawNeedleAndValue();
+	//update();
+}
+
+void Dial::update(){
+	if(!visible) return;
+	
+	if(!forcedUpdate){	
+		if(previousValue == currentValue) return;
 	}
+	
+	// Limit crossing forces border to redraw
+	/*
+	if(previousValue < hiLimit && previousValue > lowLimit){
+		if(currentValue >= hiLimit || currentValue <= lowLimit) drawBorder();
+	}
+	if(previousValue >= hiLimit){
+		if(currentValue < hiLimit) drawBorder();
+	}
+	if(previousValue <= lowLimit){
+		if(currentValue > lowLimit) drawBorder();
+	}
+	*/
+	drawNeedleAndValue();
 }

@@ -209,7 +209,7 @@ void Button::drawLabel(){
 		
 		//Check label is within screen area
 		if(xl > 0 && xl <= (myCanvas->w - labelWidth) && yl>0 && yl <= (myCanvas->h - labelHeight)){
-			myCanvas->tft->drawString(label,xl,yl,fontSize,~this->myCanvas->bgColor);
+			myCanvas->tft->drawString(label,xl,yl,fontSize,fgColor);
 		}else{	// if not within screen area draw a red rectangle around the button as a warning
 			myCanvas->tft->fillRect(x-4,y-4,w+8,h+8,RED);
 		}

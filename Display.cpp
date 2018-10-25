@@ -88,18 +88,18 @@ void Display::fitToText(){
   }
 }
 
-void Display::setNum(int num, bool now){
+void Display::setNum(int num, bool force){
 	if(contents->getNum() == num) return;
-	if(now) drawText(bgColor);
+	if(force) drawText(bgColor);
 	contents->setNum(num);
-	if(now) drawText(fgColor);
+	if(force) drawText(fgColor);
 }
 
-void Display::setText(char* _text, bool now){
-	if(now) drawText(bgColor);
+void Display::setText(char* _text, bool force){
+	if(force) drawText(bgColor);
 	//contents->setText(_text);
 	contents->text = _text; // changed from calling setText to just passing the pointer, reduced 4 bytes in program memory
-	if(now) drawText(fgColor);
+	if(force) drawText(fgColor);
 }
 
 void Display::deleteChar(){

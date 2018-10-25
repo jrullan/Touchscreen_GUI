@@ -28,6 +28,7 @@ class Screen{
 		void init();
 		void add(Widget* w,int x, int y);
 		void touchWidgets(Point* p);
+		void hide();
 		void show();
 		void setCanvas(Canvas* c);
 		
