@@ -21,7 +21,7 @@ void Dial::init(){
 	type = 0x21;
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
-	this->currentValue = setpoint;
+	this->currentValue = scaleMin;
 	this->maxDegree = 315;
 	this->minDegree = 585;
 	this->tickSize = 10;
@@ -187,7 +187,8 @@ void Dial::drawNeedleAndValue(){
 		if(currentValue<10) dSpace = 3 * fontSize;
 		if(currentValue>=10) dSpace = 6 * fontSize;
 		if(currentValue>99) dSpace = 9 * fontSize;
-		myCanvas->tft->fillRect(x-9*fontSize,y+radius-12*fontSize,18*fontSize,8*fontSize,bgColor);
+		if(currentValue>999) dSpace = 12 * fontSize;
+		myCanvas->tft->fillRect(x-12*fontSize,y+radius-12*fontSize,24*fontSize,8*fontSize,bgColor);
 		myCanvas->tft->drawNumber(currentValue,x-dSpace,y+radius-12*fontSize,fontSize,color);
 	}	
 }
