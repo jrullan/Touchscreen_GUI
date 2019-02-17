@@ -33,6 +33,7 @@ class Canvas_SEEEDTOUCH: public Canvas{
  */
 void Canvas_SEEEDTOUCH::init(){
 	Serial.println("Seeedtouch init");
+	
 	tft->begin();
 	tft->fillScreen(bgColor);		
 	lastMillis = millis();

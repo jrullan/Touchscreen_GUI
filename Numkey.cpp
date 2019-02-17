@@ -209,7 +209,7 @@ void Numkey::deleteChar(){
 	int btnWidth = w / 3;
   int btnHeight = h / 5;
 	byte textSize = getTextSize();
-	Serial.print("Size is ");Serial.println(textSize);
+	//Serial.print("Size is ");Serial.println(textSize);
 	if(!textSize) return;
 
 	// last character, forcefully erase it now because update wont
