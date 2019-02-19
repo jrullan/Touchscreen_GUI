@@ -11,6 +11,8 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
+//#pragma GCC optimize ("-O2")
+
 #if defined(ARDUINO) && ARDUINO >= 100
 	#define SEEEDUINO
 	#include <Arduino.h>

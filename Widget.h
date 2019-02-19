@@ -11,6 +11,8 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+//#pragma GCC optimize ("-O2")
+
 //Length of characters to use for labels and texts in general
 #define DISPLAY_SIZE 6
 

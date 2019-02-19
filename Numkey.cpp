@@ -237,7 +237,12 @@ void Numkey::clear(){
 				text[i] = 0;
 		}
 	}
-	update();
+	
+  int btnWidth = w / 3;
+  int btnHeight = h / 5;
+	// clear area
+	myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK); 	
+	//update();
 }
 
 //Overriden virtual methods
