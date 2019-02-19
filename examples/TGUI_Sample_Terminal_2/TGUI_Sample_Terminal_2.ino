@@ -32,30 +32,30 @@ Terminal terminal = Terminal(240,50,TERMINAL_SCROLL_UP);
 // EVENT HANDLING ROUTINES
 //==================================
 void buttonEventHandler(Button* btn){
-  Serial.println((btn->touched)?"Slider On":"Slider Off");
-  terminal.print((btn->touched)?"Slider On":"Slider Off",(btn->touched)?ILI9341_GREEN:ILI9341_LIGHTGREY);
-  btn->update();
+	Serial.println((btn->touched)?"Slider On":"Slider Off");
+	terminal.print((btn->touched)?"Slider On":"Slider Off",(btn->touched)?ILI9341_GREEN:ILI9341_LIGHTGREY);
+	btn->update();
 }
 
 void welcomeMessage(){
-  terminal.print("Hello World!",YELLOW);
-  terminal.print("This is the terminal",GREEN);
-  terminal.print("Enjoy!",RED);  
+	terminal.print("Hello World!",YELLOW);
+	terminal.print("This is the terminal",GREEN);
+	terminal.print("Enjoy!",RED);  
 }
 //==================================
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
-	
-	// Add GUI initialization code here:
-  btnSlider.setEventHandler(&buttonEventHandler);
-  btnSlider.transparentColor = BLACK;
-  terminal.setColors(BLACK,WHITE,WHITE);
+	canvas.init();
 
-  canvas.add(&terminal,0,0);
+	// Add GUI initialization code here:
+	btnSlider.setEventHandler(&buttonEventHandler);
+	btnSlider.transparentColor = BLACK;
+	terminal.setColors(BLACK,WHITE,WHITE);
+
+	canvas.add(&terminal,0,0);
 	canvas.add(&btnSlider,90,145);
-  welcomeMessage();
+	welcomeMessage();
 }
 
 //==================================

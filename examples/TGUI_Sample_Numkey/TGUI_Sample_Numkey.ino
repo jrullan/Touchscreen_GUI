@@ -29,23 +29,23 @@ Numkey numkey = Numkey();
 // EVENT HANDLING ROUTINES
 //==================================
 void numkeyEventHandler(Numkey* nk){
-  Serial.println(nk->getText());
-  nk->clear();
+	Serial.println(nk->getText());
+	nk->clear();
 }
 
 //==================================
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
-	
+	canvas.init();
+
 	// Add GUI initialization code here:
-  numkey.setSize(120,180);
-  numkey.setColors(ILI9341_DARKGREY,ILI9341_BLACK,ILI9341_WHITE);
-  numkey.setEventHandler(&numkeyEventHandler);
-  numkey.setDebounce(100);
-  numkey.autoremove = false;
-	
+	numkey.setSize(120,180);
+	numkey.setColors(ILI9341_DARKGREY,ILI9341_BLACK,ILI9341_WHITE);
+	numkey.setEventHandler(&numkeyEventHandler);
+	numkey.setDebounce(100);
+	numkey.autoremove = false;
+
 	canvas.add(&numkey,60,50);
 }
 

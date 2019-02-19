@@ -50,37 +50,37 @@ void guiSetup(){
   canvas.init();
 	
 	// Add GUI initialization code here:
-  screen_1.bgColor = 0xDFE;  
-  display_1.setSize(240,40);
-  display_1.setColors(ILI9341_BLUE,WHITE,WHITE);
-  display_1.borderWidth = 2;
-  display_1.setText("Screen 1",false);
-  screen_1.add(&display_1,0,0);
+	screen_1.bgColor = 0xDFE;  
+	display_1.setSize(240,40);
+	display_1.setColors(ILI9341_BLUE,WHITE,WHITE);
+	display_1.borderWidth = 2;
+	display_1.setText("Screen 1",false);
+	screen_1.add(&display_1,0,0);
 
-  screen_2.bgColor = 0xfff68f;
-  display_2.setSize(240,40);
-  display_2.setColors(0xb2ac64,WHITE,WHITE);
-  display_2.borderWidth = 2;
-  display_2.setText("Screen 2",false);
-  screen_2.add(&display_2,0,0);
+	screen_2.bgColor = 0xfff68f;
+	display_2.setSize(240,40);
+	display_2.setColors(0xb2ac64,WHITE,WHITE);
+	display_2.borderWidth = 2;
+	display_2.setText("Screen 2",false);
+	screen_2.add(&display_2,0,0);
 
-  btnShowDisplay1.setSize(120,40);
-  btnShowDisplay1.setColors(ILI9341_DARKGREY,ILI9341_WHITE,ILI9341_LIGHTGREY);
-  btnShowDisplay1.cornerRadius = 8;
-  btnShowDisplay1.setText("Screen 1");
-  btnShowDisplay1.setEventHandler(&showDisplay1EventHandler);
-  btnShowDisplay1.setDebounce(400);
-  
-  btnShowDisplay2.setSize(120,40);
-  btnShowDisplay2.setColors(ILI9341_DARKGREY,ILI9341_WHITE,ILI9341_LIGHTGREY);
-  btnShowDisplay2.cornerRadius = 8;
-  btnShowDisplay2.setText("Screen 2");
-  btnShowDisplay2.setEventHandler(&showDisplay2EventHandler);
-  btnShowDisplay2.setDebounce(400);
+	btnShowDisplay1.setSize(120,40);
+	btnShowDisplay1.setColors(ILI9341_DARKGREY,ILI9341_WHITE,ILI9341_LIGHTGREY);
+	btnShowDisplay1.cornerRadius = 8;
+	btnShowDisplay1.setText("Screen 1");
+	btnShowDisplay1.setEventHandler(&showDisplay1EventHandler);
+	btnShowDisplay1.setDebounce(400);
+
+	btnShowDisplay2.setSize(120,40);
+	btnShowDisplay2.setColors(ILI9341_DARKGREY,ILI9341_WHITE,ILI9341_LIGHTGREY);
+	btnShowDisplay2.cornerRadius = 8;
+	btnShowDisplay2.setText("Screen 2");
+	btnShowDisplay2.setEventHandler(&showDisplay2EventHandler);
+	btnShowDisplay2.setDebounce(400);
 
 	canvas.add(&btnShowDisplay1,0,280);
-  canvas.add(&btnShowDisplay2,120,280);
-  canvas.setScreen(&screen_1);
+	canvas.add(&btnShowDisplay2,120,280);
+	canvas.setScreen(&screen_1);
 }
 
 //==================================

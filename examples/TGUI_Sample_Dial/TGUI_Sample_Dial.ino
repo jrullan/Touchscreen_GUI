@@ -75,8 +75,8 @@ void guiSetup(){
   dial.setCV(72,false);
       
 	canvas.add(&dial,100,160);
-  canvas.add(&btnPlus,160,160 - dial.radius);
-  canvas.add(&btnMinus,160,160 + dial.radius - btnMinus.h);
+	canvas.add(&btnPlus,160,160 - dial.radius);
+	canvas.add(&btnMinus,160,160 + dial.radius - btnMinus.h);
 }
 
 //==================================

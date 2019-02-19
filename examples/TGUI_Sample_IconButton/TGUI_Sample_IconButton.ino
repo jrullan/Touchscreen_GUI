@@ -30,20 +30,20 @@ IconButton btnSlider = IconButton(60,30,slider_off,slider_on);
 // EVENT HANDLING ROUTINES
 //==================================
 void buttonEventHandler(Button* btn){
-  Serial.println((btn->touched)?"Slider On":"Slider Off");
-  btn->update();
+	Serial.println((btn->touched)?"Slider On":"Slider Off");
+	btn->update();
 }
 
 //==================================
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
-	
+	canvas.init();
+
 	// Add GUI initialization code here:
-  btnSlider.setEventHandler(&buttonEventHandler);
-  btnSlider.transparentColor = BLACK;
-  	
+	btnSlider.setEventHandler(&buttonEventHandler);
+	btnSlider.transparentColor = BLACK;
+		
 	canvas.add(&btnSlider,90,145);
 }
 

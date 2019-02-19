@@ -34,13 +34,13 @@ Display disp = Display();
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
-	
+	canvas.init();
+
 	// Add GUI initialization code here:
 	disp.setSize(80,40);
-  disp.setColors(ILI9341_BLUE,ILI9341_WHITE,ILI9341_LIGHTGREY);
-  disp.setText("Hello",false);
-  
+	disp.setColors(ILI9341_BLUE,ILI9341_WHITE,ILI9341_LIGHTGREY);
+	disp.setText("Hello",false);
+
 	canvas.add(&disp,80,140);
 }
 

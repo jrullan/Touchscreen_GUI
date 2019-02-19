@@ -39,16 +39,16 @@ void buttonEventHandler(Button* btn){
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
-	
+	canvas.init();
+
 	// Add GUI initialization code here:
 	button.setColors(ILI9341_DARKGREY,ILI9341_WHITE,ILI9341_LIGHTGREY);
-  button.setSize(80,40);
-  button.cornerRadius = 8;
-  button.setText("Press");
-  button.setDebounce(200);
-  button.setEventHandler(&buttonEventHandler);
-  
+	button.setSize(80,40);
+	button.cornerRadius = 8;
+	button.setText("Press");
+	button.setDebounce(200);
+	button.setEventHandler(&buttonEventHandler);
+
 	canvas.add(&button,80,140);
 }
 
