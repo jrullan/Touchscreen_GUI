@@ -234,15 +234,18 @@ void Numkey::clear(){
 	if(textSize){
 		for(int i = textSize-1; i >= 0; i--)
 		{
-				text[i] = 0;
+			text[i] = 0;
 		}
 	}
 	
   int btnWidth = w / 3;
   int btnHeight = h / 5;
-	// clear area
-	myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK); 	
-	//update();
+  // clear area
+  if(!autoremove){
+		myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
+  }else{
+		update();
+  }
 }
 
 //Overriden virtual methods
