@@ -12,6 +12,7 @@ Gauge	KEYWORD1
 IconButton	KEYWORD1
 Indicator KEYWORD1
 Numkey	KEYWORD1
+OptionButton	KEYWORD1
 Point	KEYWORD1
 Popup	KEYWORD1
 StackArray	KEYWORD1
@@ -31,6 +32,7 @@ setColors	KEYWORD2
 setText	KEYWORD2
 setEventHandler	KEYWORD2
 setDebounce	KEYWORD2
+setLabel	KEYWORD2
 setLimits	KEYWORD2
 setHiLimit	KEYWORD2
 setLowLimit	KEYWORD2
