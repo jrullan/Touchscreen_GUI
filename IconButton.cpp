@@ -6,8 +6,8 @@
 #include "IconButton.h"
 
 IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed){	
-	this->type = 0x35;
 	Button::init();
+	this->type = 0x35;
 	this->borderWidth = 0;
 	this->setSize(_w,_h);
 	this->debounceTime = DEBOUNCE;

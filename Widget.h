@@ -114,6 +114,8 @@ public:
 			return "popup";
 		}else if ((w->type & 0xFF) == 0x34){
 			return "option";
+		}else if ((w->type & 0xFF) == 0x35){
+			return "iconbutton";
 		}		
 	};
 	
