@@ -66,6 +66,7 @@ Button::Button(unsigned int radius, int backgroundColor, int textColor, int bord
 	this->setColors(backgroundColor,textColor,borderColor);
 }
 
+
 Button::~Button(){
 	free(contents->text);
 	free(label);
@@ -213,7 +214,7 @@ void Button::drawLabel(){
 		}else{	// if not within screen area draw a red rectangle around the button as a warning
 			myCanvas->tft->fillRect(x-4,y-4,w+8,h+8,RED);
 		}
-	}	
+	}
 }
 
 /**
@@ -295,32 +296,40 @@ void Button::setEventHandler(void (*functionPointer)(Button *)){
 	eventHandler = functionPointer;
 }
 
+
 void Button::setNum(int num){
 	if(contents->getNum()==num)return;
 	contents->clear();
 	contents->setNum(num);
 }
 
+
 void Button::setText(char* _text){
   contents->text = _text;
 	//contents->setText(_text);
 }
 
+
 void Button::setLabel(char* _label){
-	if(!label){ // if not already set (initialized...)
+	if(!*label){ // if not already set (initialized...)
 		int labelSize = Widget::getTextLength(_label);
-		if(label = (char *)malloc(labelSize+1)) memset(label,0,labelSize+1);
-		label = _label;
+		if(label = (char *)malloc(labelSize+1)){ 
+			memset(label,0,labelSize+1);
+			label = _label;
+		}
 	}
 }
+
 
 char* Button::getText(){
   return contents->text;
 }
 
+
 long Button::getNum(){
 	return contents->getNum();
 }
+
 
 void Button::fitToText(){
   if(*contents->text){
@@ -329,5 +338,3 @@ void Button::fitToText(){
     h = FONT_Y * fontSize + FONT_Y;
   }
 }
-
-

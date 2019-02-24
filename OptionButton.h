@@ -14,13 +14,18 @@
 #define DEBOUNCE 200
 #endif
 
-class Option : public Button
+class OptionButton : public Button
 {
 
 public:
-	Option(unsigned int diameter, int backgroundColor, int textColor, int borderColor);
-	~Option();
+	OptionButton();
+	OptionButton(unsigned int diameter, int backgroundColor, int textColor, int borderColor);
+	~OptionButton();
 
+	void init();
+	void show();
+	void update();
+	
 private:
 
 };
