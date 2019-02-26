@@ -34,8 +34,6 @@ Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BLACK,TFT_CS,TFT_DS,TS_CS);
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
-	
 	// Add GUI initialization code here:
 	
 	// canvas.add(&name_of_widget,x_coordinate,y_coordinate);

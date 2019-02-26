@@ -37,8 +37,6 @@ void numkeyEventHandler(Numkey* nk){
 // SETUP
 //==================================
 void guiSetup(){
-	canvas.init();
-
 	// Add GUI initialization code here:
 	numkey.setSize(120,180);
 	numkey.setColors(ILI9341_DARKGREY,ILI9341_BLACK,ILI9341_WHITE);

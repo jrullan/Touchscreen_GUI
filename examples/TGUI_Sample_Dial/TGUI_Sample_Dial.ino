@@ -53,8 +53,6 @@ void btnMinusEventHandler(Button* btn){
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
- 
 	// Add GUI initialization code here:
   btnPlus.setText("+");
   btnPlus.setEventHandler(&btnPlusEventHandler);

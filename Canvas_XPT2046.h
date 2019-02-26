@@ -23,14 +23,18 @@
 #define XPT2046_MIN_Y 3891
 #define XPT2046_MAX_Y 320
 
-
 class Canvas_XPT2046: public Canvas{
 	public:
-	Canvas_XPT2046(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){};
-	~Canvas_XPT2046(){};
+	Canvas_XPT2046(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){
+		this->init();
+	};
+	~Canvas_XPT2046(){
+		
+	};
 	void init();
 	Point* getTouchedPoint();
 };
+
 
 /*
  * Init function initializes 
@@ -38,8 +42,6 @@ class Canvas_XPT2046: public Canvas{
  * and other timing variables
  */
 void Canvas_XPT2046::init(){
-	Serial.println("XPT2046 init");
-	
 	tft->begin();
 	tft->fillScreen(bgColor);
 	lastMillis = millis();
@@ -52,13 +54,6 @@ void Canvas_XPT2046::init(){
 	
 	ts = new XPT2046_Touchscreen(ts_cs);
 	ts->begin(0);
-	
-	// Wait until the touchscreen is started.
-	// Original driver has an apparent bug,
-	// sometimes it did start other times it didn't.
-	//while(!ts->begin(0)){
-	//	Serial.print(".");
-	//}
 }
 
 Point* Canvas_XPT2046::getTouchedPoint(){

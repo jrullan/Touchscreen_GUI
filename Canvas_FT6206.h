@@ -20,7 +20,9 @@
 
 class Canvas_FT6206: public Canvas{
 	public:
-	Canvas_FT6206(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){};
+	Canvas_FT6206(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){
+		this->init();
+	};
 	~Canvas_FT6206(){};
 	void init();
 	Point* getTouchedPoint();
@@ -32,8 +34,6 @@ class Canvas_FT6206: public Canvas{
  * and other timing variables
  */
 void Canvas_FT6206::init(){
-	Serial.println("FT6206 init");
-	
 	tft->begin();
 	tft->fillScreen(bgColor);
 	lastMillis = millis();

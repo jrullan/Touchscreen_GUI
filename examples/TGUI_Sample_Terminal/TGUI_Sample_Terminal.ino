@@ -38,11 +38,9 @@ void welcomeMessage(){
 // SETUP
 //==================================
 void guiSetup(){
-	canvas.init();
-
 	// Add GUI initialization code here:
 	terminal.setColors(BLACK,WHITE,WHITE);
-		
+
 	canvas.add(&terminal,0,0);
 	welcomeMessage();
 }

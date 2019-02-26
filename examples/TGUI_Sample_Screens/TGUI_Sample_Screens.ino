@@ -47,8 +47,6 @@ void showDisplay2EventHandler(Button* btn){
 // SETUP
 //==================================
 void guiSetup(){
-  canvas.init();
-	
 	// Add GUI initialization code here:
 	screen_1.bgColor = 0xDFE;  
 	display_1.setSize(240,40);

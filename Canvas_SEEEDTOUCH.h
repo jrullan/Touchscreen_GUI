@@ -20,7 +20,9 @@
 
 class Canvas_SEEEDTOUCH: public Canvas{
 	public:
-	Canvas_SEEEDTOUCH(int mode, int color, int tft_cs=5, int tft_ds=6):Canvas(mode, color, tft_cs, tft_ds){};
+	Canvas_SEEEDTOUCH(int mode, int color, int tft_cs=5, int tft_ds=6):Canvas(mode, color, tft_cs, tft_ds){
+		this->init();
+	};
 	~Canvas_SEEEDTOUCH(){};
 	void init();
 	Point* getTouchedPoint();
@@ -32,8 +34,6 @@ class Canvas_SEEEDTOUCH: public Canvas{
  * and other timing variables
  */
 void Canvas_SEEEDTOUCH::init(){
-	Serial.println("Seeedtouch init");
-	
 	tft->begin();
 	tft->fillScreen(bgColor);		
 	lastMillis = millis();

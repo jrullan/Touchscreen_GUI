@@ -145,8 +145,6 @@ void welcomeMessage(){
 // SETUP
 //==================================
 void guiSetup(){
-	canvas.init();
-
 	// ===== MAIN SCREEN =====
 	screen_main.bgColor = 0xDFE;
 	title.setSize(240,40);

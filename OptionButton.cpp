@@ -31,17 +31,20 @@ void OptionButton::init(){
 void OptionButton::update(){
 	int radius = this->w/2;
 	
-	myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius), this->borderColor);
-	myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius) - this->borderWidth, this->bgColor);
-
 	if(this->touched){
-		myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius) - this->borderWidth - 2, this->fgColor);
+		myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius) - this->borderWidth - OPTION_GAP, this->fgColor);
 	}else{
-		myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius) - this->borderWidth - 2, this->bgColor);
+		myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius) - this->borderWidth - OPTION_GAP, this->bgColor);
 	}
 }
 
 void OptionButton::show(){
+	int radius = this->w/2;
+
 	drawLabel();
+	
+	myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius), this->borderColor);
+	myCanvas->tft->fillCircle(this->x+radius,this->y+radius,(radius) - this->borderWidth, this->bgColor);	
+	
 	update();
 }

@@ -14,6 +14,8 @@
 #define DEBOUNCE 200
 #endif
 
+#define OPTION_GAP 4
+
 class OptionButton : public Button
 {
 

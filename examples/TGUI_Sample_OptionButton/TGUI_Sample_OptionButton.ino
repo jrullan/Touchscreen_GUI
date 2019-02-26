@@ -64,8 +64,6 @@ void welcomeMessage(){
 // SETUP
 //==================================
 void guiSetup(){
-	canvas.init();
-
 	// Add GUI initialization code here:
 	terminal.setColors(BLACK,WHITE,WHITE);
   opt1.setLabel("Option 1");

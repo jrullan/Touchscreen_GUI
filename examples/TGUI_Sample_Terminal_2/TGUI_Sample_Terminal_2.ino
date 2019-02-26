@@ -46,8 +46,6 @@ void welcomeMessage(){
 // SETUP
 //==================================
 void guiSetup(){
-	canvas.init();
-
 	// Add GUI initialization code here:
 	btnSlider.setEventHandler(&buttonEventHandler);
 	btnSlider.transparentColor = BLACK;

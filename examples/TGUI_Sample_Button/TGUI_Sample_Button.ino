@@ -39,8 +39,6 @@ void buttonEventHandler(Button* btn){
 // SETUP
 //==================================
 void guiSetup(){
-	canvas.init();
-
 	// Add GUI initialization code here:
 	button.setColors(ILI9341_DARKGREY,ILI9341_WHITE,ILI9341_LIGHTGREY);
 	button.setSize(80,40);

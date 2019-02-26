@@ -20,7 +20,9 @@
 
 class Canvas_STMPE610: public Canvas{
 	public:
-	Canvas_STMPE610(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){};
+	Canvas_STMPE610(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){
+		this->init();
+	};
 	~Canvas_STMPE610(){};
 	void init();
 	Point* getTouchedPoint();
@@ -32,8 +34,6 @@ class Canvas_STMPE610: public Canvas{
  * and other timing variables
  */
 void Canvas_STMPE610::init(){
-	Serial.println("STMPE init");
-	
 	tft->begin();
 	tft->fillScreen(bgColor);
 	lastMillis = millis();
