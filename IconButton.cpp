@@ -6,13 +6,35 @@
 #include "IconButton.h"
 
 IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed){	
-	Button::init();
-	this->type = 0x35;
-	this->borderWidth = 0;
-	this->setSize(_w,_h);
-	this->debounceTime = DEBOUNCE;
-	this->imageUnpressed = _imageUnpressed;
-	this->imagePressed = _imagePressed;
+	//Button::init();
+	/*
+	type = 0x30;
+	debounceTime = 500;
+	isButton = true;
+	isRound = false;
+	touched = false;
+	borderWidth = 2;
+	bgColor = GRAY1;
+	fgColor = BLACK;
+	borderColor = WHITE;
+	setSize(100,40);
+	setText("Button");
+	x = 0;
+	y = 0;
+	lastMillis = millis();	
+	*/
+	type = 0x35;
+	debounceTime = DEBOUNCE;
+	isButton = true;
+	isRound = false;
+	touched = false;
+	borderWidth = 0;
+	setSize(_w,_h);
+	x = 0;
+	y = 0;
+	lastMillis = millis();	
+	imageUnpressed = _imageUnpressed;
+	imagePressed = _imagePressed;
 }
 
 IconButton::~IconButton(){}

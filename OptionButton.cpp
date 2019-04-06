@@ -7,8 +7,6 @@
 
 OptionButton::OptionButton(){
 	this->init();
-	this->setSize(40,40);
-	this->setColors(BLACK,WHITE,GRAY1);
 }
 
 OptionButton::OptionButton(unsigned int diameter, int backgroundColor, int textColor, int borderColor){
@@ -20,11 +18,38 @@ OptionButton::OptionButton(unsigned int diameter, int backgroundColor, int textC
 OptionButton::~OptionButton(){}
 
 void OptionButton::init(){
-	Button::init();
-	this->type = 0x34;
+	//Button::init();
+	/*
+	type = 0x30;
+	debounceTime = 500;
+	isButton = true;
+	isRound = false;
+	touched = false;
+	borderWidth = 2;
+	bgColor = GRAY1;
+	fgColor = BLACK;
+	borderColor = WHITE;
+	setSize(100,40);
+	setText("Button");
+	x = 0;
+	y = 0;
+	lastMillis = millis();	
+	*/
 	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
-	this->labelPos = 2;
-	this->isRound = true;
+	type = 0x34;
+	debounceTime = 500;
+	isButton = true;
+	isRound = true;
+	touched = false;
+	borderWidth = 2;
+	bgColor = GRAY1;
+	fgColor = BLACK;
+	borderColor = WHITE;
+	setSize(40,40);
+	setLabel("Option");
+	labelPos = 2;
+	x = 0;
+	y = 0;
 	lastMillis = millis();	
 }
 

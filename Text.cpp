@@ -4,7 +4,7 @@
 Text::Text(unsigned char textSize){
 	// Reserve memory for the text, and initialize to empty characters (0)
 	_textSize = textSize;
-	if(this->text = (char *)malloc(textSize+1)) memset(this->text,0,textSize+1); 
+	if(this->text = (char *)malloc(textSize+1)) memset(this->text,0,textSize+1);
 }
 
 Text::~Text(){

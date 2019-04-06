@@ -21,8 +21,7 @@
  * Basic Constructor, no parameters
  */
 Button::Button(){
-	contents = new Text(8);
-	this->isRound = false;
+	contents = new Text(8);	
 	init();
 }
 
@@ -30,8 +29,7 @@ Button::Button(){
  * Constructor with initial "Text" and optional "Label"
  */
 Button::Button(char* text, char* _label){
-	contents = new Text(Widget::getTextLength(text));
-	this->isRound = false;
+	contents = new Text(Widget::getTextLength(text));	
 	init();
 	
 	if(_label){
@@ -44,10 +42,8 @@ Button::Button(char* text, char* _label){
  * Constructor for a typical rectangle button
  */
 Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textLength){
-	contents = new Text(textLength);
-	this->isRound = false;
+	contents = new Text(textLength);	
 	init();
-	
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
 }
@@ -57,9 +53,8 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
  */
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
 	contents = new Text(8);
-	this->isRound = true;
 	init();
-	
+	this->isRound = true;
 	x = radius;
 	y = radius;	
 	this->setSize(2*radius,2*radius);
@@ -77,8 +72,9 @@ Button::~Button(){
  */
 void Button::init(){
 	type = 0x30;
-	debounceTime = 1000;
+	debounceTime = 500;
 	isButton = true;
+	isRound = false;
 	touched = false;
 	borderWidth = 2;
 	bgColor = GRAY1;
