@@ -82,6 +82,7 @@ public:
 	 * 		Dial -		0x21
 	 * 		Gauge -		0x22
 	 * 		Trend -		0x23
+	 * 		Slider - 	0x24
 	 * 	Button -		0x30
 	 * 		Buttongrid-	0x31
 	 * 		Numkey -	0x32
@@ -104,6 +105,8 @@ public:
 			return "gauge";
 		}else if ((w->type & 0xFF) == 0x23){
 			return "trend";
+		}else if ((w->type & 0xFF) == 0x24){
+			return "slider";
 		}else if ((w->type & 0xFF) == 0x30){
 			return "button";
 		}else if ((w->type & 0xFF) == 0x31){
