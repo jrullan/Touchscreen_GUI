@@ -25,12 +25,6 @@ class Slider : public Indicator
 		void show();	
 		void update();
 
-	/*
-	virtual bool checkTouch(Point* p)=0;
-	virtual void show() =0;
-	virtual void update() =0;
-	*/
-					
 	void (*eventHandler)(Slider*);
 	bool block = false;
 	unsigned long lastMillis;

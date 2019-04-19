@@ -4,7 +4,9 @@
 Text::Text(unsigned char textSize){
 	// Reserve memory for the text, and initialize to empty characters (0)
 	_textSize = textSize;
-	if(this->text = (char *)malloc(textSize+1)) memset(this->text,0,textSize+1);
+	if(this->text = (char *)malloc(textSize+1)){
+		memset(this->text,0,textSize+1);
+	}
 }
 
 Text::~Text(){
@@ -25,12 +27,22 @@ long Text::getNum(){
 	return result;
 }
 
+
+/*
+ * This function had to be deprecated because it was originally
+ * designed to fill a char[] with the digits of a number, however
+ * later the internal text property was modified to be a pointer
+ * to an existing char[], instead of the actual array.
+ * This is the reason it is crashing when trying to fill the text array
+ * (I think)
+ */
+/*
 void Text::setNum(int num){
 	clear();
 	char numChar[_textSize];
 	char chars = 0;
 	
-	// Extract characters representing the powers of ten
+	// Get the last digit for each power of ten
 	while(num >= 10)
 	{
 		numChar[chars++] = num%10;
@@ -46,7 +58,7 @@ void Text::setNum(int num){
 	
 	this->text[chars]=0;
 }
-
+*/
 void Text::setText(char* _text){
 	for(int i=0; i<_textSize;i++){
 		this->text[i] = _text[i];
@@ -54,7 +66,7 @@ void Text::setText(char* _text){
 }
 
 unsigned char Text::getTextSize(){
-  return Widget::getTextLength(this->text);
+	return Widget::getTextLength(this->text);
 }
 
 void Text::clear(){

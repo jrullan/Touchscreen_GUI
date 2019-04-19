@@ -48,8 +48,7 @@ class Indicator : public Widget{
 		unsigned int getCV();
 
 		// Overriden methods
-		bool checkTouch(Point* p);
-		bool isButton();		
+		bool checkTouch(Point* p);	
 		virtual void update()=0;
 		virtual void show()=0;
 		

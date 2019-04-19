@@ -292,13 +292,14 @@ void Button::setEventHandler(void (*functionPointer)(Button *)){
 	eventHandler = functionPointer;
 }
 
-
+/*
+ * See notes in Text.cpp
 void Button::setNum(int num){
 	if(contents->getNum()==num)return;
 	contents->clear();
 	contents->setNum(num);
 }
-
+*/
 
 void Button::setText(char* _text){
   contents->text = _text;

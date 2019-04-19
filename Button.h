@@ -37,7 +37,7 @@ public:
 	void drawText();
 	void setEventHandler(void (*functionPointer)(Button *));
 	void fitToText();
-	void setNum(int n);
+	//void setNum(int n); -- See notes in Text.cpp --
 	void setText(char* _text);
 	char* getText();
 	long getNum();

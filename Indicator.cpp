@@ -84,10 +84,6 @@ bool Indicator::checkTouch(Point* p){
 	return true;
 }
 
-bool Indicator::isButton(){
-	return false;
-}
-
 /*
 void Indicator::show(){
 	update();

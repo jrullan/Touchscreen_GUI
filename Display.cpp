@@ -24,6 +24,7 @@ void Display::init(){
 	type = 0x10;
 	borderWidth = 2;
 	charPos = 0;
+	isButton = false;
 }
 
 void Display::drawFrame(){
@@ -88,12 +89,22 @@ void Display::fitToText(){
   }
 }
 
+/*
+ * See notes in Text.cpp
 void Display::setNum(int num, bool force){
-	if(contents->getNum() == num) return;
+	Serial.println("In Display's setNum, calling Text's getNum");
+	int prev = contents->getNum();
+	if(prev == num) return;
 	if(force) drawText(bgColor);
+	
+	Serial.print("Previous value = "); Serial.println(prev);
+	Serial.println("In Display's setNum, calling Text's setNum");
+	//Serial.print("Setting Num to: ");Serial.println(num);
 	contents->setNum(num);
+	
 	if(force) drawText(fgColor);
 }
+*/
 
 void Display::setText(char* _text, bool force){
 	if(force) drawText(bgColor);
@@ -120,10 +131,6 @@ void Display::deleteChar(){
 
 bool Display::checkTouch(Point* p){
 	return true;
-}
-
-bool Display::isButton(){
-	return false;
 }
 
 void Display::show(){

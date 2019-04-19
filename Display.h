@@ -26,7 +26,7 @@ public:
 	void drawFrame();
 	void drawText(int color);
 	void fitToText();
-	void setNum(int num, bool force = false);
+	//void setNum(int num, bool force = false); -- See Text.cpp --
 	void setText(char* _text, bool force = false);
 	void append(char* c);
 	
@@ -37,7 +37,6 @@ public:
 	
 	//Overriden methods
 	virtual bool checkTouch(Point* p);
-	virtual bool isButton();
 	virtual void show();
 	virtual void update();
 

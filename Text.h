@@ -19,7 +19,7 @@ class Text
 		char* text;
 		
 		//=====Getters and Setters======
-		void setNum(int num);
+		//void setNum(int num); -- Had to be removed, see cpp --
 		void setText(char* _text);
 		long getNum();	
 		char* getText();

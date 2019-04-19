@@ -124,6 +124,7 @@ public:
 	
 	static uint8_t getTextLength(char* c){
 		uint8_t size = 0;
+		//Serial.println("In Widget's getTextLength");
 		if(*c){
 			char* chars = c;
 			while(*chars){
