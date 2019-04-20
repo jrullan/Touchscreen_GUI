@@ -5,7 +5,6 @@
 #include <Slider.h>
 #include <Display.h>
 
-
 // Architecture specific pins:
 // For MH-ET Live esp32 MiniKit (ESP32)
 #define TFT_CS 26 // esp32 MiniKit D0
@@ -15,19 +14,19 @@
 // TGUI's objects declarations:
 Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BLACK,TFT_CS,TFT_DS,TS_CS);
 Slider blueSlider = Slider();
-Display blueDisp = Display(8);
+Display blueDisp = Display();
 Slider greenSlider = Slider();
-Display greenDisp = Display(8);
+Display greenDisp = Display();
 Slider redSlider = Slider();
-Display redDisp = Display(8);
+Display redDisp = Display();
+
+Display demoDisp = Display();
 
 //==================================
 // EVENT HANDLING ROUTINES
 //==================================
 void sliderEventHandler(Slider* sld){
-  Serial.print("Slider Pressed, CV = ");
-  Serial.println(sld->currentValue);
-  Serial.println("Calling Display's setNum");
+
   char buf[8];
   String value = String(sld->currentValue);
   value.toCharArray(buf,8);
@@ -46,14 +45,26 @@ void sliderEventHandler(Slider* sld){
     redDisp.setText(buf,false);
     redDisp.update();
   }  
+
+  int red = map(redSlider.currentValue,0,100,0,255);
+  int green = map(greenSlider.currentValue,0,100,0,255);
+  int blue = map(blueSlider.currentValue,0,100,0,255);
+  int newColor = canvas.tft->color565(red,green,blue);
+
+  demoDisp.bgColor = newColor;
+  demoDisp.update();
 }
 
 //==================================
 // SETUP
 //==================================
-void guiSetup(){  
+void guiSetup(){ 
+  demoDisp.setSize(80,40);
+  demoDisp.setColors(ILI9341_BLACK,ILI9341_WHITE,ILI9341_LIGHTGREY);
+  demoDisp.setText("",false); 
+   
   blueSlider.setDebounce(0);
-  blueSlider.setSize(40,240);
+  blueSlider.setSize(40,140);
   blueSlider.setColors(BLACK,BLUE,WHITE);
   blueSlider.setEventHandler(&sliderEventHandler);
   
@@ -62,7 +73,7 @@ void guiSetup(){
   blueDisp.setText("",false); 
   
   greenSlider.setDebounce(0);
-  greenSlider.setSize(40,240);
+  greenSlider.setSize(40,140);
   greenSlider.setColors(BLACK,GREEN,WHITE);
   greenSlider.setEventHandler(&sliderEventHandler);
 
@@ -71,7 +82,7 @@ void guiSetup(){
   greenDisp.setText("",false);
 
   redSlider.setDebounce(0);
-  redSlider.setSize(40,240);
+  redSlider.setSize(40,140);
   redSlider.setColors(BLACK,RED,WHITE);
   redSlider.setEventHandler(&sliderEventHandler);
 
@@ -79,14 +90,16 @@ void guiSetup(){
   redDisp.setColors(ILI9341_RED,ILI9341_WHITE,ILI9341_LIGHTGREY);
   redDisp.setText("",false);
 
-  canvas.add(&blueDisp, 20, 10);
-  canvas.add(&blueSlider, 20, 60);
-  
-  canvas.add(&greenDisp, 100, 10);
-  canvas.add(&greenSlider, 100, 60);  
+  canvas.add(&demoDisp, 80, 25);
 
-  canvas.add(&redDisp, 180, 10);
-  canvas.add(&redSlider, 180, 60); 
+  canvas.add(&blueDisp, 20, 110);
+  canvas.add(&blueSlider, 20, 160);
+  
+  canvas.add(&greenDisp, 100, 110);
+  canvas.add(&greenSlider, 100, 160);  
+
+  canvas.add(&redDisp, 180, 110);
+  canvas.add(&redSlider, 180, 160); 
 }
 
 void setup() {
