@@ -19,7 +19,6 @@ Slider greenSlider = Slider();
 Display greenDisp = Display();
 Slider redSlider = Slider();
 Display redDisp = Display();
-
 Display demoDisp = Display();
 
 //==================================
@@ -59,45 +58,43 @@ void sliderEventHandler(Slider* sld){
 // SETUP
 //==================================
 void guiSetup(){ 
+  // Display to show the resulting color
   demoDisp.setSize(80,40);
   demoDisp.setColors(ILI9341_BLACK,ILI9341_WHITE,ILI9341_LIGHTGREY);
   demoDisp.setText("",false); 
    
+  // Blue slider elements
   blueSlider.setDebounce(0);
   blueSlider.setSize(40,140);
   blueSlider.setColors(BLACK,BLUE,WHITE);
   blueSlider.setEventHandler(&sliderEventHandler);
-  
   blueDisp.setSize(40,40);
   blueDisp.setColors(ILI9341_BLUE,ILI9341_WHITE,ILI9341_LIGHTGREY);
   blueDisp.setText("",false); 
   
+  // Green slider elements
   greenSlider.setDebounce(0);
   greenSlider.setSize(40,140);
   greenSlider.setColors(BLACK,GREEN,WHITE);
   greenSlider.setEventHandler(&sliderEventHandler);
-
   greenDisp.setSize(40,40);
   greenDisp.setColors(ILI9341_DARKGREEN,ILI9341_WHITE,ILI9341_LIGHTGREY);
   greenDisp.setText("",false);
 
+  // Red slider elements
   redSlider.setDebounce(0);
   redSlider.setSize(40,140);
   redSlider.setColors(BLACK,RED,WHITE);
   redSlider.setEventHandler(&sliderEventHandler);
-
   redDisp.setSize(40,40);
   redDisp.setColors(ILI9341_RED,ILI9341_WHITE,ILI9341_LIGHTGREY);
   redDisp.setText("",false);
 
   canvas.add(&demoDisp, 80, 25);
-
   canvas.add(&blueDisp, 20, 110);
-  canvas.add(&blueSlider, 20, 160);
-  
+  canvas.add(&blueSlider, 20, 160);  
   canvas.add(&greenDisp, 100, 110);
   canvas.add(&greenSlider, 100, 160);  
-
   canvas.add(&redDisp, 180, 110);
   canvas.add(&redSlider, 180, 160); 
 }
