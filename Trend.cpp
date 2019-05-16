@@ -21,14 +21,15 @@ void Trend::init(){
 	type = 0x23;
 	borderWidth=2;
 	
-	this->maxValues = w - yScaleWidth - 2*borderWidth;
-	
+	//this->maxValues = w - yScaleWidth - 2*borderWidth;
+	this->maxValues = MAX_TREND_VALUES;
+
 	// Reserve memory for trend values
 	if(values = (uint8_t *)malloc(maxValues)){ 
 		memset(values,0,maxValues*sizeof(uint8_t));
-		//Serial.println("Memory allocated for trend values");
+		Serial.println("Memory allocated for trend values");
 	}else{
-		//Serial.println("Memory was not allocated for trend values");
+		Serial.println("Memory was not allocated for trend values");
 	}
 	
 	this->hiLimit = scaleMax;
@@ -197,6 +198,7 @@ void Trend::setWindow(int min, int max){
  * of the x-scale. If the value is too high, it automatically adjusts
  * to minutes.
  */
+/*
 void Trend::setMaxX(int m){
 	int interval = m/maxValues;
 	if(interval*2 >= 60){ //-- auto adjust for minutes interval if too many seconds.
@@ -205,6 +207,7 @@ void Trend::setMaxX(int m){
 		maxX = m;
 	}
 }
+*/
 
 int Trend::getXVal(int index){
 	int xBase = x+yScaleWidth+borderWidth;

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="80mm"
+   height="100mm"
+   viewBox="0 0 80 100"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="person.svg"
+   inkscape:export-filename="C:\Users\jrullan\Pictures\icons for Touchscreen\person_off.png"
+   inkscape:export-xdpi="25.4"
+   inkscape:export-ydpi="25.4">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="240.74733"
+     inkscape:cy="67.277812"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(15.37486,-196.42184)">
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#008000;stroke-width:1;stroke-linecap:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
+       d="m 24.670735,200.55884 c -8.028509,-4.6e-4 -14.53717,6.69548 -14.537277,14.95555 0.0013,5.45207 2.886122,10.47147 7.528966,13.09974 l -0.550632,-0.007 -27.69048,10.80695 c 0,0 -3.471995,1.31616 -3.397729,4.68528 0.07631,3.462 3.671545,2.98579 3.671545,2.98579 l 23.943273,-6.28709 -0.274102,18.91777 -8.0765999,30.44367 c 0,0 2.0923622,2.12624 5.3304349,2.12624 2.939597,0 5.718176,-2.12624 5.718176,-2.12624 l 8.398383,-25.25869 8.399385,25.25869 c 0,0 2.547503,2.13601 5.782131,2.09128 3.234629,-0.0448 5.047623,-2.09128 5.047623,-2.09128 l -8.313438,-30.04356 -0.36433,-19.06715 24.727036,6.03719 c 0,0 3.130439,1.4e-4 3.213851,-3.85868 0.0753,-3.48387 -4.219177,-4.54856 -4.219177,-4.54856 l -27.42466,-9.93814 -0.145908,-9.4e-4 c 4.774795,-2.58375 7.766056,-7.67565 7.769805,-13.22617 -1.06e-4,-8.25966 -6.50816,-14.95542 -14.536279,-14.95555 z"
+       id="path12"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccsccccsccccccccsccccc" />
+    <path
+       sodipodi:nodetypes="cccccsccccsccccccccsccccc"
+       inkscape:connector-curvature="0"
+       id="path4533"
+       d="m 120.88776,200.55884 c -8.0285,-4.6e-4 -14.53717,6.69548 -14.53727,14.95555 0.001,5.45207 2.88612,10.47147 7.52896,13.09974 l -0.55063,-0.007 -27.690478,10.80695 c 0,0 -3.471995,1.31616 -3.397729,4.68528 0.07631,3.462 3.671545,2.98579 3.671545,2.98579 l 23.943272,-6.28709 -0.2741,18.91777 -8.0766,30.44367 c 0,0 2.09236,2.12624 5.33043,2.12624 2.9396,0 5.71818,-2.12624 5.71818,-2.12624 l 8.39838,-25.25869 8.39939,25.25869 c 0,0 2.5475,2.13601 5.78213,2.09128 3.23463,-0.0448 5.04762,-2.09128 5.04762,-2.09128 l -8.31344,-30.04356 -0.36433,-19.06715 24.72704,6.03719 c 0,0 3.13044,1.4e-4 3.21385,-3.85868 0.0753,-3.48387 -4.21918,-4.54856 -4.21918,-4.54856 l -27.42466,-9.93814 -0.1459,-9.4e-4 c 4.77479,-2.58375 7.76605,-7.67565 7.7698,-13.22617 -1.1e-4,-8.25966 -6.50816,-14.95542 -14.53628,-14.95555 z"
+       style="opacity:1;fill:#00ff00;fill-opacity:1;stroke:#008000;stroke-width:1;stroke-linecap:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>
