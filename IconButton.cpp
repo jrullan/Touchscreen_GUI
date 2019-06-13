@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////////////
 #include "IconButton.h"
 
-IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed){	
+IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed, char* _label){	
 	//Button::init();
 	/*
 	type = 0x30;
@@ -23,6 +23,13 @@ IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const ui
 	y = 0;
 	lastMillis = millis();	
 	*/
+
+	int labelSize = Widget::getTextLength(_label);
+	if(label = (char *)malloc(labelSize+1)){ 
+		memset(label,0,labelSize+1);
+		label = _label;
+	}	
+	fgColor = WHITE;
 	type = 0x35;
 	debounceTime = DEBOUNCE;
 	isButton = true;

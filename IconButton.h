@@ -43,7 +43,7 @@ class IconButton : public Button
 {
 
 public:
-	IconButton(int _width, int _height, const uint16_t* imageUnpressed, const uint16_t* imagePressed = NULL);
+	IconButton(int _width, int _height, const uint16_t* imageUnpressed, const uint16_t* imagePressed = NULL, char* label = 0);
 	~IconButton();
 	
 	void show();

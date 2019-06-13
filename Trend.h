@@ -35,6 +35,8 @@ class Trend : public Indicator{
 		void init();
 		void clear();
 		void addValue(uint8_t val);
+		void drawTrend();
+		void eraseTrend();
 		void forceUpdate(){
 			forcedUpdate = true;
 			update();
