@@ -1,3 +1,6 @@
 .DS_Store
 *.bin
 *.ipch
+.vs/slnx.sqlite
+.vs/Touchscreen_GUI/v16/.suo
+.vs/VSWorkspaceState.json
