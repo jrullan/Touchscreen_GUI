@@ -173,13 +173,7 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
 
 void Dial::drawNeedleAndValue(){
 	int color = fgColor;
-	
-	// Draw needle
-	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);
-	if(currentValue >= hiLimit) color = hiLimitColor;
-	if(currentValue <= lowLimit) color = lowLimitColor;
-	drawNeedle(x,y,currentValue,radius-tickSize-gap,color);
-	
+
 	if(showVal){
 		// Draw current value
 		int dSpace;
@@ -188,9 +182,15 @@ void Dial::drawNeedleAndValue(){
 		if(currentValue>=10) dSpace = 6 * fontSize;
 		if(currentValue>99) dSpace = 9 * fontSize;
 		if(currentValue>999) dSpace = 12 * fontSize;
-		myCanvas->tft->fillRect(x-12*fontSize,y+radius-12*fontSize,24*fontSize,8*fontSize,bgColor);
-		myCanvas->tft->drawNumber(currentValue,x-dSpace,y+radius-12*fontSize,fontSize,color);
+		myCanvas->tft->fillRect(x-12*fontSize,y+radius-16*fontSize,24*fontSize,8*fontSize,bgColor);
+		myCanvas->tft->drawNumber(currentValue,x-dSpace,y+radius-16*fontSize,fontSize,color);
 	}	
+	
+	// Draw needle
+	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);
+	if(currentValue >= hiLimit) color = hiLimitColor;
+	if(currentValue <= lowLimit) color = lowLimitColor;
+	drawNeedle(x,y,currentValue,radius-tickSize-gap,color);
 }
 
 int Dial::getX(int cX,int deg, int radius){
