@@ -27,9 +27,9 @@
 #define TS_CS 0   // Wemos D1 Mini D3
 
 // For MH-ET Live esp32 MiniKit (ESP32)
-#define TFT_CS 26 // esp32 MiniKit D0
-#define TFT_DS 5  // esp32 MiniKit D8
-#define TS_CS 17  // esp32 MiniKit D3
+//#define TFT_CS 26 // esp32 MiniKit D0
+//#define TFT_DS 5  // esp32 MiniKit D8
+//#define TS_CS 17  // esp32 MiniKit D3
 
 #define BG_COLOR 0xDFE  //Background color (light blue)
 Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BG_COLOR,TFT_CS,TFT_DS,TS_CS);
@@ -66,7 +66,7 @@ void btnIconEventHandler(Button* btn){
 }
 
 void btnMainEventHandler(Button* btn){
-  header.setText("Main");
+  header.setText("Main",true);
   canvas.setScreen(&screen_main);
   terminal.clear();
   welcomeMessage();
@@ -76,6 +76,7 @@ void btnDialEventHandler(Button* btn){
   // Show the numkey to enter a password
   // The numkey event handler will verify the password
   // and change the screen if the password is correct
+  
   terminal.clear();
   terminal.print("Enter the numeric password:");
   terminal.print("1234",GREEN);
@@ -83,7 +84,7 @@ void btnDialEventHandler(Button* btn){
 }
 
 void btnButtonsEventHandler(Button* btn){
-  header.setText("Buttons");
+  header.setText("Buttons",true);
   canvas.setScreen(&screen_buttons);
   terminal.clear();
   terminal.print("Icon buttons use images to");
@@ -116,7 +117,7 @@ void numkeyEventHandler(Numkey* nk){
       if(nk->getText()[i] != password[i]) match = false; 
     }
     if(match){
-      header.setText("Dial");
+      header.setText("Dial",true);
       canvas.setScreen(&screen_dial);
       terminal.clear();
       terminal.print("Dial reprents a value in a range");
