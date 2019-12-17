@@ -1,6 +1,8 @@
 /* 
  * Sample template
  * 
+ * Button Example
+ * 
  * Created by: Jose Rullan
  * Date: February 16, 2019
  */
@@ -9,7 +11,9 @@
 #include <Canvas_XPT2046.h>
 
 // Widgets includes here:
+#include <Button.h>
 #include <Terminal.h>
+
 
 // Architecture specific pins:
 // For Wemos Mini D1 (ESP8266)
@@ -23,15 +27,21 @@
 
 // TGUI's objects declarations:
 Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BLACK,TFT_CS,TFT_DS,TS_CS);
+Button button = Button();
 Terminal terminal = Terminal(240,50,TERMINAL_SCROLL_UP);
+
+int times = 0;
 
 //==================================
 // EVENT HANDLING ROUTINES
 //==================================
-void welcomeMessage(){
-  terminal.print("Hello World!",YELLOW);
-  terminal.print("This is the terminal",GREEN);
-  terminal.print("Enjoy!",RED);  
+/*
+ * This example shows how to use print to show an integer number
+ * within the message using the %d placeholder in place of the 
+ * number variable.
+ */
+void buttonEventHandler(Button* btn){
+  terminal.print("Button pressed %d times",++times);
 }
 
 //==================================
@@ -39,10 +49,18 @@ void welcomeMessage(){
 //==================================
 void guiSetup(){
   // Add GUI initialization code here:
-  terminal.setColors(BLACK,WHITE,WHITE);
+
+  terminal.setColors(canvas.bgColor,WHITE,WHITE);
+
+  button.setColors(ILI9341_DARKGREY,ILI9341_WHITE,ILI9341_LIGHTGREY);
+  button.setSize(80,40);
+  button.cornerRadius = 8;
+  button.setText("Press");
+  button.setDebounce(200);
+  button.setEventHandler(&buttonEventHandler);
 
   canvas.add(&terminal,0,0);
-  welcomeMessage();
+  canvas.add(&button,80,140);
 }
 
 //==================================
