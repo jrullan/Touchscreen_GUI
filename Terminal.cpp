@@ -19,12 +19,6 @@ Terminal::Terminal(int width, int height, uint8_t dir, int fontSize){
 	lines = (lines > MAX_LINES) ? MAX_LINES : lines;
 	memset(linesBuffer, 0, MAX_LINES * sizeof(char*));
 	
-	// Allocate memory for lines
-	//if(linesBuffer = (char**)malloc(this->lines)){
-		//memset(linesBuffer,0,sizeof(char*)*this->lines);
-	//}
-	
-	
 	// Calculate characters based on fontSize and width
 	maxCharacters = (this->w - 2*borderWidth - 2*horizontalBleed)/(fontSize*FONT_X);
 	// Allocate memory for characters
@@ -38,6 +32,11 @@ Terminal::Terminal(int width, int height, uint8_t dir, int fontSize){
  
 Terminal::~Terminal(){}
  
+/*
+ * Main print function.
+ * Prints a char array, given by a pointer with the highlight color
+ * specified. 
+ */
 void Terminal::print(char* string,uint16_t highColor){
 	highlightColor = highColor;
 	int length = Widget::getTextLength(string);
@@ -61,23 +60,34 @@ void Terminal::print(char* string,uint16_t highColor){
 	update();
 }
 
-// Trying to implement a print("some %d characters",4)
+/*
+ * Implementation of print("some %d characters",4)
+ * similar to C++ printf function. Only %d is recognized here.
+ * First searches for the position of the % symbol in the string.
+ * Then if the next character is d then convert the number to 
+ * a character array in num_string using Widget's convert_str
+ * and copy them into the new_string in the inverted order. 
+ * Then update the indexes and keep copying the rest of the characters
+ * into the new_string array. 
+ * 
+ * At the end call the main print function with the new_string
+ * characters array.
+ */
 void Terminal::print(char* string, int num, uint16_t highColor){
-	uint8_t num_size = Widget::getIntLength(num);
 	uint8_t str_size = Widget::getTextLength(string);
-
-	char num_string[num_size];
-	memset(num_string,0,num_size);
+	uint8_t num_size = Widget::getIntLength(num);
 
 	char new_string[str_size + num_size - 2];
 	memset(new_string,0,str_size+num_size-1);
+	
+	char num_string[num_size];
+	memset(num_string,0,num_size);
 
 	uint8_t j = 0;
 	for(uint8_t i=0; i<str_size; i++){
 	
 		if(string[i] == '%' && string[i+1] == 'd'){
 			Widget::convert_str(num,num_string);
-			//Invert the characters
 			for(uint8_t k=num_size; k!=0; k--){
 				new_string[j+(num_size-k)] = num_string[k-1];
 			}
@@ -89,75 +99,14 @@ void Terminal::print(char* string, int num, uint16_t highColor){
 		j++;
 	}
 	
+	//Call the main print function
 	this->print(new_string,highColor);
 }
 
-
 /*
-void Terminal::print(char* string, int num, uint16_t highColor){
-	highlightColor = highColor;
-	char numChar[DISPLAY_SIZE];
-	char numStr[DISPLAY_SIZE];
-	char chars = 0;
-	while(num >= 10)
-	{
-		numChar[chars++] = num%10;
-		num /= 10;
-	}
-	numChar[chars++] = num;
-	for(int j = 0; j < chars; j++)
-	{
-		numStr[chars-1-j] = '0'+numChar[j];
-	}
-	numStr[chars]=0;	
-	
-	int numLength = Widget::getTextLength(numStr);
-	int strLength = Widget::getTextLength(string);
-	int length = strLength + numLength;
-	length = (length > maxCharacters) ? maxCharacters : length;
-	
-	scroll();
-	
-	char lineIndex = (direction) ? 0 : lines - 1;
-	for(int i=0; i<length; i++){
-		if(i >= strLength){
-			linesBuffer[lineIndex][i] = numStr[i-strLength];
-		}else{
-			linesBuffer[lineIndex][i] = string[i];
-		}
-	}
-	linesBuffer[lineIndex][length] = 0;
-	
-	update();	
-}
-
-void Terminal::print(int num, uint16_t highColor){
-	highlightColor = highColor;
-	char numChar[DISPLAY_SIZE];
-	char chars = 0;
-	
-	// Extract characters representing the powers of ten
-	while(num >= 10)
-	{
-		numChar[chars++] = num%10;
-		num /= 10;
-	}
-	numChar[chars++] = num;
-	
-	scroll();
-	
-	char lineIndex = (direction) ? 0 : lines - 1;
-	for(int j = 0; j < chars; j++)
-	{
-		linesBuffer[lineIndex][chars-1-j] = '0'+numChar[j];
-	}
-	linesBuffer[lineIndex][chars]=0;
-	
-	update();
-}
-
-*/
-
+ * Calls the corresponding scroll function based on the
+ * direction property.
+ */
 void Terminal::scroll(){
 	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 
