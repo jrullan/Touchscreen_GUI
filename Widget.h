@@ -135,6 +135,27 @@ public:
 	  return size;
 	}
 	
+	// Calculate the number of characters required to represent an int
+	static uint8_t getIntLength(int num){
+		uint8_t size = 0;
+		// Get the last digit for each power of ten
+		while(num >= 10){
+			num /= 10;
+			size++;
+		}
+		return size+1;
+	}
+	
+	static void convert_str(int num, char* string){
+		char chars = 0;
+		while(num >= 10)
+		{
+			string[chars++] = num%10 + '0';
+			num /= 10;
+		}
+		string[chars++] = num + '0';
+	}
+	
 	// Pure Virtual methods - To force inheritance (makes this an abstract class)
 	virtual bool checkTouch(Point* p)=0;
 	virtual void show() =0;

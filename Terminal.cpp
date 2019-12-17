@@ -61,6 +61,38 @@ void Terminal::print(char* string,uint16_t highColor){
 	update();
 }
 
+// Trying to implement a print("some %d characters",4)
+void Terminal::print(char* string, int num, uint16_t highColor){
+	uint8_t num_size = Widget::getIntLength(num);
+	uint8_t str_size = Widget::getTextLength(string);
+
+	char num_string[num_size];
+	memset(num_string,0,num_size);
+
+	char new_string[str_size + num_size - 2];
+	memset(new_string,0,str_size+num_size-1);
+
+	uint8_t j = 0;
+	for(uint8_t i=0; i<str_size; i++){
+	
+		if(string[i] == '%' && string[i+1] == 'd'){
+			Widget::convert_str(num,num_string);
+			//Invert the characters
+			for(uint8_t k=num_size; k!=0; k--){
+				new_string[j+(num_size-k)] = num_string[k-1];
+			}
+			j += num_size-1;
+			i++;
+		}else{
+			new_string[j] = string[i];			
+		}
+		j++;
+	}
+	
+	this->print(new_string,highColor);
+}
+
+
 /*
 void Terminal::print(char* string, int num, uint16_t highColor){
 	highlightColor = highColor;
