@@ -21,13 +21,13 @@ class Terminal : public Widget {
 		
 		uint8_t direction;
 		uint8_t keepColors;
-		int lines;
-		int lineSpace;
-		int fontHeight;
-		int verticalBleed=1;
-		int horizontalBleed=1;
+		uint8_t lines;
+		uint8_t lineSpace;
+		uint8_t fontHeight;
+		uint8_t verticalBleed=1;
+		uint8_t horizontalBleed=1;
 		int maxCharacters;
-		int linesIndex = 0;
+		uint8_t linesIndex = 0;
 		uint16_t highlightColor;
 		uint16_t linesColors[MAX_LINES];
 		char* linesBuffer[MAX_LINES];

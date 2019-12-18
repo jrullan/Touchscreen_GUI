@@ -80,17 +80,26 @@ void Terminal::print(char* string, int num, uint16_t highColor){
 	char new_string[str_size + num_size - 2];
 	memset(new_string,0,str_size+num_size-1);
 	
-	char num_string[num_size];
-	memset(num_string,0,num_size);
-
 	uint8_t j = 0;
 	for(uint8_t i=0; i<str_size; i++){
-	
 		if(string[i] == '%' && string[i+1] == 'd'){
-			Widget::convert_str(num,num_string);
-			for(uint8_t k=num_size; k!=0; k--){
-				new_string[j+(num_size-k)] = num_string[k-1];
+			
+			//Convert the number to characters and put them in the
+			//new_string starting at the current position (i)
+			Widget::convert_str(num,&new_string[i]);
+			
+			//Invert the characters corresponding to the number 
+			//representation starting at the i position.
+			uint8_t b = i+num_size-1;
+			uint8_t a = i;
+			while(b > a){
+				char temp = new_string[a];
+				new_string[a] = new_string[b];
+				new_string[b] = temp;
+				a++;
+				b--;
 			}
+			
 			j += num_size-1;
 			i++;
 		}else{
