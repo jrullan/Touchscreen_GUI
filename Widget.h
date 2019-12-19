@@ -138,22 +138,25 @@ public:
 	// Calculate the number of characters required to represent an int
 	static uint8_t getIntLength(int num){
 		uint8_t size = 0;
+		int absNum = abs(num);
 		// Get the last digit for each power of ten
-		while(num >= 10){
-			num /= 10;
+		while(absNum >= 10){
+			absNum /= 10;
 			size++;
 		}
-		return size+1;
+		return (num >= 0) ? size+1 : size+2; // if negative add one more character
 	}
 	
 	static void convert_str(int num, char* string){
 		char chars = 0;
-		while(num >= 10)
+		int absNum = abs(num);
+		while(absNum >= 10)
 		{
-			string[chars++] = num%10 + '0';
-			num /= 10;
+			string[chars++] = absNum%10 + '0';
+			absNum /= 10;
 		}
-		string[chars++] = num + '0';
+		string[chars++] = absNum + '0';
+		if(num < 0) string[chars] = '-'; // if negative add sign
 	}
 	
 	// Pure Virtual methods - To force inheritance (makes this an abstract class)
