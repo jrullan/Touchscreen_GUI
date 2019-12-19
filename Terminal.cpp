@@ -76,7 +76,8 @@ void Terminal::print(char* string,uint16_t highColor){
 void Terminal::printf(char* string, int num, uint16_t highColor){
 	uint8_t str_size = Widget::getTextLength(string);
 	uint8_t num_size = Widget::getIntLength(num);
-
+	char temp;
+	
 	char new_string[str_size + num_size - 2];
 	memset(new_string,0,str_size+num_size-1);
 	
@@ -93,7 +94,7 @@ void Terminal::printf(char* string, int num, uint16_t highColor){
 			uint8_t b = i+num_size-1;
 			uint8_t a = i;
 			while(b > a){
-				char temp = new_string[a];
+				temp = new_string[a];
 				new_string[a] = new_string[b];
 				new_string[b] = temp;
 				a++;
