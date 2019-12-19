@@ -36,7 +36,7 @@ class Terminal : public Widget {
 		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
 		~Terminal();
 		void print(char* string, uint16_t highColor = NULL);
-		void print(char* string, int num, uint16_t highColor = NULL);
+		void printf(char* string, int num, uint16_t highColor = NULL);
 		void print(const char* string, uint16_t highColor = NULL){
 			print((char*) string, highColor);
 		}

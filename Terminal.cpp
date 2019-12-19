@@ -73,7 +73,7 @@ void Terminal::print(char* string,uint16_t highColor){
  * At the end call the main print function with the new_string
  * characters array.
  */
-void Terminal::print(char* string, int num, uint16_t highColor){
+void Terminal::printf(char* string, int num, uint16_t highColor){
 	uint8_t str_size = Widget::getTextLength(string);
 	uint8_t num_size = Widget::getIntLength(num);
 
