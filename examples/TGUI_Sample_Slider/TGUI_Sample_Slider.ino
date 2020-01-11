@@ -123,12 +123,12 @@ void guiSetup(){
   redDisp.setText("",false);
 
   canvas.add(&demoDisp, 80, 25);
-  canvas.add(&redDisp, 180, 110);
-  canvas.add(&redSlider, 180, 160);   
+  canvas.add(&redDisp, 20, 110);
+  canvas.add(&redSlider, 20, 160);   
 	canvas.add(&greenDisp, 100, 110);
   canvas.add(&greenSlider, 100, 160);  
-  canvas.add(&blueDisp, 20, 110);
-  canvas.add(&blueSlider, 20, 160);  
+  canvas.add(&blueDisp, 180, 110);
+  canvas.add(&blueSlider, 180, 160);  
 }
 
 void setup() {
