@@ -1,12 +1,12 @@
 #include "Dial.h"
 //Constructor
 Dial::Dial(){
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
+	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); 
 }
 
 Dial::Dial(unsigned int radius, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit)
 {	
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
+	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1);
 	this->setSize(radius);
 	this->setLimits(minLimit,setpoint,maxLimit);
 	this->setColors(BLACK,BLUE,WHITE);
@@ -150,29 +150,12 @@ void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
 
 	myCanvas->tft->fillTriangle(pX1,pY1,pX2,pY2,pX3,pY3,color);
 	myCanvas->tft->fillCircle(cX,cY,4,color);
-	/*
-	// Outer triangle
-	myCanvas->tft->drawLine(pX1,pY1,pX2,pY2,color);
-	myCanvas->tft->drawLine(pX1,pY1,pX3,pY3,color);
-	myCanvas->tft->drawLine(pX2,pY2,pX3,pY3,color);
-
-	pX1 = getX(cX,degree-90,2);
-	pY1 = getY(cY,degree-90,2);
-	pX2 = getX(cX,degree+90,2);
-	pY2 = getY(cY,degree+90,2);
-
-	// Inner Triangle
-	myCanvas->tft->drawLine(pX1,pY1,pX2,pY2,color);
-	myCanvas->tft->drawLine(pX1,pY1,pX3,pY3,color);
-	myCanvas->tft->drawLine(pX2,pY2,pX3,pY3,color);  
-
-	// Center Line
-	myCanvas->tft->drawLine(cX,cY,pX3,pY3,color);
-	*/
 }
 
 void Dial::drawNeedleAndValue(){
 	int color = fgColor;
+	if(currentValue >= hiLimit) color = hiLimitColor;
+	if(currentValue <= lowLimit) color = lowLimitColor;
 
 	if(showVal){
 		// Draw current value
@@ -188,8 +171,6 @@ void Dial::drawNeedleAndValue(){
 	
 	// Draw needle
 	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);
-	if(currentValue >= hiLimit) color = hiLimitColor;
-	if(currentValue <= lowLimit) color = lowLimitColor;
 	drawNeedle(x,y,currentValue,radius-tickSize-gap,color);
 }
 
