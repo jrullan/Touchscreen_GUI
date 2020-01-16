@@ -16,10 +16,12 @@
 #include <Terminal.h>
 #include <Display.h>
 #include <Button.h>
+#include <Slider.h>
 #include <Dial.h>
 #include <Numkey.h>
 #include <IconButton.h>
 #include <icons.h>
+#include <neotimer.h>
 
 // For Wemos Mini D1 (ESP8266)
 #define TFT_CS 16 // Wemos D1 Mini D0
@@ -44,12 +46,14 @@ Screen screen_main = Screen(&canvas,0,40,240,190);
 Screen screen_dial = Screen(&canvas,0,40,240,190);
 Screen screen_buttons = Screen(&canvas,0,40,240,190);
 Dial dial = Dial();
-Button btnPlus = Button(20,GRAY1,WHITE,ILI9341_LIGHTGREY);  //Initialization version for round buttons
-Button btnMinus = Button(20,GRAY1,WHITE,ILI9341_LIGHTGREY); //Initialization version for round buttons
+Slider slider = Slider();
 IconButton btnBulb = IconButton(50,50,lightbulb_off,lightbulb_on);
 IconButton btnSlider = IconButton(60,30,slider_off,slider_on);
+Neotimer dialTimer = Neotimer(5000);
+Neotimer incrementTimer = Neotimer(10);
 
-const char increment = 1;
+bool passwordCorrect = false;
+int8_t increment = 2;
 
 //==================================
 // EVENT HANDLING ROUTINES
@@ -76,11 +80,14 @@ void btnDialEventHandler(Button* btn){
   // Show the numkey to enter a password
   // The numkey event handler will verify the password
   // and change the screen if the password is correct
-  
-  terminal.clear();
-  terminal.print("Enter the numeric password:");
-  terminal.print("1234",GREEN);
-  canvas.add(&numkey,60,45);
+  if(!passwordCorrect){
+    terminal.clear();
+    terminal.print("Enter the numeric password:");
+    terminal.print("1234",GREEN);
+    canvas.add(&numkey,60,45);
+  }else{
+    numkeyEventHandler(&numkey);
+  }
 }
 
 void btnButtonsEventHandler(Button* btn){
@@ -92,43 +99,42 @@ void btnButtonsEventHandler(Button* btn){
   terminal.print("Press a button to see it's state");
 }
 
-void btnPlusEventHandler(Button* btn){
-  if(dial.getCV() >= dial.scaleMax){
-    terminal.print("Maximum value reached",RED);
-    return;
-  }
-  dial.setCV(dial.getCV()+increment);
-}
-
-void btnMinusEventHandler(Button* btn){
-  if(dial.getCV() <= dial.scaleMin){
-    terminal.print("Minimum value reached",BLUE);
-    return;
-  }
-  dial.setCV(dial.getCV()-increment);
+void sliderEventHandler(Slider* sld){
+	dial.setCV(map(sld->currentValue,0,100,dial.scaleMin,dial.scaleMax));
+  dialTimer.reset();
+  dialTimer.start();
 }
 
 void numkeyEventHandler(Numkey* nk){
-  char* password = "1234";
-  if(nk->getTextSize() == Widget::getTextLength(password)){
+  if(passwordCorrect==false){
+    char* password = "1234";
     bool match = true;
-    Serial.println(nk->getText());
-    for(int i=0;i<nk->getTextSize();i++){
-      if(nk->getText()[i] != password[i]) match = false; 
+    if(nk->getTextSize() == Widget::getTextLength(password)){
+      Serial.println(nk->getText());
+      for(int i=0;i<nk->getTextSize();i++){
+        if(nk->getText()[i] != password[i]){
+          match = false;
+          break; 
+        }
+      }
+    }else{
+      match = false;
     }
-    if(match){
-      header.setText("Dial",true);
-      canvas.setScreen(&screen_dial);
-      terminal.clear();
-      terminal.print("Dial reprents a value in a range");
-      terminal.print("Press the + and - buttons");
-      terminal.print("To change it's value");
-      nk->clear();
+    if(!match){
+      terminal.print("Incorrect Password",RED);
+      nk->clear();      
       return;
-    }
+    }  
+    passwordCorrect = true;
+    dialTimer.start();
   }
-  terminal.print("Wrong password entered",RED);
-  nk->clear();
+
+  header.setText("Dial & Slider",true);
+  canvas.setScreen(&screen_dial);
+  terminal.clear();
+  terminal.print("Dial reprents a value in a range");
+  terminal.print("Touch anywhere on the slider bar");
+  terminal.print("To change it's value");
 }
 
 void welcomeMessage(){
@@ -152,14 +158,12 @@ void guiSetup(){
   // ===== SCREEN TWO =====
   screen_dial.bgColor = BG_COLOR;
 
-  btnPlus.setText("+");
-  btnPlus.setEventHandler(&btnPlusEventHandler);
-  btnPlus.setDebounce(25);  
-
-  btnMinus.setText("-");
-  btnMinus.setEventHandler(&btnMinusEventHandler);
-  btnMinus.setDebounce(25);  
-
+  // Blue slider elements
+  slider.setDebounce(0);
+  slider.setSize(40,140);
+  slider.setColors(BLACK,GRAY1,WHITE);
+  slider.setEventHandler(&sliderEventHandler);
+	
   dial.init();
   dial.setSize(50);
   dial.borderWidth = 5;
@@ -170,10 +174,9 @@ void guiSetup(){
   dial.setLowLimit(70,BLUE);
   dial.setCV(72,false);
 
-  screen_dial.add(&dial,100,screen_dial.h/2);
-  screen_dial.add(&btnPlus,160,screen_dial.h/2 - dial.radius);
-  screen_dial.add(&btnMinus,160,screen_dial.h/2 + dial.radius - btnMinus.h);
-
+  screen_dial.add(&dial,80,screen_dial.h/2);
+	screen_dial.add(&slider,170,20);
+	
   // ===== SCREEN THREE - BUTTONS  =====  
   screen_buttons.bgColor = BG_COLOR;
 
@@ -182,9 +185,12 @@ void guiSetup(){
 
   btnSlider.setEventHandler(&btnIconEventHandler);
   btnSlider.transparentColor = BLACK;
+  btnSlider.fgColor = BLACK;
+  btnSlider.labelPos = LABEL_RIGHT;
+  btnSlider.setLabel("Simulate");
 
-  screen_buttons.add(&btnBulb,95,50);
-  screen_buttons.add(&btnSlider,90,110);
+  screen_buttons.add(&btnBulb,95,70);
+  screen_buttons.add(&btnSlider,10,10);
 
   // ===== CANVAS GENERAL ITEMS  =====  
   btnMain.setSize(80,40);
@@ -242,4 +248,15 @@ void loop() {
   // The corresponding widget invokes it's event
   // handler to react to the event.
   canvas.scan();
+
+  if(dialTimer.done() && btnSlider.touched){
+    if(incrementTimer.repeat()){
+      if(slider.currentValue > 100) slider.currentValue = 100;
+      if(slider.currentValue < 0) slider.currentValue = 0;
+      if(slider.currentValue == 100 || slider.currentValue == 0) increment = increment * -1;
+      slider.currentValue = constrain(slider.currentValue + increment, slider.scaleMin, slider.scaleMax);      
+      if(canvas.currentScreen == &screen_dial) slider.update();
+      dial.setCV(map(slider.currentValue,0,100,dial.scaleMin,dial.scaleMax));
+    }
+  }
 }

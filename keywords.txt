@@ -11,6 +11,7 @@ Display	KEYWORD1
 Gauge	KEYWORD1
 IconButton	KEYWORD1
 Indicator KEYWORD1
+Slider	KEYWORD1
 Numkey	KEYWORD1
 OptionButton	KEYWORD1
 Point	KEYWORD1

@@ -1,4 +1,24 @@
+/*
+	Sample template
+	
+	This example shows how to use sliders.
+	
+	There are three sliders in this application. 
+	One for Blue, one for Green and one for Red.
+	
+	A display at the top of each slider shows the current value
+	of the slider. 
+	
+	A main display changes its background color based on the 
+	combined value of each slider.
+
+	Created by: Jose Rullan
+	updated: January 11, 2020
+ */
+
+
 // Touch driver specific Canvas include:
+// For Lolin TFT-2.4
 #include <Canvas_XPT2046.h>
 
 // Widgets includes here:
@@ -6,6 +26,12 @@
 #include <Display.h>
 
 // Architecture specific pins:
+
+// For Wemos Mini D1 (ESP8266)
+//#define TFT_CS 16 // Wemos D1 Mini D0
+//#define TFT_DS 15 // Wemos D1 Mini D8
+//#define TS_CS 0   // Wemos D1 Mini D3
+
 // For MH-ET Live esp32 MiniKit (ESP32)
 #define TFT_CS 26 // esp32 MiniKit D0
 #define TFT_DS 5  // esp32 MiniKit D8
@@ -24,6 +50,12 @@ Display demoDisp = Display();
 //==================================
 // EVENT HANDLING ROUTINES
 //==================================
+/*
+	This routine handles all of the sliders events.
+	Inside the routine, it checks which slider generated the event
+	and updates its corresponding value display and the color of the
+	demo display.
+*/
 void sliderEventHandler(Slider* sld){
 
   char buf[8];
@@ -91,12 +123,12 @@ void guiSetup(){
   redDisp.setText("",false);
 
   canvas.add(&demoDisp, 80, 25);
-  canvas.add(&blueDisp, 20, 110);
-  canvas.add(&blueSlider, 20, 160);  
-  canvas.add(&greenDisp, 100, 110);
+  canvas.add(&redDisp, 20, 110);
+  canvas.add(&redSlider, 20, 160);   
+	canvas.add(&greenDisp, 100, 110);
   canvas.add(&greenSlider, 100, 160);  
-  canvas.add(&redDisp, 180, 110);
-  canvas.add(&redSlider, 180, 160); 
+  canvas.add(&blueDisp, 180, 110);
+  canvas.add(&blueSlider, 180, 160);  
 }
 
 void setup() {
