@@ -251,10 +251,10 @@ void loop() {
 
   if(dialTimer.done() && btnSlider.touched){
     if(incrementTimer.repeat()){
-      slider.currentValue += increment;
       if(slider.currentValue > 100) slider.currentValue = 100;
       if(slider.currentValue < 0) slider.currentValue = 0;
       if(slider.currentValue == 100 || slider.currentValue == 0) increment = increment * -1;
+      slider.currentValue = constrain(slider.currentValue + increment, slider.scaleMin, slider.scaleMax);      
       if(canvas.currentScreen == &screen_dial) slider.update();
       dial.setCV(map(slider.currentValue,0,100,dial.scaleMin,dial.scaleMax));
     }
