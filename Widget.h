@@ -147,16 +147,31 @@ public:
 		return (num >= 0) ? size+1 : size+2; // if negative add one more character
 	}
 	
-	static void convert_str(int num, char* string){
+	static void convert_str(int num, char* string, uint8_t invert = 1){
 		char chars = 0;
 		int absNum = abs(num);
+		uint8_t temp;
+		
 		while(absNum >= 10)
 		{
 			string[chars++] = absNum%10 + '0';
 			absNum /= 10;
 		}
 		string[chars++] = absNum + '0';
-		if(num < 0) string[chars] = '-'; // if negative add sign
+		if(num < 0) string[chars++] = '-'; // if negative add sign
+		
+		//Invert the order to be readable from index 0
+		if(invert){
+			uint8_t b = chars-1;
+			uint8_t a = 0;
+			while(b > a){
+				temp = string[a];
+				string[a] = string[b];
+				string[b] = temp;
+				a++;
+				b--;
+			}
+		}
 	}
 	
 	// Pure Virtual methods - To force inheritance (makes this an abstract class)

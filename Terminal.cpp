@@ -89,6 +89,7 @@ void Terminal::printf(char* string, int num, uint16_t highColor){
 			//new_string starting at the current position (i)
 			Widget::convert_str(num,&new_string[i]);
 			
+			/*
 			//Invert the characters corresponding to the number 
 			//representation starting at the i position.
 			uint8_t b = i+num_size-1;
@@ -99,7 +100,7 @@ void Terminal::printf(char* string, int num, uint16_t highColor){
 				new_string[b] = temp;
 				a++;
 				b--;
-			}
+			}*/
 			
 			j += num_size-1;
 			i++;
