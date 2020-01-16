@@ -21,6 +21,7 @@
 #include <Numkey.h>
 #include <IconButton.h>
 #include <icons.h>
+#include <neotimer.h>
 
 // For Wemos Mini D1 (ESP8266)
 #define TFT_CS 16 // Wemos D1 Mini D0
@@ -48,8 +49,11 @@ Dial dial = Dial();
 Slider slider = Slider();
 IconButton btnBulb = IconButton(50,50,lightbulb_off,lightbulb_on);
 IconButton btnSlider = IconButton(60,30,slider_off,slider_on);
+Neotimer dialTimer = Neotimer(5000);
+Neotimer incrementTimer = Neotimer(10);
 
 bool passwordCorrect = false;
+int8_t increment = 2;
 
 //==================================
 // EVENT HANDLING ROUTINES
@@ -97,6 +101,8 @@ void btnButtonsEventHandler(Button* btn){
 
 void sliderEventHandler(Slider* sld){
 	dial.setCV(map(sld->currentValue,0,100,dial.scaleMin,dial.scaleMax));
+  dialTimer.reset();
+  dialTimer.start();
 }
 
 void numkeyEventHandler(Numkey* nk){
@@ -120,6 +126,7 @@ void numkeyEventHandler(Numkey* nk){
       return;
     }  
     passwordCorrect = true;
+    dialTimer.start();
   }
 
   header.setText("Dial & Slider",true);
@@ -178,9 +185,12 @@ void guiSetup(){
 
   btnSlider.setEventHandler(&btnIconEventHandler);
   btnSlider.transparentColor = BLACK;
+  btnSlider.fgColor = BLACK;
+  btnSlider.labelPos = LABEL_RIGHT;
+  btnSlider.setLabel("Simulate");
 
-  screen_buttons.add(&btnBulb,95,50);
-  screen_buttons.add(&btnSlider,90,110);
+  screen_buttons.add(&btnBulb,95,70);
+  screen_buttons.add(&btnSlider,10,10);
 
   // ===== CANVAS GENERAL ITEMS  =====  
   btnMain.setSize(80,40);
@@ -238,4 +248,15 @@ void loop() {
   // The corresponding widget invokes it's event
   // handler to react to the event.
   canvas.scan();
+
+  if(dialTimer.done() && btnSlider.touched){
+    if(incrementTimer.repeat()){
+      slider.currentValue += increment;
+      if(slider.currentValue > 100) slider.currentValue = 100;
+      if(slider.currentValue < 0) slider.currentValue = 0;
+      if(slider.currentValue == 100 || slider.currentValue == 0) increment = increment * -1;
+      if(canvas.currentScreen == &screen_dial) slider.update();
+      dial.setCV(map(slider.currentValue,0,100,dial.scaleMin,dial.scaleMax));
+    }
+  }
 }
