@@ -86,7 +86,7 @@ Also, both have a debouncing feature set by default to 200 mS. This time can be 
 
 The button widget activates an event handler function in the Arduino sketch when a touch event is detected. The buttons can be rectangular or round. 
 
-![Buttons](http://i1181.photobucket.com/albums/x437/jerullan/touchscreen_gui/button_zpsqklkvm5s.png)
+![Buttons](images/button.png)
 
 To configure a button as a round button, you must create the button using the syntax: 
 
