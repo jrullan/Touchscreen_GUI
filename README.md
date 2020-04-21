@@ -35,7 +35,7 @@ There are three hardware architecture components supported by the library.
 The architecture of the library consists of one **Canvas**, a **Touch object**, a **Point object**, **Screens** and **Widgets**. The canvas provides the layout, orientation and positioning of Screens and Widgets, and also monitors the Touch object for any touch events. If a touch event is detected then it returns a Point object that represents the coordinates of the touch event in relation with the Widgets drawn on the Canvas. 
 
 The class architecture
-![Class Architecture](https://raw.githubusercontent.com/jrullan/Touchscreen_GUI/master/images/architecture_2.PNG)
+![Class Architecture](images/architecture_2.PNG)
 
 
 
