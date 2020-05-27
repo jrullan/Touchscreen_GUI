@@ -52,7 +52,8 @@ public:
 	
 	const uint16_t* imageUnpressed;
 	const uint16_t* imagePressed;
-	int16_t transparentColor = -1; // Not a color
+	uint16_t transparentColor = BLACK; // By default 0 == Black is transparent
+	bool useTransparency = true;
 	
 private:
 

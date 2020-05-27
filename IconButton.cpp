@@ -78,17 +78,19 @@ void IconButton::update(){
 // Modified version of Adafruit_GFX drawRGBBitmap to support defining one color as transparent
 // void Adafruit_GFX::drawRGBBitmap(int16_t x, int16_t y,
 void IconButton::drawRGBABitmap(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, int16_t h, uint16_t transparentColor) {
-		uint16_t pixel;
+	uint16_t pixelColor;
     myCanvas->tft->startWrite();
-
-    for(int16_t j=0; j<h; j++, y++) {
-        for(int16_t i=0; i<w; i++ ) {
-						pixel = bitmap[j*w+i];
-						if(pixel != transparentColor){
-							myCanvas->tft->writePixel(x+i, y, pgm_read_word(&bitmap[j * w + i]));
-						}
-        }
-    }
- 	
+		for(int16_t j=0; j<h; j++, y++) {
+			for(int16_t i=0; i<w; i++ ) {
+				pixelColor = pgm_read_word(&bitmap[j*w+i]);
+				if(useTransparency){
+					if(pixelColor != transparentColor){
+						myCanvas->tft->writePixel(x+i, y, pixelColor);
+					}
+				}else{
+					myCanvas->tft->writePixel(x+i, y, pixelColor);
+				}				
+			}
+		}
     myCanvas->tft->endWrite();
 }
