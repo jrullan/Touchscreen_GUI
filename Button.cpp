@@ -256,9 +256,9 @@ bool Button::checkTouch(Point* p){
 
 	if(lastMillis + debounceTime < millis()){ 
 		if((p->x > xl) && (p->x < xl+w) && (p->y > y) && (p->y < y+h)){
+			lastMillis = millis();
 			touched = !touched;
 			eventHandler(this);
-			lastMillis = millis();
 			return false;
 		}
 	}

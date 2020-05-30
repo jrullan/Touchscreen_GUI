@@ -13,7 +13,7 @@
 
 #define DEBOUNCE 200
 #define LABEL_LEFT		0
-#define LABEL_TOP			1
+#define LABEL_TOP		1
 #define LABEL_RIGHT		2
 #define LABEL_BOTTOM	3
 
@@ -59,9 +59,9 @@ public:
 	bool block = false;
 	uint8_t cornerRadius = 0;
 	unsigned long lastMillis;
-	
+		
 protected:	
-	unsigned int debounceTime = DEBOUNCE;	
+	unsigned int debounceTime = DEBOUNCE;
 	bool isRound;
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)
