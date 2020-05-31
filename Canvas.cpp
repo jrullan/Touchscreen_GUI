@@ -154,9 +154,10 @@ bool Canvas::scan(){
 					currentScreen->touchWidgets(tP);
 				}
 			}
+			return true;
 	}
 	
-  return true;
+  return false;
 }
 
 // This method calculates the x,y coordinates of the touched point
