@@ -195,12 +195,12 @@ void Button::drawLabel(){
 		if(labelPos == LABEL_TOP){ // top
 		
 		}else if(labelPos == LABEL_RIGHT){ // right
-			xl = x + w + FONT_SPACE*fontSize;
+			xl = x + w + FONT_SPACE*fontSize/2;
 			yl = y+(h-labelHeight)/2;
 		}else if(labelPos == LABEL_BOTTOM){ // bottom
 			
 		}else{ 	// default LABEL_LEFT 
-			xl = x-(labelWidth + FONT_SPACE*fontSize);
+			xl = x-(labelWidth + FONT_SPACE*fontSize/2);
 			yl = y+(h-labelHeight)/2;	
 		}
 		
