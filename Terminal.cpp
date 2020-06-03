@@ -74,45 +74,48 @@ void Terminal::print(char* string,uint16_t highColor){
  * characters array.
  */
 void Terminal::printf(char* string, int num, uint16_t highColor){
+	highlightColor = highColor;
+	char lineIndex = (direction == TERMINAL_SCROLL_DOWN) ? 0 : lines - 1;
+	
+	// Only scroll up when it is already in the last line:
+	if(direction==TERMINAL_SCROLL_UP && linesIndex <= lines -1){
+		lineIndex = linesIndex++;
+	}else{
+		scroll();
+	}
+	
+	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
+	
+
+	// Here is the code when the characters are copied to the terminal buffer
 	uint8_t str_size = Widget::getTextLength(string);
 	uint8_t num_size = Widget::getIntLength(num);
 	char temp;
-	
-	char new_string[str_size + num_size - 2];
-	memset(new_string,0,str_size+num_size-1);
-	
+	char* new_string = linesBuffer[lineIndex];
+
 	uint8_t j = 0;
 	for(uint8_t i=0; i<str_size; i++){
+
+		// Scan for the %d placeholder in the provided string
 		if(string[i] == '%' && string[i+1] == 'd'){
 			
 			//Convert the number to characters and put them in the
 			//new_string starting at the current position (i)
-			Widget::convert_str(num,&new_string[i]);
-			
-			/*
-			//Invert the characters corresponding to the number 
-			//representation starting at the i position.
-			uint8_t b = i+num_size-1;
-			uint8_t a = i;
-			while(b > a){
-				temp = new_string[a];
-				new_string[a] = new_string[b];
-				new_string[b] = temp;
-				a++;
-				b--;
-			}*/
-			
+			Widget::convert_str(num,&new_string[i]);			
 			j += num_size-1;
 			i++;
 		}else{
 			new_string[j] = string[i];			
 		}
+		// Exit if at the end of the terminal buffer
+		if(j>=maxCharacters-1) break;
 		j++;
 	}
-	
-	//Call the main print function
-	this->print(new_string,highColor);
+	new_string[j] = 0;
+
+	update();
 }
+
 
 /*
  * Calls the corresponding scroll function based on the
