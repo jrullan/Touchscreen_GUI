@@ -69,9 +69,6 @@ void Terminal::print(char* string,uint16_t highColor){
  * and copy them into the new_string in the inverted order. 
  * Then update the indexes and keep copying the rest of the characters
  * into the new_string array. 
- * 
- * At the end call the main print function with the new_string
- * characters array.
  */
 void Terminal::printf(char* string, int num, uint16_t highColor){
 	highlightColor = highColor;
