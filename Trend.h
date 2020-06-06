@@ -28,13 +28,13 @@ class Trend : public Indicator{
 	public:
 		//Constructor
 		Trend();
-		Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit);
+		Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values=MAX_TREND_VALUES);
 		~Trend();
 		
 		//Methods
 		void init();
 		void clear();
-		void addValue(uint8_t val);
+		void addValue(uint8_t val, bool updateTrend=true);
 		void drawTrend();
 		void eraseTrend();
 		void forceUpdate(){
@@ -61,6 +61,7 @@ class Trend : public Indicator{
 		uint8_t maxValues;
 		bool forcedUpdate = false;
 		bool enableAutoFit = false;
+		bool forceSquareWaveform = false;
 		
 		struct TrendWindow {
 			int minValue;

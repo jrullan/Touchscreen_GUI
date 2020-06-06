@@ -4,12 +4,13 @@ Trend::Trend(){
 	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
 }
 
-Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit)
+Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values)
 {	
 	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug	
 	this->setSize(width,height);
 	this->setLimits(minLimit,setpoint,maxLimit);
 	this->setColors(BLACK,BLUE,WHITE);
+	this->maxValues = max_trend_values;
 	init();
 }
 
@@ -22,7 +23,7 @@ void Trend::init(){
 	borderWidth=2;
 	
 	//this->maxValues = w - yScaleWidth - 2*borderWidth;
-	this->maxValues = MAX_TREND_VALUES;
+	//this->maxValues = MAX_TREND_VALUES;
 
 	// Reserve memory for trend values
 	if(values = (uint8_t *)malloc(maxValues)){ 
@@ -145,9 +146,16 @@ void Trend::drawValues(uint16_t color){
 		
 		//if(j<maxValues-1){
 		if(j<trendWindow.maxValue){
-			myCanvas->tft->drawLine(x2,y2-1,x1,y1-1,color);
-			myCanvas->tft->drawLine(x2,y2,x1,y1,color);
-			myCanvas->tft->drawLine(x2,y2+1,x1,y1+1,color);
+			//myCanvas->tft->drawLine(x2,y2-1,x1,y1-1,color);
+			//myCanvas->tft->drawLine(x2,y2,x1,y1,color);
+			//myCanvas->tft->drawLine(x2,y2+1,x1,y1+1,color);			
+			if(forceSquareWaveform){
+				myCanvas->tft->drawHorizontalLine(x2,y2,x1-x2+1,color);
+				myCanvas->tft->drawVerticalLine(x1,y1,y2-y1,color);
+			}else{
+				myCanvas->tft->drawLine(x2,y2,x1,y1,color);
+			}
+
 		}
 	}
 }
@@ -211,7 +219,7 @@ void Trend::setMaxX(int m){
 
 int Trend::getXVal(int index){
 	int xBase = x+yScaleWidth+borderWidth;
-	int effWidth = w - yScaleWidth - 2*borderWidth;
+	int effWidth = w - yScaleWidth - 2*borderWidth-1;
 	//int inc = index*(effWidth)/(maxValues-1);
 	int inc = index*(effWidth)/(trendWindow.maxValue-trendWindow.minValue);
 	return xBase + effWidth - inc;
@@ -278,7 +286,7 @@ void Trend::autoFit(bool scale){
 }
 
 // Adds a new value to the trend
-void Trend::addValue(uint8_t val){
+void Trend::addValue(uint8_t val, bool updateTrend){
 	previousValue = currentValue;
 	currentValue = val;
 
@@ -299,7 +307,7 @@ void Trend::addValue(uint8_t val){
 		//Serial.println(values[i-1]);
 	}	
 	
-	update();
+	if(updateTrend) update();
 }
 
 //Overriden virtual methods
