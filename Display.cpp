@@ -45,6 +45,7 @@ void Display::drawText(int color){
 		int stringX = getCenterTextX(x,w,size);
 		int stringY = getCenterTextY(y,h);
 		myCanvas->tft->drawString(contents->text,stringX,stringY,fontSize,color);
+		//Serial.print("Draw ");Serial.print(contents->text); Serial.print(" with color "); Serial.println(color);
 	}
 }
 
@@ -107,10 +108,10 @@ void Display::setNum(int num, bool force){
 */
 
 void Display::setText(char* _text, bool force){
-	if(force) drawText(bgColor);
-	//contents->setText(_text);
-	contents->text = _text; // changed from calling setText to just passing the pointer, reduced 4 bytes in program memory
-	if(force) drawText(fgColor);
+	if(force) drawText(this->bgColor);
+	contents->setText(_text);
+	//contents->text = _text; // changed from calling setText to just passing the pointer, reduced 4 bytes in program memory
+	if(force) drawText(this->fgColor);
 }
 
 void Display::deleteChar(){

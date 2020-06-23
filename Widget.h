@@ -172,6 +172,7 @@ public:
 				b--;
 			}
 		}
+		string[Widget::getIntLength(num)]=0; // terminate the string with a null character (=0)
 	}
 	
 	// Pure Virtual methods - To force inheritance (makes this an abstract class)

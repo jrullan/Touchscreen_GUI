@@ -62,6 +62,7 @@ void Text::setNum(int num){
 void Text::setText(char* _text){
 	for(int i=0; i<_textSize;i++){
 		this->text[i] = _text[i];
+		if(_text[i] == 0) break;
 	}
 }
 
