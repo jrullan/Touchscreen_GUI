@@ -35,7 +35,7 @@ void OptionButton::init(){
 	y = 0;
 	lastMillis = millis();	
 	*/
-	if(label = (char *)malloc(DISPLAY_SIZE+1)) memset(label,0,DISPLAY_SIZE+1);
+	if( (label = (char *)malloc(DISPLAY_SIZE+1)) ) memset(label,0,DISPLAY_SIZE+1);
 	type = 0x34;
 	debounceTime = 500;
 	isButton = true;

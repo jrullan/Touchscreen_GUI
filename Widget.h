@@ -90,7 +90,7 @@ public:
 	 * 		Option - 	0x34
 	 *		IconButton - 0x35
 	 */ 
-	static char* getType(Widget* w){
+	static const char* getType(Widget* w){
 		if((w->type & 0xFF) == 0x00){ 
 			return "widget";
 		}else if ((w->type & 0xFF) == 0x10){
@@ -148,7 +148,7 @@ public:
 	}
 	
 	static void convert_str(int num, char* string, uint8_t invert = 1){
-		char chars = 0;
+		uint8_t chars = 0;
 		int absNum = abs(num);
 		uint8_t temp;
 		

@@ -1,7 +1,7 @@
 #include "Indicator.h"
 
 Indicator::Indicator(){
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
+	if( (buf = (char *)malloc(BUF_SIZE+1)) ) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
 }
 
 Indicator::~Indicator(){
@@ -58,7 +58,7 @@ void Indicator::setSP(unsigned int sp, int color){
 void Indicator::setNum(int num){
 	clear();
 	char numChar[BUF_SIZE];
-	char chars = 0;
+	uint8_t chars = 0;
 	
 	// Extract characters representing the powers of ten
 	while(num >= 10)

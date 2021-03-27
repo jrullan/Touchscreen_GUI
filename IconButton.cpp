@@ -25,7 +25,7 @@ IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const ui
 	*/
 
 	int labelSize = Widget::getTextLength(_label);
-	if(label = (char *)malloc(labelSize+1)){ 
+	if( (label = (char *)malloc(labelSize+1)) ){ 
 		memset(label,0,labelSize+1);
 		label = _label;
 	}	

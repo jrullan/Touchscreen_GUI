@@ -11,7 +11,7 @@
 #include "Widget.h"
 #include "Text.h"
 
-#define DEBOUNCE 200
+//#define DEBOUNCE 200
 #define LABEL_LEFT		0
 #define LABEL_TOP		1
 #define LABEL_RIGHT		2
@@ -39,6 +39,7 @@ public:
 	void fitToText();
 	//void setNum(int n); -- See notes in Text.cpp --
 	void setText(char* _text);
+	void setText(const char* _text);
 	char* getText();
 	long getNum();
 	void setLabel(char* _label);

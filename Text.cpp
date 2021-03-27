@@ -4,7 +4,7 @@
 Text::Text(unsigned char textSize){
 	// Reserve memory for the text, and initialize to empty characters (0)
 	_textSize = textSize;
-	if(this->text = (char *)malloc(textSize+1)){
+	if( (this->text = (char *)malloc(textSize+1)) ){
 		memset(this->text,0,textSize+1);
 	}
 }
@@ -64,6 +64,13 @@ void Text::setText(char* _text){
 		this->text[i] = _text[i];
 		if(_text[i] == 0) break;
 	}
+}
+
+void Text::setText(const char* _text){
+	for(int i=0; i<_textSize;i++){
+		this->text[i] = _text[i];
+		if(_text[i] == 0) break;
+	}	
 }
 
 unsigned char Text::getTextSize(){

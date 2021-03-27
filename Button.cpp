@@ -302,8 +302,13 @@ void Button::setNum(int num){
 */
 
 void Button::setText(char* _text){
-  contents->text = _text;
-	//contents->setText(_text);
+  //contents->text = _text;
+  contents->setText(_text);
+}
+
+void Button::setText(const char* _text){
+  //contents->text = _text;
+  contents->setText(_text);
 }
 
 

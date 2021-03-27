@@ -28,7 +28,7 @@ void Point::toLandscape(){
 }
 
 void Point::rotate(char dir){
-	int oldX,oldY;
+	int oldX;
 	
 	switch(dir){
 		case(POINT_PORTRAIT1):

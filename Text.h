@@ -21,6 +21,7 @@ class Text
 		//=====Getters and Setters======
 		//void setNum(int num); -- Had to be removed, see cpp --
 		void setText(char* _text);
+		void setText(const char* _text);
 		long getNum();	
 		char* getText();
 		unsigned char getTextSize();
