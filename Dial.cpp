@@ -188,7 +188,7 @@ void Dial::drawNeedleAndValue(){
 	if(currentValue <= lowLimit) color = lowLimitColor;
 
 	if(showVal && currentValue != previousValue){
-		int fontSize = 2;
+		int fontSize = valFontSize;
 		int dSpace;
 		if(currentValue < 10)   dSpace = 3 * fontSize;
 		else if(currentValue < 100)  dSpace = 6 * fontSize;

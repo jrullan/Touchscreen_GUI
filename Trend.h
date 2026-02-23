@@ -64,6 +64,8 @@ class Trend : public Indicator{
 		bool forcedUpdate = false;
 		bool enableAutoFit = false;
 		bool forceSquareWaveform = false;
+		bool showYScale = true;
+		bool showXScale = true;
 		
 		struct TrendWindow {
 			int minValue;
@@ -73,9 +75,10 @@ class Trend : public Indicator{
 	private:
 		//Attributes
 		byte updates = 0;
-		byte yScaleWidth = 4 * FONT_X + 10; // four characters and a line of 10 pixels
-		byte xScaleHeight = 2 * FONT_Y + 10 + borderWidth;
-		//int maxX = MAX_TREND_VALUES;
+		byte _yScaleWidth = 4 * FONT_X + 10; // four characters and a line of 10 pixels
+		byte _xScaleHeight = 2 * FONT_Y + 10 + borderWidth;
+		byte yScaleWidth() { return showYScale ? _yScaleWidth : 0; }
+		byte xScaleHeight() { return showXScale ? _xScaleHeight : 0; }
 		//Methods
 		void clearPlotArea();
 		void drawLineSpans(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);

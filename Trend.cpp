@@ -5,8 +5,8 @@ Trend::Trend(){
 }
 
 Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values)
-{	
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug	
+{
+	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
 	this->setSize(width,height);
 	this->setLimits(minLimit,setpoint,maxLimit);
 	this->setColors(BLACK,BLUE,WHITE);
@@ -21,8 +21,8 @@ void Trend::init(){
 	Indicator::init();
 	type = 0x23;
 	borderWidth=2;
-	
-	//this->maxValues = w - yScaleWidth - 2*borderWidth;
+
+	//this->maxValues = w - yScaleWidth() - 2*borderWidth;
 	//this->maxValues = MAX_TREND_VALUES;
 
 	// Reserve memory for trend values
@@ -34,7 +34,7 @@ void Trend::init(){
 	}
 	writeIndex = 0;
 	count = 0;
-	
+
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
 	this->currentValue = setpoint;
@@ -49,10 +49,10 @@ void Trend::clear(){
 }
 
 void Trend::clearPlotArea(){
-	int px = x + yScaleWidth + borderWidth;
+	int px = x + yScaleWidth() + borderWidth;
 	int py = y + borderWidth;
-	int pw = w - yScaleWidth - 2*borderWidth;
-	int ph = h - xScaleHeight - 2*borderWidth;
+	int pw = w - yScaleWidth() - 2*borderWidth;
+	int ph = h - xScaleHeight() - 2*borderWidth;
 	myCanvas->tft->fillRect(px, py, pw, ph, bgColor);
 }
 
@@ -62,18 +62,18 @@ void Trend::drawYScale(){
 	int lineX = x + textWidth - 1; //to separate from border
 
 	// Draw background
-	myCanvas->tft->fillRect(x,y,yScaleWidth-borderWidth+1,h-xScaleHeight+borderWidth,bgColor);
-	
+	myCanvas->tft->fillRect(x,y,_yScaleWidth-borderWidth+1,h-xScaleHeight()+borderWidth,bgColor);
+
 	// Draw Max value and line
 	setNum(scaleMax); // Sets buf with scaleMax value
 	myCanvas->tft->drawString(buf,x,getYVal(scaleMax),1,borderColor);
 	myCanvas->tft->drawHorizontalLine(lineX,getYVal(scaleMax),10,borderColor);
-	
+
 	// Draw Setpoint value and line
 	setNum(setpoint); // Sets buf with setpoint value
 	myCanvas->tft->drawString(buf,x,getYVal(setpoint)-(FONT_Y/2),1,setpointColor);
 	myCanvas->tft->drawHorizontalLine(lineX,getYVal(setpoint),10,setpointColor);
-	
+
 	// Draw Min value and line
 	setNum(scaleMin); // Sets buf with scaleMin value
 	myCanvas->tft->drawString(buf,x,getYVal(scaleMin)-(FONT_Y),1,borderColor);
@@ -95,14 +95,14 @@ void Trend::drawYScale(){
 void Trend::drawXScale(){
 	unsigned int val;
 	int textWidth = 4 * FONT_SPACE;
-	
+
 	//Draw X Scale
 	//--background
-	int xPos = x + yScaleWidth + 1;
-	int yPos = y + h + borderWidth - xScaleHeight;
-	int xWidth = w - yScaleWidth;
-	int xHeight = xScaleHeight;
-	myCanvas->tft->fillRect(xPos-yScaleWidth-1,yPos,w,xHeight+1,bgColor);
+	int xPos = x + yScaleWidth() + 1;
+	int yPos = y + h + borderWidth - _xScaleHeight;
+	int xWidth = w - yScaleWidth();
+	int xHeight = _xScaleHeight;
+	myCanvas->tft->fillRect(xPos-yScaleWidth()-1,yPos,w,xHeight+1,bgColor);
 	yPos += borderWidth;
 
 	//--right
@@ -112,11 +112,11 @@ void Trend::drawXScale(){
 	xWidth -= borderWidth;
 	int xp = xPos + xWidth;
 	int longInterval = xWidth / 10;
-	
+
 	//for(int i = 0; i < maxValues+1; i++){
-		//xp = xPos + xWidth - i*xWidth/(maxValues);	
+		//xp = xPos + xWidth - i*xWidth/(maxValues);
 	for(int i = trendWindow.minValue; i < trendWindow.maxValue+1+1; i++){
-		xp = xPos + xWidth - i*xWidth/(trendWindow.maxValue-trendWindow.minValue+1);	
+		xp = xPos + xWidth - i*xWidth/(trendWindow.maxValue-trendWindow.minValue+1);
 		//draw alternating numbers
 		#if !defined(__STM32F1__)
 		if(i>0 && !(i%2)){
@@ -129,13 +129,13 @@ void Trend::drawXScale(){
 			//setNum(map(i,0,maxValues,0,maxX));
 			setNum(i);
 			byte size = getTextLength(buf);
-			myCanvas->tft->drawString(buf,xp - size*(FONT_X>>1),yPos+10+FONT_Y,1,borderColor);	
+			myCanvas->tft->drawString(buf,xp - size*(FONT_X>>1),yPos+10+FONT_Y,1,borderColor);
 		//}else{
 		}else if(i>0 && !(i%(int)(xWidth/15))){
 			myCanvas->tft->drawVerticalLine(xp,yPos,5,borderColor);
 		}
 	}
-	
+
 }
 
 // Span-based line draw: accumulates horizontal (or vertical) runs and
@@ -214,12 +214,12 @@ void Trend::drawValues(uint16_t color){
 }
 
 void Trend::drawBorder(){
-	int xPos = x + yScaleWidth;
+	int xPos = x + yScaleWidth();
 	int yPos = y;// + borderWidth;
-	int width = w-yScaleWidth-2*borderWidth;
+	int width = w-yScaleWidth()-2*borderWidth;
 	int borderW, borderH;
-	borderW = w - yScaleWidth;
-	borderH = h - xScaleHeight;
+	borderW = w - yScaleWidth();
+	borderH = h - xScaleHeight();
 
 	//--border
 	for(byte i=borderWidth; i!=0; i--){
@@ -228,19 +228,19 @@ void Trend::drawBorder(){
 		yPos++;
 		borderW -= 2;
 		borderH -= 2;
-	}	
+	}
 }
 
 void Trend::drawThresholdLines(bool colors){
-	int xPos = x + borderWidth + yScaleWidth - 1;
-	int width = w-yScaleWidth-2*borderWidth;
-  
+	int xPos = x + borderWidth + yScaleWidth() - 1;
+	int width = w-yScaleWidth()-2*borderWidth;
+
 	if(hiLimit < scaleMax){
 		myCanvas->tft->drawHorizontalLine(xPos+1,getYVal(hiLimit),width,!colors?bgColor:hiLimitColor);
 	}
-	
+
 	myCanvas->tft->drawHorizontalLine(xPos+1,getYVal(setpoint),width,!colors?bgColor:setpointColor);
-	
+
 	if(lowLimit > scaleMin){
 		myCanvas->tft->drawHorizontalLine(xPos+1,getYVal(lowLimit),width,!colors?bgColor:lowLimitColor);
 	}
@@ -254,7 +254,7 @@ void Trend::setWindow(int min, int max){
 	trendWindow.maxValue = max;
 }
 
-/* 
+/*
  * Sets maximum X value in milli-seconds. This value is used to draw the interval values
  * of the x-scale. If the value is too high, it automatically adjusts
  * to minutes.
@@ -271,8 +271,8 @@ void Trend::setMaxX(int m){
 */
 
 int Trend::getXVal(int index){
-	int xBase = x+yScaleWidth+borderWidth;
-	int effWidth = w - yScaleWidth - 2*borderWidth-1;
+	int xBase = x+yScaleWidth()+borderWidth;
+	int effWidth = w - yScaleWidth() - 2*borderWidth-1;
 	//int inc = index*(effWidth)/(maxValues-1);
 	int inc = index*(effWidth)/(trendWindow.maxValue-trendWindow.minValue);
 	return xBase + effWidth - inc;
@@ -280,7 +280,7 @@ int Trend::getXVal(int index){
 
 int Trend::getYVal(int value){
 	int yBase = y ;//+ borderWidth ;//+ 1; 	// +1 to account for trend width line
-	int maxHeight = h-xScaleHeight-borderWidth - 2; // -2 to account for trend line width
+	int maxHeight = h-xScaleHeight()-borderWidth - 2; // -2 to account for trend line width
 	unsigned int val = constrain(value,scaleMin,scaleMax);
 	val = map(val,scaleMin,scaleMax,maxHeight,borderWidth+1); //-1 to account for trend line width
 	return yBase + val;
@@ -305,13 +305,13 @@ int Trend::getMax(){
 }
 
 void Trend::drawTrend(){
-	this->drawThresholdLines(true);	
-  this->drawValues(this->fgColor);	
+	this->drawThresholdLines(true);
+  this->drawValues(this->fgColor);
 }
 
 void Trend::eraseTrend(){
 	this->drawValues(this->bgColor);	//erase original line
-	this->drawThresholdLines(false); //erase threshold lines		
+	this->drawThresholdLines(false); //erase threshold lines
 }
 
 void Trend::autoFit(bool scale){
@@ -333,7 +333,7 @@ void Trend::autoFit(bool scale){
 		}
 	}
 
-	drawYScale();
+	if(showYScale) drawYScale();
 	clearPlotArea();
 	drawTrend();
 }
@@ -364,8 +364,8 @@ void Trend::show(){
 	if(this->visible){
 	  myCanvas->tft->startWrite();
 	  myCanvas->tft->fillRect(x,y,w,h,bgColor);
-	  this->drawYScale();
-	  this->drawXScale();
+	  if(showYScale) this->drawYScale();
+	  if(showXScale) this->drawXScale();
 	  this->drawBorder();
 	  this->update();
 	  myCanvas->tft->endWrite();

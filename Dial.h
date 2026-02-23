@@ -43,6 +43,7 @@ class Dial : public Indicator{
 		unsigned char tickSize;
 		bool showVal;
 		bool showTicks;
+		uint8_t valFontSize = 2;
 		bool forcedUpdate = false;
 		
 	private:

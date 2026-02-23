@@ -89,7 +89,7 @@ void Gauge::show(){
 		this->drawBorder();
 		// Full bar draw since background was just cleared
 		int barX = x+borderWidth+yScaleWidth;
-		int barW = w-(2*borderWidth);
+		int barW = w-yScaleWidth-(2*borderWidth);
 		unsigned int val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
 		int color = fgColor;
 		if(currentValue >= this->hiLimit) color = hiLimitColor;
@@ -102,7 +102,7 @@ void Gauge::show(){
 
 void Gauge::drawBorder(){
 	int xPos = x + yScaleWidth;
-	int width = w;
+	int width = w - yScaleWidth;
 	byte yPos = y;
 	byte height = h;
 	
@@ -117,7 +117,7 @@ void Gauge::drawBorder(){
 
 void Gauge::drawFill(){
 	int barX = x+borderWidth+yScaleWidth;
-	int barW = w-(2*borderWidth);
+	int barW = w-yScaleWidth-(2*borderWidth);
 
 	unsigned int newVal = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
 	unsigned int oldVal = map(previousValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
