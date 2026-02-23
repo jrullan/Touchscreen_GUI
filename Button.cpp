@@ -219,9 +219,11 @@ void Button::drawLabel(){
  * void function() = 0;
  */
 void Button::show(){
-	drawLabel();	
+	myCanvas->tft->startWrite();
+	drawLabel();
 	drawBackground(bgColor);
 	update();
+	myCanvas->tft->endWrite();
 }
 
 /**

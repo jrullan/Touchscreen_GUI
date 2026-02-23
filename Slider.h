@@ -60,17 +60,24 @@ void Slider::drawBorder(){
 }
 
 void Slider::drawCV(int cv){
-	int cvY = map(cv,scaleMin,scaleMax,y+h-borderWidth,y+borderWidth);
-	
-	//		Draw the background
-	int startFill = y+borderWidth;
-	int fillHeight = cvY - startFill;
-	myCanvas->tft->fillRect(x+borderWidth, startFill, w-2*borderWidth, fillHeight, this->bgColor);
+	int newY = map(cv,scaleMin,scaleMax,y+h-borderWidth,y+borderWidth);
+	int oldY = map(previousValue,scaleMin,scaleMax,y+h-borderWidth,y+borderWidth);
+	int barW = w-2*borderWidth;
 
-	//		Draw the knob/marker
-	startFill = cvY;
-	fillHeight = y + h - borderWidth - startFill;
-	myCanvas->tft->fillRect(x+borderWidth, startFill, w-2*borderWidth, fillHeight, this->fgColor);
+	if(newY == oldY){
+		// Full draw (initial or no change)
+		myCanvas->tft->fillRect(x+borderWidth, y+borderWidth, barW, newY-(y+borderWidth), bgColor);
+		myCanvas->tft->fillRect(x+borderWidth, newY, barW, y+h-borderWidth-newY, fgColor);
+		return;
+	}
+
+	if(newY < oldY){
+		// Bar grew upward (value increased)
+		myCanvas->tft->fillRect(x+borderWidth, newY, barW, oldY-newY, fgColor);
+	} else {
+		// Bar shrank (value decreased)
+		myCanvas->tft->fillRect(x+borderWidth, oldY, barW, newY-oldY, bgColor);
+	}
 }
 
 void Slider::setDebounce(int debounce){
@@ -112,15 +119,19 @@ bool Slider::checkTouch(Point* p){
 }
 
 void Slider::update(){
+	if(!_dirty) return;
+	_dirty = false;
+	myCanvas->tft->startWrite();
 	drawBorder();
 	drawCV(currentValue);
-	//myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,this->fgColor);
+	myCanvas->tft->endWrite();
 }
 
 void Slider::show(){
+	myCanvas->tft->startWrite();
 	drawBorder();
 	drawCV(currentValue);
-	//myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,this->fgColor);
+	myCanvas->tft->endWrite();
 }
 
 #endif

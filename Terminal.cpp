@@ -18,6 +18,7 @@ Terminal::Terminal(int width, int height, uint8_t dir, int fontSize){
 	lines  = (this->h-2*borderWidth-2*verticalBleed)/(fontSize*FONT_Y+lineSpace);
 	lines = (lines > MAX_LINES) ? MAX_LINES : lines;
 	memset(linesBuffer, 0, MAX_LINES * sizeof(char*));
+	memset(linesDirty, 0, MAX_LINES * sizeof(bool));
 	
 	// Calculate characters based on fontSize and width
 	maxCharacters = (this->w - 2*borderWidth - 2*horizontalBleed)/(fontSize*FONT_X);
@@ -42,21 +43,22 @@ void Terminal::print(char* string,uint16_t highColor){
 	int length = Widget::getTextLength(string);
 	length = (length > maxCharacters) ? maxCharacters : length;
 	char lineIndex = (direction == TERMINAL_SCROLL_DOWN) ? 0 : lines - 1;
-	
+
 	// Only scroll if:
 	if(direction==TERMINAL_SCROLL_UP && linesIndex <= lines -1){
 		lineIndex = linesIndex++;
 	}else{
 		scroll();
 	}
-	
+
 	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
-	
+
 	for(int i=0; i<length; i++){
 		linesBuffer[lineIndex][i] = string[i];
 	}
 	linesBuffer[lineIndex][length] = 0;
-	
+	linesDirty[lineIndex] = true;
+
 	update();
 }
 
@@ -109,6 +111,7 @@ void Terminal::printf(char* string, int num, uint16_t highColor){
 		j++;
 	}
 	new_string[j] = 0;
+	linesDirty[lineIndex] = true;
 
 	update();
 }
@@ -119,21 +122,19 @@ void Terminal::printf(char* string, int num, uint16_t highColor){
  * direction property.
  */
 void Terminal::scroll(){
-	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
-
 	if(direction){
 		scrollDown();
 	}else{
 		scrollUp();
 	}
+	// Mark all lines dirty since content shifted
+	for(int i=0; i<lines; i++) linesDirty[i] = true;
 }
 
 void Terminal::scrollDown(){
 	// Scroll Down
 	for(int line = lines-1; line!=0; line--){
-		for(int i=0; i<maxCharacters; i++){
-			linesBuffer[line][i] = linesBuffer[line-1][i];
-		}
+		memcpy(linesBuffer[line], linesBuffer[line-1], maxCharacters+1);
 		linesColors[line] = linesColors[line-1];
 	}
 }
@@ -141,9 +142,7 @@ void Terminal::scrollDown(){
 void Terminal::scrollUp(){
 	// Scroll Up
 	for(int line = 0; line<lines-1; line++){
-		for(int i=0; i<maxCharacters; i++){
-			linesBuffer[line][i] = linesBuffer[line+1][i];
-		}
+		memcpy(linesBuffer[line], linesBuffer[line+1], maxCharacters+1);
 		linesColors[line] = linesColors[line+1];
 	}
 }
@@ -174,24 +173,34 @@ void Terminal::drawFrame(){
 void Terminal::show(){
 	drawFrame();
 	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
+	for(int i=0; i<lines; i++) linesDirty[i] = true;
 	update();
 }
 
 void Terminal::update(){
 	uint16_t color;
-	
+
 	//Calculate position for first line
 	int lineX = this->x + borderWidth + horizontalBleed;
 	int lineY = this->y + borderWidth + verticalBleed;
 
 	char lineIndex = (direction) ? 0 : lines - 1;
-	
+
+	myCanvas->tft->startWrite();
 	for(int i=0; i<lines; i++){
+		if(!linesDirty[i]) continue;
+		linesDirty[i] = false;
+
+		int ly = lineY + i*(fontSize*FONT_Y+lineSpace);
+		// Clear this line area
+		myCanvas->tft->fillRect(x+borderWidth, ly, w-2*borderWidth, fontSize*FONT_Y+lineSpace, bgColor);
+
 		if(i==lineIndex){
 			color = linesColors[i];
 		}else{
 			color = (keepColors)?linesColors[i]:fgColor;
 		}
-		myCanvas->tft->drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, color);//color);
+		myCanvas->tft->drawString(linesBuffer[i], lineX, ly, this->fontSize, color);
 	}
+	myCanvas->tft->endWrite();
 }

@@ -26,12 +26,14 @@ void Trend::init(){
 	//this->maxValues = MAX_TREND_VALUES;
 
 	// Reserve memory for trend values
-	if(values = (uint8_t *)malloc(maxValues)){ 
+	if(values = (uint8_t *)malloc(maxValues)){
 		memset(values,0,maxValues*sizeof(uint8_t));
 		Serial.println("Memory allocated for trend values");
 	}else{
 		Serial.println("Memory was not allocated for trend values");
 	}
+	writeIndex = 0;
+	count = 0;
 	
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
@@ -129,35 +131,28 @@ void Trend::drawXScale(){
 }
 
 void Trend::drawValues(uint16_t color){
-	unsigned int val; //= map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
 	int x1, y1, x2, y2;
-	
-	//-- loop through all values and plot them left to right (starting with values[7])
-	//for(int i = maxValues; i!=0; i--){
+
+	myCanvas->tft->startWrite();
 	for(int i = trendWindow.maxValue+1; i!=trendWindow.minValue; i--){
 		int j = i-1;
-		
-		//-- previous values[j] coordinates 2-previous 1-current
+
 		x2 = x1;
 		y2 = y1;
-		
+
 		x1 = getXVal(j);
-		y1 = getYVal(values[j]);
-		
-		//if(j<maxValues-1){
+		y1 = getYVal(getValueAt(j));
+
 		if(j<trendWindow.maxValue){
-			//myCanvas->tft->drawLine(x2,y2-1,x1,y1-1,color);
-			//myCanvas->tft->drawLine(x2,y2,x1,y1,color);
-			//myCanvas->tft->drawLine(x2,y2+1,x1,y1+1,color);			
 			if(forceSquareWaveform){
 				myCanvas->tft->drawHorizontalLine(x2,y2,x1-x2+1,color);
 				myCanvas->tft->drawVerticalLine(x1,y1,y2-y1,color);
 			}else{
 				myCanvas->tft->drawLine(x2,y2,x1,y1,color);
 			}
-
 		}
 	}
+	myCanvas->tft->endWrite();
 }
 
 void Trend::drawBorder(){
@@ -234,17 +229,19 @@ int Trend::getYVal(int value){
 }
 
 int Trend::getMin(){
-	int val = values[0];
-	for(int i = 1; i<maxValues; i++){
-		if(values[i] < val) val = values[i];
+	if(count == 0) return 0;
+	int val = getValueAt(0);
+	for(int i = 1; i<count; i++){
+		if(getValueAt(i) < val) val = getValueAt(i);
 	}
 	return val;
 }
 
 int Trend::getMax(){
-	int val = values[0];
-	for(int i = 1; i<maxValues; i++){
-		if(values[i] > val) val = values[i];
+	if(count == 0) return 0;
+	int val = getValueAt(0);
+	for(int i = 1; i<count; i++){
+		if(getValueAt(i) > val) val = getValueAt(i);
 	}
 	return val;
 }
@@ -293,42 +290,39 @@ void Trend::addValue(uint8_t val, bool updateTrend){
 	//--delete previous line (bgColor)
 	if(visible) drawValues(this->bgColor);
 
-	//--push value into the array
-	for(int i = maxValues; i!=0; i--){
+	//--push value into ring buffer (O(1) instead of O(n) shift)
+	values[writeIndex] = val;
+	writeIndex = (writeIndex + 1) % maxValues;
+	if(count < maxValues) count++;
 
-		if(i==1){
-			values[i-1] = val;
-		}else{
-			values[i-1] = values[i-2];
-		}
-		//Serial.print("Value[");
-		//Serial.print(i-1);
-		//Serial.print("] = ");
-		//Serial.println(values[i-1]);
-	}	
-	
 	if(updateTrend) update();
+}
+
+uint8_t Trend::getValueAt(int i){
+	if(i >= count) return 0;
+	return values[(writeIndex - 1 - i + maxValues) % maxValues];
 }
 
 //Overriden virtual methods
 void Trend::show(){
-	//Serial.print("Show");Serial.println();
 	if(this->visible){
+	  myCanvas->tft->startWrite();
 	  myCanvas->tft->fillRect(x,y,w,h,bgColor);
 	  this->drawYScale();
 	  this->drawXScale();
 	  this->drawBorder();
 	  this->update();
+	  myCanvas->tft->endWrite();
 	}
 }
 
 void Trend::update(){
-	if(!forcedUpdate){	
+	if(!forcedUpdate){
 		if(!visible) return;
 	}
-	
+
 	if(enableAutoFit){
-		if(values[0] >= scaleMax - 2 || values[0] <= scaleMin + 2){
+		if(getValueAt(0) >= scaleMax - 2 || getValueAt(0) <= scaleMin + 2){
 			autoFit(true);
 			return;
 		}

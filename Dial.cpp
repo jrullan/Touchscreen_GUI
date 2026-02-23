@@ -157,6 +157,7 @@ void Dial::drawNeedleAndValue(){
 	if(currentValue >= hiLimit) color = hiLimitColor;
 	if(currentValue <= lowLimit) color = lowLimitColor;
 
+	myCanvas->tft->startWrite();
 	if(showVal){
 		// Draw current value
 		int dSpace;
@@ -167,11 +168,12 @@ void Dial::drawNeedleAndValue(){
 		if(currentValue>999) dSpace = 12 * fontSize;
 		myCanvas->tft->fillRect(x-12*fontSize,y+radius-16*fontSize,24*fontSize,8*fontSize,bgColor);
 		myCanvas->tft->drawNumber(currentValue,x-dSpace,y+radius-16*fontSize,fontSize,color);
-	}	
-	
+	}
+
 	// Draw needle
 	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);
 	drawNeedle(x,y,currentValue,radius-tickSize-gap,color);
+	myCanvas->tft->endWrite();
 }
 
 int Dial::getX(int cX,int deg, int radius){
@@ -185,31 +187,16 @@ int Dial::getY(int cY, int deg, int radius){
 
 //Overriden virtual methods
 void Dial::show(){
-	// Draw face
+	myCanvas->tft->startWrite();
 	drawBorder();
 	drawFace();
 	drawNeedleAndValue();
-	//update();
+	myCanvas->tft->endWrite();
 }
 
 void Dial::update(){
 	if(!visible) return;
-	
-	if(!forcedUpdate){	
-		if(previousValue == currentValue) return;
-	}
-	
-	// Limit crossing forces border to redraw
-	/*
-	if(previousValue < hiLimit && previousValue > lowLimit){
-		if(currentValue >= hiLimit || currentValue <= lowLimit) drawBorder();
-	}
-	if(previousValue >= hiLimit){
-		if(currentValue < hiLimit) drawBorder();
-	}
-	if(previousValue <= lowLimit){
-		if(currentValue > lowLimit) drawBorder();
-	}
-	*/
+	if(!forcedUpdate && !_dirty) return;
+	_dirty = false;
 	drawNeedleAndValue();
 }

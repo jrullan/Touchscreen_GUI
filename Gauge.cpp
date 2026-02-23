@@ -83,10 +83,20 @@ int Gauge::getYVal(int value){
 //Overriden virtual methods
 void Gauge::show(){
 	if(this->visible){
+		myCanvas->tft->startWrite();
 		myCanvas->tft->fillRect(x,y,w,h,bgColor);
 		this->drawScale();
 		this->drawBorder();
-		this->update();
+		// Full bar draw since background was just cleared
+		int barX = x+borderWidth+yScaleWidth;
+		int barW = w-(2*borderWidth);
+		unsigned int val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
+		int color = fgColor;
+		if(currentValue >= this->hiLimit) color = hiLimitColor;
+		if(currentValue <= this->lowLimit) color = lowLimitColor;
+		myCanvas->tft->fillRect(barX, y+val, barW, h-val-borderWidth, color);
+		myCanvas->tft->endWrite();
+		_dirty = false;
 	}
 }
 
@@ -106,23 +116,40 @@ void Gauge::drawBorder(){
 }
 
 void Gauge::drawFill(){
-	int xPos = x + yScaleWidth;
-	int width = w;
-	byte yPos = y;
-	byte height = h;
-	unsigned int val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
+	int barX = x+borderWidth+yScaleWidth;
+	int barW = w-(2*borderWidth);
 
-	//--background fill
-	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
-	//--bar fill
-	int color=fgColor;
+	unsigned int newVal = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
+	unsigned int oldVal = map(previousValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
+
+	int color = fgColor;
 	if(currentValue >= this->hiLimit) color = hiLimitColor;
 	if(currentValue <= this->lowLimit) color = lowLimitColor;
-	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);	
+
+	int oldColor = fgColor;
+	if(previousValue >= this->hiLimit) oldColor = hiLimitColor;
+	if(previousValue <= this->lowLimit) oldColor = lowLimitColor;
+
+	// Color changed or same position — full redraw
+	if(color != oldColor || newVal == oldVal){
+		myCanvas->tft->fillRect(barX, y+borderWidth, barW, newVal-borderWidth, bgColor);
+		myCanvas->tft->fillRect(barX, y+newVal, barW, h-newVal-borderWidth, color);
+		return;
+	}
+
+	if(newVal < oldVal){
+		// Bar grew upward (value increased)
+		myCanvas->tft->fillRect(barX, y+newVal, barW, oldVal-newVal, color);
+	} else {
+		// Bar shrank (value decreased)
+		myCanvas->tft->fillRect(barX, y+oldVal, barW, newVal-oldVal, bgColor);
+	}
 }
 
 void Gauge::update(){
 	if(!_dirty) return;
 	_dirty = false;
+	myCanvas->tft->startWrite();
 	drawFill();
+	myCanvas->tft->endWrite();
 }

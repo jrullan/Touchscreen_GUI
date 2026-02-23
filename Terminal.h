@@ -31,6 +31,7 @@ class Terminal : public Widget {
 		uint16_t highlightColor;
 		uint16_t linesColors[MAX_LINES];
 		char* linesBuffer[MAX_LINES];
+		bool linesDirty[MAX_LINES];
 		//char** linesBuffer;
 		
 		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);

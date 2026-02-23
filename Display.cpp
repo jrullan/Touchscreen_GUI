@@ -145,6 +145,8 @@ void Display::show(){
 void Display::update(){
 	if(!_dirty) return;
 	_dirty = false;
+	myCanvas->tft->startWrite();
 	myCanvas->tft->fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
 	drawText(fgColor);
+	myCanvas->tft->endWrite();
 }

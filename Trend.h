@@ -42,6 +42,7 @@ class Trend : public Indicator{
 			update();
 			forcedUpdate = false;
 		}
+		uint8_t getValueAt(int i);
 		int getXVal(int index);
 		int getYVal(int value);
 		int getMin();
@@ -55,10 +56,11 @@ class Trend : public Indicator{
 		void update();
 		
 		//Attributes
-		uint8_t* values;  // Array of values to plot
+		uint8_t* values;  // Ring buffer of values to plot
 		uint8_t vals;			// number of values in the array
-		//uint8_t maxValues = MAX_TREND_VALUES;	// To define max values in the trend
 		uint8_t maxValues;
+		uint8_t writeIndex = 0;
+		uint8_t count = 0;
 		bool forcedUpdate = false;
 		bool enableAutoFit = false;
 		bool forceSquareWaveform = false;
