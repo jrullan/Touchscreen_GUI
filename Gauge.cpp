@@ -122,5 +122,7 @@ void Gauge::drawFill(){
 }
 
 void Gauge::update(){
+	if(!_dirty) return;
+	_dirty = false;
 	drawFill();
 }

@@ -53,7 +53,7 @@ void Display::append(char* c){
 	byte cSize = getTextLength(c);
 	byte txtSize = getTextLength(contents->text);//getTextSize();
 	byte space = contents->_textSize - txtSize;
-	
+
 	//Check that there space available to append
 	if(txtSize < contents->_textSize){
 		for(int i=0; i<space; i++)
@@ -61,6 +61,7 @@ void Display::append(char* c){
 			contents->text[i+txtSize] = c[i];
 		}
 	}
+	_dirty = true;
 	update();
 }
 
@@ -71,7 +72,8 @@ void Display::append(char c){
 	if(txtSize < contents->_textSize){
 		contents->text[txtSize] = c;
 	}
-	update();	
+	_dirty = true;
+	update();
 }
 
 void Display::fitToText(){
@@ -110,7 +112,7 @@ void Display::setNum(int num, bool force){
 void Display::setText(char* _text, bool force){
 	if(force) drawText(this->bgColor);
 	contents->setText(_text);
-	//contents->text = _text; // changed from calling setText to just passing the pointer, reduced 4 bytes in program memory
+	_dirty = true;
 	if(force) drawText(this->fgColor);
 }
 
@@ -125,6 +127,7 @@ void Display::deleteChar(){
 			}
 		}
 	}
+	_dirty = true;
 	update();
 }
 
@@ -140,6 +143,8 @@ void Display::show(){
 }
 
 void Display::update(){
+	if(!_dirty) return;
+	_dirty = false;
 	myCanvas->tft->fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
 	drawText(fgColor);
 }

@@ -206,6 +206,5 @@ void Popup::reset(){
 }
 
 void Popup::update(){
-	// ???
-	return;
+	if(visible) draw();
 }

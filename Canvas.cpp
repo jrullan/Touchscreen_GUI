@@ -3,19 +3,11 @@
 * Implementation of the Class Canvas
 * Created on:      02-Mar-2015 9:16:46 PM
 * Original author: Invision
-* 
-*	2018-08-08: Added initialization for Adafruit touch controller STMPE610
-*
 */
 
 #include "Canvas.h"
 #include "Widget.h"
 #include "Screen.h"
-
-// Touch drivers includes
-//#include "Seeedtouch.h"
-//#include "Adafruit_FT6206.h"
-//#include "Adafruit_STMPE610.h"
 
 
 Canvas::Canvas(int mode, int color, int tft_cs, int tft_ds, int ts){
@@ -39,41 +31,6 @@ Canvas::~Canvas(){
 
 }
 
-// Initializes the LCD screen (tft) and sets debounce and lastmillis variables.
-// Last millis is used for the Canvas-wide debounce of touch events.
-/*
-void Canvas::init(){
-	tft->begin();
-	tft->fillScreen(BLACK);
-	lastMillis = millis();
-	touchSampling = millis();
-	scanSampling = millis();
-	scanSampleDelay = SCAN_SAMPLING_TIME;
-
-	if(_mode == TFT_PORTRAIT) portrait();
-	if(_mode == TFT_LANDSCAPE) landscape();	
-
-	if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
-		ts = new SeeedstudioTouch(XP,YP,XM,YM);
-	}
-	
-	if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
-		ts = new Adafruit_FT6206();
-		ts->begin(FT62XX_DEFAULT_THRESHOLD);
-	}
-	if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){
-		ts = new Adafruit_STMPE610(STMPE_CS);
-
-		//Wait until the touchscreen is started.
-		//Original driver has an apparent bug,
-		//sometimes it did start other times it didn't.
-		while(!ts->begin(STMPE_ADDR)){
-			;
-		}
-		//Serial.println("Touchscreen successfully started");
-	}
-}
-*/
 	
 // This method sets the TFT orientation mode to landscape.
 void Canvas::landscape(){
@@ -160,49 +117,6 @@ bool Canvas::scan(){
   return false;
 }
 
-// This method calculates the x,y coordinates of the touched point
-// according to the currently set orientation mode.
-/*
-Point* Canvas::getTouchedPoint(){
-	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
-		Point p = ts->getPoint();
-		
-		if(touchType == TOUCHTYPE_ADAFRUIT_FT6206){
-			if(tft->layoutMode == TFT_PORTRAIT){
-				p.rotate(POINT_PORTRAIT2);
-			}
-			if(tft->layoutMode == TFT_LANDSCAPE){
-				p.rotate(POINT_LANDSCAPE2);
-			}
-		}
-		
-		if(touchType == TOUCHTYPE_ADAFRUIT_STMPE610){				
-			p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
-			p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);			
-			if(_mode == TFT_LANDSCAPE){
-				p.rotate(POINT_STMPE610_LANDSCAPE);
-			}
-			if(_mode == TFT_PORTRAIT){
-				p.rotate(POINT_STMPE610_PORTRAIT);
-			}
-		}		
-
-		if(touchType == TOUCHTYPE_SEEEDSTUDIO_RESISTIVE){
-			p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft->width());
-			p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft->height());			
-			if(tft->layoutMode == TFT_LANDSCAPE){
-				p.toLandscape();
-			}
-		}
-		
-		touchedPoint.x = p.x;
-		touchedPoint.y = p.y;
-		touchSampling = millis();
-		return &touchedPoint;
-	}
-	return NULL;
-}
-*/
  
 // Determines if the given point falls
 // within the Bounds of the layout chosen

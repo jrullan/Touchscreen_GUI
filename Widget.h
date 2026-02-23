@@ -57,10 +57,12 @@ public:
 	// defaults
 	bool visible = true;
 	bool isButton = false;
+	bool _dirty = true;
 	unsigned char fontSize = 2;
 
 	// Methods
 	void hide();
+	void markDirty() { _dirty = true; }
 	void setCanvas(Canvas* c);
 	void setColors(int bgColor,int fgColor, int borderColor);
 	void setSize(int width, int height);

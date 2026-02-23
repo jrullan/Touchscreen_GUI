@@ -72,7 +72,7 @@ Button::~Button(){
  */
 void Button::init(){
 	type = 0x30;
-	debounceTime = 500;
+	debounceTime = 150;
 	isButton = true;
 	isRound = false;
 	touched = false;

@@ -29,6 +29,9 @@ void Indicator::init(){
 void Indicator::setCV(int cv, boolean show){
 	previousValue = currentValue;
 	currentValue = constrain(cv,scaleMin,scaleMax);
+	if(currentValue != previousValue){
+		_dirty = true;
+	}
 	if(show){
 		update();
 	}
