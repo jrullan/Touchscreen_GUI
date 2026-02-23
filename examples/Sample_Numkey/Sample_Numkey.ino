@@ -45,52 +45,25 @@ Display dispLabel  = Display(20);
 // Button to trigger the numkey
 Button btnEnter = Button();
 
-// ---- State ----
-bool numkeyVisible = false;
-
 // ---- Forward declarations ----
 void onEnter(Button* btn);
 void onNumkeyDone(Numkey* nk);
 
 // ---- Event Handlers ----
 
-// Button handler: shows/processes the numkey
-// Pattern: first press shows the numkey, second press (after entry)
-// processes the result.
+// Button handler: shows the numkey when not already visible
 void onEnter(Button* btn) {
-  if (!numkeyVisible) {
-    // Show the numkey and link it to this button
-    // show(Button*) — displays the numkey and sets the target button.
-    // When "=" is pressed, the numkey calls the target button's event handler.
-    numkey.show(btn);
-
-    // Add numkey to canvas so it receives touch events
-    canvas.add(&numkey, 60, 80);
-    numkeyVisible = true;
-  } else {
-    // Process the entry (called when numkey triggers the target button)
-    long value = numkey.getNum();
-    char buf[12];
-    sprintf(buf, "%ld", value);
-    dispResult.setText(buf);
-    dispResult.update();
-
-    Serial.print("Entered: ");
-    Serial.println(value);
-
-    // hide() — removes numkey from canvas and redraws underlying widgets
-    numkey.hide();
-
-    // reset() — clears the entry and makes numkey ready for next use
-    numkey.reset();
-    numkeyVisible = false;
-  }
+  numkey.show(btn);
 }
 
-// Numkey event handler (optional, called when "=" is pressed)
+// Numkey event handler — called when "=" is pressed
 void onNumkeyDone(Numkey* nk) {
   Serial.print("Numkey entry: ");
   Serial.println(nk->getNum());
+  dispResult.setText(nk->getText());
+  dispResult.update();
+  nk->clear();
+  nk->hide();
 }
 
 // ---- Setup ----
@@ -116,10 +89,6 @@ void setup() {
   //   borderColor: key border color
   numkey.setColors(GRAY2, WHITE, WHITE);
 
-  // setSize(width, height) — keypad dimensions
-  // Includes display area at top + 4x3 key grid
-  numkey.setSize(120, 160);
-
   // fontSize — key label font size
   numkey.fontSize = 2;
 
@@ -127,9 +96,17 @@ void setup() {
   // When false, you must manually call hide() and pop() to remove it.
   numkey.autoremove = true;
 
+  numkey.init(); // Initializes internal state (must be called before use)
+
+  // setSize(width, height) — keypad dimensions
+  // Includes display area at top + 4x3 key grid
+  numkey.setSize(120, 160);  
+
+
   // setEventHandler(callback) — called when "=" is pressed
   // Callback signature: void handler(Numkey* nk)
   numkey.setEventHandler(&onNumkeyDone);
+  canvas.add(&numkey, 60, 80);
 
   // --- Result Display ---
   dispLabel.setColors(BLACK, GRAY1, BLACK);
