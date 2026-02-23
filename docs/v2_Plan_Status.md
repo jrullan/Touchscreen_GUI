@@ -35,17 +35,17 @@ Constant tuning, dead code removal, dirty flag.
 
 ---
 
-## Phase 2: Rendering Optimizations — PARTIALLY COMPLETE
+## Phase 2: Rendering Optimizations — COMPLETE
 
 SPI batching, delta draws, circular buffer, terminal scroll.
 
 | Item | Status | Notes |
 |------|--------|-------|
 | 2.1 startWrite/endWrite batching (Dial) | Done | Dial.cpp wraps in startWrite/endWrite |
-| 2.1 startWrite/endWrite batching (other widgets) | Not started | Gauge, Slider, Trend, Terminal, Display, Button |
-| 2.2 Delta-only rendering (Gauge, Slider) | Not started | Only redraw the changed strip |
-| 2.3 Circular buffer for Trend | Not started | O(1) addValue instead of O(n) shift |
-| 2.4 Terminal scroll optimization | Not started | memcpy, dirty lines, clear only vacated line |
+| 2.1 startWrite/endWrite batching (other widgets) | Done | Gauge, Slider, Trend, Terminal, Display, Button — all wrap in startWrite/endWrite |
+| 2.2 Delta-only rendering (Gauge, Slider) | Done | Gauge::drawFill() and Slider::drawCV() already compute delta strips |
+| 2.3 Circular buffer for Trend | Done | Ring buffer with writeIndex/count, O(1) addValue, getValueAt() accessor |
+| 2.4 Terminal scroll optimization | Done | memcpy, linesDirty[], per-line clear, hw scroll marks only 1 line dirty |
 
 ### Expected Impact
 
