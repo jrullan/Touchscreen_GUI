@@ -1,6 +1,11 @@
 // Classes
 Canvas	KEYWORD1
 Canvas_XPT2046	KEYWORD1
+Canvas_Touch	KEYWORD1
+TouchDriver	KEYWORD1
+TouchDriver_XPT2046	KEYWORD1
+TouchMapper	KEYWORD1
+TouchCalibration	KEYWORD1
 Button	KEYWORD1
 Buttongrid	KEYWORD1
 Dial	KEYWORD1

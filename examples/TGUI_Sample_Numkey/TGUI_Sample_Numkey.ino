@@ -5,8 +5,10 @@
  * Date: February 16, 2019
  */
 
-// Touch driver specific Canvas include:
-#include <Canvas_XPT2046.h>
+// New touch system includes:
+#include <Canvas_Touch.h>
+#include <TouchDriver_XPT2046.h>
+#include <TouchCalibration.h>
 
 // Widgets includes here:
 #include <Numkey.h>
@@ -22,7 +24,10 @@
 #define TS_CS 17  // esp32 MiniKit D3
 
 // TGUI's objects declarations:
-Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BLACK,TFT_CS,TFT_DS,TS_CS);
+TouchDriver_XPT2046 touchDriver(TS_CS);
+TouchMapper mapper(&touchDriver, TouchCal::XPT2046_DEFAULT);
+Canvas_Touch canvas(TFT_PORTRAIT, BLACK, TFT_CS, TFT_DS, &mapper);
+// Legacy API: Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BLACK,TFT_CS,TFT_DS,TS_CS);
 Numkey numkey = Numkey();
 
 //==================================

@@ -5,8 +5,10 @@
  * Date: February 16, 2019
  */
 
-// Touch driver specific Canvas include:
-#include <Canvas_XPT2046.h>
+// New touch system includes:
+#include <Canvas_Touch.h>
+#include <TouchDriver_XPT2046.h>
+#include <TouchCalibration.h>
 #include <neotimer.h>
 
 // Widgets includes here:
@@ -23,7 +25,10 @@
 #define TS_CS 17  // esp32 MiniKit D3
 
 // TGUI's objects declarations:
-Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_LANDSCAPE,BLACK,TFT_CS,TFT_DS,TS_CS);
+TouchDriver_XPT2046 touchDriver(TS_CS);
+TouchMapper mapper(&touchDriver, TouchCal::XPT2046_DEFAULT);
+Canvas_Touch canvas(TFT_LANDSCAPE, BLACK, TFT_CS, TFT_DS, &mapper);
+// Legacy API: Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_LANDSCAPE,BLACK,TFT_CS,TFT_DS,TS_CS);
 Terminal terminal = Terminal(180,50,TERMINAL_SCROLL_UP);
 Trend trend = Trend(220, 100, 0, 50, 100);
 Neotimer terminalUpdateTimer = Neotimer(250);

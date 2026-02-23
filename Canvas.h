@@ -34,10 +34,10 @@
 #include "GUI_TFT.h"
 #include "Touch.h"
 
-// Forward declaration of class Widget to solve issue with mutual 
-// includes
+// Forward declarations
 class Widget;
 class Screen;
+class TouchMapper;
 
 class Canvas
 {
@@ -50,6 +50,8 @@ public:
 	// Methods
 	void portrait();
 	void landscape();
+	void portrait2();
+	void landscape2();
 	void add(Widget* widget, int x, int y, uint8_t show = true);
 	Widget* pop();
 	void showWidgets();
@@ -82,6 +84,8 @@ public:
 	StackArray<Widget*> widgets;
 	unsigned int _mode;	
 	
+	TouchMapper* _mapper = NULL;
+
 protected:
 	unsigned long lastMillis;
 	unsigned long touchSampling;

@@ -37,6 +37,8 @@
 //Orientation
 #define TFT_PORTRAIT 0
 #define TFT_LANDSCAPE 1
+#define TFT_PORTRAIT2 2
+#define TFT_LANDSCAPE2 3
 
 /*
 //Font Dimensions (based on the standard 5x7 font included in Adafruit_GFX

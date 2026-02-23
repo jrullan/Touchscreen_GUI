@@ -1,16 +1,17 @@
 /*
-	
-	This class inherits from Canvas to provide a specific 
-	touch chipset implementation and reduce the amount of
-	included libraries in the compilation.
-	
-	In theory every chipset should have a correspoding 
-	canvas.
-	
-	This however still requires that each touch chipset
-	library is adapted to inherit from Touch.
-	
-	*/
+	DEPRECATED: Use Canvas_Touch with TouchDriver_XPT2046 and TouchMapper instead.
+
+	This class is maintained for backward compatibility only.
+	See Canvas_Touch.h for the recommended replacement.
+
+	New API usage:
+	  #include <Canvas_Touch.h>
+	  #include <TouchDriver_XPT2046.h>
+	  #include <TouchCalibration.h>
+	  TouchDriver_XPT2046 touchDriver(TS_CS);
+	  TouchMapper mapper(&touchDriver, TouchCal::XPT2046_DEFAULT);
+	  Canvas_Touch canvas(TFT_PORTRAIT, BLACK, TFT_CS, TFT_DC, &mapper);
+*/
 	
 #if !defined(__CANVAS_XPT2046__)
 #define __CANVAS_XPT2046__
@@ -50,7 +51,9 @@ void Canvas_XPT2046::init(){
 	scanSampleDelay = SCAN_SAMPLING_TIME;
 
 	if(_mode == TFT_PORTRAIT) portrait();
-	if(_mode == TFT_LANDSCAPE) landscape();	
+	else if(_mode == TFT_LANDSCAPE) landscape();
+	else if(_mode == TFT_PORTRAIT2) portrait2();
+	else if(_mode == TFT_LANDSCAPE2) landscape2();
 	
 	ts = new XPT2046_Touchscreen(ts_cs);
 	ts->begin(0);

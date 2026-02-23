@@ -8,6 +8,7 @@
 #include "Canvas.h"
 #include "Widget.h"
 #include "Screen.h"
+#include "TouchMapper.h"
 
 
 Canvas::Canvas(int mode, int color, int tft_cs, int tft_ds, int ts){
@@ -48,6 +49,22 @@ void Canvas::portrait(){
 	h=320;
 }
 
+// Portrait rotated 180 degrees (setRotation 2)
+void Canvas::portrait2(){
+	tft->layoutMode = TFT_PORTRAIT2;
+	tft->setRotation(2);
+	w=240;
+	h=320;
+}
+
+// Landscape rotated CW (setRotation 1)
+void Canvas::landscape2(){
+	tft->layoutMode = TFT_LANDSCAPE2;
+	tft->setRotation(1);
+	w=320;
+	h=240;
+}
+
 // This method adds a widget to the widgets array and places it in the X,Y
 // position of the canvas. The value passed is the address of the widget object.
 void Canvas::add(Widget* widget, int x, int y, uint8_t show){
@@ -77,43 +94,51 @@ Widget* Canvas::pop(){
 // This method scans the touchscreen for touch events.
 // If an event is detected, all registered widgets are notified of the event by
 // calling its event handler function.
-bool Canvas::scan(){		
+bool Canvas::scan(){
 
 	if(millis() > (scanSampling + scanSampleDelay)){
 			scanSampling = millis();
-			//Early exits
-			if(!ts->touched()){
-				//Serial.println("!touched()");
+
+			// New TouchMapper path
+			if(_mapper != NULL){
+				_mapper->poll();
+				TouchState st = _mapper->state();
+				if(st == TOUCH_PRESSED || st == TOUCH_HELD){
+					Point p = _mapper->currentPoint();
+					touchedPoint = p;
+					if(!inBounds(&touchedPoint)) return false;
+					if(touchWidgets(&touchedPoint)){
+						if(currentScreen != NULL){
+							currentScreen->touchWidgets(&touchedPoint);
+						}
+					}
+					return true;
+				}
 				return false;
 			}
-			
+
+			// Legacy path
+			if(!ts->touched()){
+				return false;
+			}
+
 			Point* tP = getTouchedPoint();
 			if(tP == NULL){
-				//Serial.println("tp == NULL");
 				return false;
 			}
-			
+
 			if(!inBounds(tP)){
-				//Serial.println("!inBounds(tP)");
-				//Serial.print("tP.x = ");Serial.println(tP->x);
-				//Serial.print("tP.y = ");Serial.println(tP->y);
 				return false;
 			}
-			
-			//Serial.print("tP.x = ");Serial.println(tP->x);
-			
-			// Send event to canvas widgets, then to screen widgets
-			// if no canvas widget blocks the event.
+
 			if(touchWidgets(tP)){
-				//Serial.println("Sent touch event to all widgets");
 				if(currentScreen != NULL){
-					//Serial.println("Sending touch to current screen...");
 					currentScreen->touchWidgets(tP);
 				}
 			}
 			return true;
 	}
-	
+
   return false;
 }
 
@@ -121,14 +146,14 @@ bool Canvas::scan(){
 // Determines if the given point falls
 // within the Bounds of the layout chosen
 bool Canvas::inBounds(Point* tP){
-	if(tft->layoutMode == TFT_LANDSCAPE){
+	if(tft->layoutMode == TFT_LANDSCAPE || tft->layoutMode == TFT_LANDSCAPE2){
 		if(tP->x > 319 || tP->y > 239) return false;
 	}else{
 		if(tP->x > 239 || tP->y > 319) return false;
 	}
-	
+
 	if(tP->x < 0 || tP->y < 0) return false;
-	
+
 	return true;
 }
 

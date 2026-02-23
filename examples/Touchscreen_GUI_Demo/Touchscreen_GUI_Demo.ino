@@ -11,7 +11,10 @@
  * Date: February 16, 2019
  */
 
-#include <Canvas_XPT2046.h>
+// New touch system includes:
+#include <Canvas_Touch.h>
+#include <TouchDriver_XPT2046.h>
+#include <TouchCalibration.h>
 #include <Screen.h>
 #include <Terminal.h>
 #include <Display.h>
@@ -34,7 +37,10 @@
 //#define TS_CS 17  // esp32 MiniKit D3
 
 #define BG_COLOR 0xDFE  //Background color (light blue)
-Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BG_COLOR,TFT_CS,TFT_DS,TS_CS);
+TouchDriver_XPT2046 touchDriver(TS_CS);
+TouchMapper mapper(&touchDriver, TouchCal::XPT2046_DEFAULT);
+Canvas_Touch canvas(TFT_PORTRAIT, BG_COLOR, TFT_CS, TFT_DS, &mapper);
+// Legacy API: Canvas_XPT2046 canvas = Canvas_XPT2046(TFT_PORTRAIT,BG_COLOR,TFT_CS,TFT_DS,TS_CS);
 Display header = Display(240,40,BLUE,WHITE,WHITE,20);
 Display title = Display(20);
 Terminal terminal = Terminal(240,50,TERMINAL_SCROLL_UP);
