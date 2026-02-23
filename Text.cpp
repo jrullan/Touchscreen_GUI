@@ -60,17 +60,37 @@ void Text::setNum(int num){
 }
 */
 void Text::setText(char* _text){
-	for(int i=0; i<_textSize;i++){
-		this->text[i] = _text[i];
-		if(_text[i] == 0) break;
+	unsigned char len = 0;
+	while(_text[len]) len++;
+	if(len > _textSize){
+		char* newBuf = (char*)realloc(this->text, len + 1);
+		if(newBuf){
+			this->text = newBuf;
+			_textSize = len;
+		}
 	}
+	int i;
+	for(i = 0; i < _textSize && _text[i]; i++){
+		this->text[i] = _text[i];
+	}
+	this->text[i] = 0;
 }
 
 void Text::setText(const char* _text){
-	for(int i=0; i<_textSize;i++){
+	unsigned char len = 0;
+	while(_text[len]) len++;
+	if(len > _textSize){
+		char* newBuf = (char*)realloc(this->text, len + 1);
+		if(newBuf){
+			this->text = newBuf;
+			_textSize = len;
+		}
+	}
+	int i;
+	for(i = 0; i < _textSize && _text[i]; i++){
 		this->text[i] = _text[i];
-		if(_text[i] == 0) break;
-	}	
+	}
+	this->text[i] = 0;
 }
 
 unsigned char Text::getTextSize(){
