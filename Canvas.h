@@ -56,6 +56,7 @@ public:
 	bool touchWidgets(Point* p);
 	bool scan();
 	void redraw();
+	void redrawRegion(int rx, int ry, int rw, int rh);
 	void setScanSampling(unsigned int d);
 	void setScreen(Screen* screen, uint8_t show = true);
 	void updateTouch(Point* p);

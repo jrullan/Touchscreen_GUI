@@ -162,6 +162,31 @@ void Canvas::redraw(){
 	showWidgets();
 }
 
+void Canvas::redrawRegion(int rx, int ry, int rw, int rh){
+	tft->fillRect(rx, ry, rw, rh, bgColor);
+	// Redraw screen widgets that overlap the region
+	if(currentScreen != NULL){
+		byte cnt = currentScreen->widgets.count();
+		for(int i=0; i<cnt; i++){
+			Widget* w = currentScreen->widgets[i];
+			if(w->visible &&
+			   w->x < rx+rw && w->x+w->w > rx &&
+			   w->y < ry+rh && w->y+w->h > ry){
+				w->show();
+			}
+		}
+	}
+	// Redraw canvas widgets that overlap the region
+	byte cnt = widgets.count();
+	for(int i=0; i<cnt; i++){
+		if(widgets[i]->visible &&
+		   widgets[i]->x < rx+rw && widgets[i]->x+widgets[i]->w > rx &&
+		   widgets[i]->y < ry+rh && widgets[i]->y+widgets[i]->h > ry){
+			widgets[i]->show();
+		}
+	}
+}
+
 void Canvas::showWidgets(){
 	for(int i=0; i<widgets.count(); i++){
 		if(widgets[i]->visible) widgets[i]->show();

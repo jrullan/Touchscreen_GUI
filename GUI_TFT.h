@@ -84,6 +84,9 @@ class Guitft : public Adafruit_ILI9341{
 			10)))))))));
 	}
 	
+	void setScrollArea(uint16_t topFixed, uint16_t scrollLines, uint16_t bottomFixed);
+	void setScrollStart(uint16_t line);
+
 	uint8_t layoutMode;
 };
 #endif

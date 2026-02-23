@@ -122,13 +122,24 @@ void Terminal::printf(char* string, int num, uint16_t highColor){
  * direction property.
  */
 void Terminal::scroll(){
-	if(direction){
-		scrollDown();
-	}else{
-		scrollUp();
+	if(useHardwareScroll && myCanvas->tft->layoutMode == TFT_PORTRAIT){
+		uint16_t lineHeight = fontSize * FONT_Y + lineSpace;
+		uint16_t scrollAreaTop = y + borderWidth + verticalBleed;
+		if(direction){
+			scrollDown();
+			_scrollLine = (_scrollLine + lines - 1) % lines;
+		} else {
+			scrollUp();
+			_scrollLine = (_scrollLine + 1) % lines;
+		}
+		myCanvas->tft->setScrollStart(scrollAreaTop + _scrollLine * lineHeight);
+		// Only the new line needs redrawing
+		int newLineIndex = direction ? 0 : lines - 1;
+		linesDirty[newLineIndex] = true;
+	} else {
+		if(direction){ scrollDown(); } else { scrollUp(); }
+		for(int i=0; i<lines; i++) linesDirty[i] = true;
 	}
-	// Mark all lines dirty since content shifted
-	for(int i=0; i<lines; i++) linesDirty[i] = true;
 }
 
 void Terminal::scrollDown(){
@@ -147,6 +158,18 @@ void Terminal::scrollUp(){
 	}
 }
 
+void Terminal::enableHardwareScroll(){
+	if(myCanvas->tft->layoutMode != TFT_PORTRAIT) return;
+	useHardwareScroll = true;
+	_scrollLine = 0;
+	uint16_t lineHeight = fontSize * FONT_Y + lineSpace;
+	uint16_t scrollH = lines * lineHeight;
+	uint16_t scrollTop = y + borderWidth + verticalBleed;
+	uint16_t bottomFixed = 320 - scrollTop - scrollH;
+	myCanvas->tft->setScrollArea(scrollTop, scrollH, bottomFixed);
+	myCanvas->tft->setScrollStart(scrollTop);
+}
+
 	/*
 	* Clears the terminal and all lines text are cleared
 	*/
@@ -155,6 +178,10 @@ void Terminal::clear(){
 		linesBuffer[i][0]=0;
 	}
 	linesIndex = 0;
+	if(useHardwareScroll){
+		_scrollLine = 0;
+		myCanvas->tft->setScrollStart(y + borderWidth + verticalBleed);
+	}
 	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
 }
 
@@ -173,6 +200,10 @@ void Terminal::drawFrame(){
 void Terminal::show(){
 	drawFrame();
 	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
+	if(useHardwareScroll){
+		_scrollLine = 0;
+		myCanvas->tft->setScrollStart(y + borderWidth + verticalBleed);
+	}
 	for(int i=0; i<lines; i++) linesDirty[i] = true;
 	update();
 }
@@ -183,6 +214,7 @@ void Terminal::update(){
 	//Calculate position for first line
 	int lineX = this->x + borderWidth + horizontalBleed;
 	int lineY = this->y + borderWidth + verticalBleed;
+	uint16_t lineHeight = fontSize * FONT_Y + lineSpace;
 
 	char lineIndex = (direction) ? 0 : lines - 1;
 
@@ -191,9 +223,14 @@ void Terminal::update(){
 		if(!linesDirty[i]) continue;
 		linesDirty[i] = false;
 
-		int ly = lineY + i*(fontSize*FONT_Y+lineSpace);
+		int ly;
+		if(useHardwareScroll){
+			ly = lineY + ((_scrollLine + i) % lines) * lineHeight;
+		} else {
+			ly = lineY + i * lineHeight;
+		}
 		// Clear this line area
-		myCanvas->tft->fillRect(x+borderWidth, ly, w-2*borderWidth, fontSize*FONT_Y+lineSpace, bgColor);
+		myCanvas->tft->fillRect(x+borderWidth, ly, w-2*borderWidth, lineHeight, bgColor);
 
 		if(i==lineIndex){
 			color = linesColors[i];

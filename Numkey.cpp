@@ -340,10 +340,8 @@ void Numkey::reset(){
  * automatically redraw the canvas when hidden.
  */
 void Numkey::hide(){
-	//Widget::hide();
-	myCanvas->tft->fillRect(x,y,w,h,this->myCanvas->bgColor);
 	visible = false;
-	this->myCanvas->redraw();
+	this->myCanvas->redrawRegion(x, y, w, h);
 }
 
 void Numkey::update(){

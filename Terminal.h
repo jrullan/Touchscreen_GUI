@@ -32,6 +32,8 @@ class Terminal : public Widget {
 		uint16_t linesColors[MAX_LINES];
 		char* linesBuffer[MAX_LINES];
 		bool linesDirty[MAX_LINES];
+		bool useHardwareScroll = false;
+		uint8_t _scrollLine = 0;
 		//char** linesBuffer;
 		
 		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
@@ -52,7 +54,8 @@ class Terminal : public Widget {
 		void scroll();
 		void scrollDown();
 		void scrollUp();
-		
+		void enableHardwareScroll();
+
 		//inherited methods:
 		bool checkTouch(Point* p){};
 		void show();

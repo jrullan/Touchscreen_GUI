@@ -196,9 +196,8 @@ void Popup::show(){
 }
 
 void Popup::hide(){
-	this->visible = false;	
-	myCanvas->tft->fillRect(x,y,w,h,myCanvas->bgColor);
-	myCanvas->redraw();
+	this->visible = false;
+	myCanvas->redrawRegion(x, y, w, h);
 }
 
 void Popup::reset(){
