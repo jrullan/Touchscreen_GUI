@@ -48,6 +48,14 @@ void Trend::clear(){
 	}
 }
 
+void Trend::clearPlotArea(){
+	int px = x + yScaleWidth + borderWidth;
+	int py = y + borderWidth;
+	int pw = w - yScaleWidth - 2*borderWidth;
+	int ph = h - xScaleHeight - 2*borderWidth;
+	myCanvas->tft->fillRect(px, py, pw, ph, bgColor);
+}
+
 void Trend::drawYScale(){
 	//Draw Y SCALE
 	int textWidth = 4 * FONT_X;
@@ -130,6 +138,56 @@ void Trend::drawXScale(){
 	
 }
 
+// Span-based line draw: accumulates horizontal (or vertical) runs and
+// flushes via writeFillRect. Same pixels as Bresenham but far fewer
+// setAddrWindow calls. Must be called within startWrite/endWrite context.
+void Trend::drawLineSpans(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color){
+	if(x0 == x1){
+		int16_t ymin = (y0 < y1) ? y0 : y1;
+		int16_t h = (y1 > y0) ? y1 - y0 : y0 - y1;
+		myCanvas->tft->writeFillRect(x0, ymin, 1, h + 1, color);
+		return;
+	}
+	if(y0 == y1){
+		int16_t xmin = (x0 < x1) ? x0 : x1;
+		int16_t w = (x1 > x0) ? x1 - x0 : x0 - x1;
+		myCanvas->tft->writeFillRect(xmin, y0, w + 1, 1, color);
+		return;
+	}
+
+	bool steep = abs(y1 - y0) > abs(x1 - x0);
+	if(steep)    { int16_t t; t=x0; x0=y0; y0=t; t=x1; x1=y1; y1=t; }
+	if(x0 > x1) { int16_t t; t=x0; x0=x1; x1=t; t=y0; y0=y1; y1=t; }
+
+	int16_t dx = x1 - x0;
+	int16_t dy = abs(y1 - y0);
+	int16_t err = dx >> 1;
+	int16_t ystep = (y0 < y1) ? 1 : -1;
+	int16_t y = y0;
+	int16_t spanStart = x0;
+
+	for(int16_t xp = x0; xp <= x1; xp++){
+		err -= dy;
+		if(err < 0){
+			// Y changing — flush current span
+			if(steep)
+				myCanvas->tft->writeFillRect(y, spanStart, 1, xp - spanStart + 1, color);
+			else
+				myCanvas->tft->writeFillRect(spanStart, y, xp - spanStart + 1, 1, color);
+			y += ystep;
+			err += dx;
+			spanStart = xp + 1;
+		}
+	}
+	// Flush remaining span
+	if(spanStart <= x1){
+		if(steep)
+			myCanvas->tft->writeFillRect(y, spanStart, 1, x1 - spanStart + 1, color);
+		else
+			myCanvas->tft->writeFillRect(spanStart, y, x1 - spanStart + 1, 1, color);
+	}
+}
+
 void Trend::drawValues(uint16_t color){
 	int x1, y1, x2, y2;
 
@@ -145,10 +203,10 @@ void Trend::drawValues(uint16_t color){
 
 		if(j<trendWindow.maxValue){
 			if(forceSquareWaveform){
-				myCanvas->tft->drawHorizontalLine(x2,y2,x1-x2+1,color);
-				myCanvas->tft->drawVerticalLine(x1,y1,y2-y1,color);
+				myCanvas->tft->writeFillRect(x2,y2,x1-x2+1,1,color);
+				myCanvas->tft->writeFillRect(x1,(y1<y2)?y1:y2,1,abs(y2-y1)+1,color);
 			}else{
-				myCanvas->tft->drawLine(x2,y2,x1,y1,color);
+				drawLineSpans(x2,y2,x1,y1,color);
 			}
 		}
 	}
@@ -257,29 +315,27 @@ void Trend::eraseTrend(){
 }
 
 void Trend::autoFit(bool scale){
-	eraseTrend();
-	
 	if(scale){
 		int inc = 2;
 		int min = getMin();
 		int max = getMax();
-		
-		if(min <= scaleMin && min != 0){ 
+
+		if(min <= scaleMin && min != 0){
 			scaleMin = min-inc;
 		}else{
 			if(min-scaleMin > inc) scaleMin = min - inc;
 		}
-		
+
 		if(max >= scaleMax){
 			scaleMax = max+inc;
 		}else{
 			if(scaleMax-max > inc) scaleMax = max + inc;
 		}
 	}
-	
+
 	drawYScale();
-	
-	drawTrend();	
+	clearPlotArea();
+	drawTrend();
 }
 
 // Adds a new value to the trend
@@ -326,14 +382,8 @@ void Trend::update(){
 			autoFit(true);
 			return;
 		}
-		/*
-		 *if(updates++ > maxValues){
-			autoFit();
-			updates = 0;
-			return;
-		}*/
 	}
-	
+
 	this->drawThresholdLines(true);
-	this->drawValues(this->fgColor);	
+	this->drawValues(this->fgColor);
 }

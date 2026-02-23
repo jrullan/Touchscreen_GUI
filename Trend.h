@@ -77,6 +77,8 @@ class Trend : public Indicator{
 		byte xScaleHeight = 2 * FONT_Y + 10 + borderWidth;
 		//int maxX = MAX_TREND_VALUES;
 		//Methods
+		void clearPlotArea();
+		void drawLineSpans(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
 		void drawYScale();
 		void drawXScale();
 		void drawBorder();

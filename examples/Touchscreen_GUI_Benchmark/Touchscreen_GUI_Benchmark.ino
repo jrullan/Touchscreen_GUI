@@ -29,6 +29,7 @@
 #include <Button.h>
 #include <Slider.h>
 #include <Dial.h>
+#include <Trend.h>
 #include <Numkey.h>
 #include <IconButton.h>
 #include <icons.h>
@@ -61,6 +62,7 @@ Screen screen_dial = Screen(&canvas,0,40,240,190);
 Screen screen_buttons = Screen(&canvas,0,40,240,190);
 Dial dial = Dial();
 Slider slider = Slider();
+Trend trend = Trend(240, 90, 0, 50, 100);
 IconButton btnBulb = IconButton(50,50,lightbulb_off,lightbulb_on);
 IconButton btnSlider = IconButton(60,30,slider_off,slider_on);
 Neotimer dialTimer = Neotimer(5000);
@@ -83,6 +85,9 @@ unsigned long dialMinUs = 0xFFFFFFFF;
 unsigned long dialMaxUs = 0;
 unsigned long sliderMinUs = 0xFFFFFFFF;
 unsigned long sliderMaxUs = 0;
+unsigned long trendTotalUs = 0;
+unsigned long trendMinUs = 0xFFFFFFFF;
+unsigned long trendMaxUs = 0;
 uint16_t frameCount = 0;
 uint16_t drawCount = 0;
 bool benchDone = false;
@@ -185,12 +190,12 @@ void guiSetup(){
 
   // Blue slider elements
   slider.setDebounce(0);
-  slider.setSize(40,140);
+  slider.setSize(30,90);
   slider.setColors(BLACK,GRAY1,WHITE);
   slider.setEventHandler(&sliderEventHandler);
 
   dial.init();
-  dial.setSize(50);
+  dial.setSize(35);
   dial.borderWidth = 5;
   dial.setColors(WHITE,GRAY2,GRAY2);
   dial.setLimits(60,70,90);
@@ -199,8 +204,13 @@ void guiSetup(){
   dial.setLowLimit(70,BLUE);
   dial.setCV(72,false);
 
-  screen_dial.add(&dial,80,screen_dial.h/2);
-  screen_dial.add(&slider,170,20);
+  trend.setColors(BLACK,GREEN,WHITE);
+  trend.setLimits(0,50,100);
+  trend.enableAutoFit = false;
+
+  screen_dial.add(&dial,70,35);
+  screen_dial.add(&slider,170,5);
+  screen_dial.add(&trend,0,100);
 
   // ===== SCREEN THREE - BUTTONS  =====
   screen_buttons.bgColor = BG_COLOR;
@@ -295,17 +305,23 @@ void loop() {
       unsigned long t1 = micros();
       dial.setCV(map(slider.currentValue,0,100,dial.scaleMin,dial.scaleMax), onDialScreen);
       unsigned long t2 = micros();
+      trend.addValue((uint8_t)cv, onDialScreen);
+      unsigned long t3 = micros();
 
       unsigned long sliderUs = t1 - t0;
       unsigned long dialUs = t2 - t1;
+      unsigned long trendUs = t3 - t2;
 
       sliderTotalUs += sliderUs;
       dialTotalUs += dialUs;
+      trendTotalUs += trendUs;
 
       if(sliderUs < sliderMinUs) sliderMinUs = sliderUs;
       if(sliderUs > sliderMaxUs) sliderMaxUs = sliderUs;
       if(dialUs < dialMinUs) dialMinUs = dialUs;
       if(dialUs > dialMaxUs) dialMaxUs = dialUs;
+      if(trendUs < trendMinUs) trendMinUs = trendUs;
+      if(trendUs > trendMaxUs) trendMaxUs = trendUs;
 
       drawCount++;
     }
@@ -335,6 +351,8 @@ void loop() {
                     dialTotalUs / drawCount, dialMinUs, dialMaxUs);
       Serial.printf("Slider avg: %lu us  min: %lu us  max: %lu us\n",
                     sliderTotalUs / drawCount, sliderMinUs, sliderMaxUs);
+      Serial.printf("Trend  avg: %lu us  min: %lu us  max: %lu us\n",
+                    trendTotalUs / drawCount, trendMinUs, trendMaxUs);
     }
     Serial.println();
     Serial.println("--- Timing (per loop frame) ---");
@@ -344,6 +362,7 @@ void loop() {
     Serial.println("--- Totals ---");
     Serial.printf("Total dial:    %lu us\n", dialTotalUs);
     Serial.printf("Total slider:  %lu us\n", sliderTotalUs);
+    Serial.printf("Total trend:   %lu us\n", trendTotalUs);
     Serial.printf("Total scan:    %lu us\n", scanTotalUs);
     Serial.printf("Total loop:    %lu us\n", loopTotalUs);
     Serial.println("========================================");

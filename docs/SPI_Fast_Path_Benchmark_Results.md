@@ -130,6 +130,73 @@ The ~0.7 ms gap between theoretical and measured is attributed to:
 
 `writePattern` crashes are likely due to ESP8266 SPI FIFO state conflicts when called within an ILI9341 transaction context. `writeBytes` and `write16` both work correctly because they handle the FIFO differently (writeBytes fills and flushes atomically; write16 does single 16-bit atomic writes).
 
+---
+
+## Trend Widget Optimization
+
+### Date: February 2026
+
+### Problem
+
+The Trend widget was the most expensive widget at ~10,267 us per frame — 5x the Dial and 100x the Slider. It dominated total render time.
+
+### Root Cause
+
+Every `addValue()` called `drawValues()` twice — once to erase the old waveform (bgColor), once to draw the new (fgColor). Each pass iterated all 15 segments using Adafruit's Bresenham `drawLine()`, which calls `setAddrWindow` + `write16` per pixel. With ~12 pixels per segment × 15 segments × 2 passes = ~360 individual SPI transactions per frame.
+
+### Optimizations Applied
+
+**1. Span-based line drawing (`drawLineSpans`)** — Replaced Adafruit's pixel-by-pixel Bresenham with a span accumulator that batches horizontal (or vertical) runs and flushes each run as a single `writeFillRect`. For a typical segment (12px wide, 5px tall), this reduces from ~12 `setAddrWindow` calls to ~5. Uses the `write*` transaction-less variants since `drawValues` already wraps in `startWrite`/`endWrite`.
+
+**2. Square waveform path** — Switched from `drawHorizontalLine`/`drawVerticalLine` (each wraps own SPI transaction) to `writeFillRect` (transaction-less within the existing `startWrite` context).
+
+**3. `clearPlotArea()` for autoFit** — A single `fillRect` of the inner plot region, used when the scale changes and exact trace-erasure isn't sufficient.
+
+### Files Modified
+
+- `Trend.h` — Added `clearPlotArea()` and `drawLineSpans()` private method declarations
+- `Trend.cpp` — Implemented `clearPlotArea()`, `drawLineSpans()`, updated `drawValues()` and `autoFit()`
+
+### Approaches Tested
+
+| Approach | Trend Avg (us) | Notes |
+|----------|---------------|-------|
+| Original (Bresenham erase + draw) | 10,267 | Baseline — 2 full passes of per-pixel drawLine |
+| fillRect clear + Bresenham draw | 11,801 | Worse — 12K pixel fillRect (~4.7ms at 40MHz SPI) costs as much as the trace erase |
+| **Span-based erase + draw** | **3,014** | **Final — same pixels, fewer SPI transactions** |
+
+### Benchmark Results (10s, with Trend on Dial screen)
+
+```
+========================================
+  TOUCHSCREEN GUI BENCHMARK RESULTS
+  Duration: 10000 ms
+========================================
+
+--- Frame Counts ---
+Total loop frames:  918
+Draw frames:        679
+Frames/sec (draw):  67
+
+--- Timing (per draw frame) ---
+Dial   avg: 1936 us  min: 6 us    max: 3778 us
+Slider avg: 94 us    min: 73 us   max: 132 us
+Trend  avg: 3014 us  min: 1317 us max: 3131 us
+========================================
+```
+
+### Performance Comparison
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| Trend avg | 10,267 us | 3,014 us | **-70%** |
+| Trend max | 10,722 us | 3,131 us | **-71%** |
+| Draw FPS (with Trend) | 45 | 67 | **+49%** |
+
+---
+
 ## Summary
 
 The SPI fast path eliminates the `delay(1)` bottleneck that consumed 98.5% of ESP8266 rendering time. Using `SPI.writeBytes()` with 64-byte FIFO batches, dial rendering improved from 64.4ms to 2.3ms — a **27.5x speedup**. The ESP8266 SPI bus is now utilized at approximately 48% efficiency (vs under 2% before), with the remaining overhead split between `setAddrWindow` commands, per-chunk loop overhead, and CPU computation.
+
+The Trend widget optimization further reduced rendering cost by replacing per-pixel Bresenham line drawing with span-based batching, cutting trend frame time by **70%** (10.3ms → 3.0ms).
