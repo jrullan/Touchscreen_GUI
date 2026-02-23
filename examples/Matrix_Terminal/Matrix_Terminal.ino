@@ -51,7 +51,7 @@ Button  btnPurge    = Button();
 Neotimer clockTimer = Neotimer(1000);
 Neotimer dataTimer  = Neotimer(600);
 Neotimer termTimer  = Neotimer(2500);
-Neotimer trendTimer = Neotimer(250);
+Neotimer trendTimer = Neotimer(100);
 
 // State
 uint8_t cpuLoad = 45;
@@ -211,8 +211,9 @@ void loop() {
   }
 
   if(trendTimer.repeat()) {
-    uint8_t v = random(15, scanning ? 95 : 75);
-    trend.addValue(v);
+    //uint8_t v = random(1, scanning ? 95 : 20);
+    uint8_t v = random(-5, 6);
+    trend.addValue(cpuLoad+v);
   }
 
   if(termTimer.repeat()) {
