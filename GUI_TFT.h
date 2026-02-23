@@ -65,6 +65,29 @@ class Guitft : public Adafruit_ILI9341{
 
 	~Guitft();
 
+	// Nesting counter for SPI transactions — prevents redundant
+	// CS toggles and SPI begin/end when nested draw calls (e.g.
+	// fillTriangle inside a startWrite/endWrite block) invoke
+	// startWrite/endWrite internally.
+	void startWrite(void) {
+		if(_nestCount++ == 0) {
+#if defined(__STM32F1__)
+			Adafruit_ILI9341_STM::startWrite();
+#else
+			Adafruit_ILI9341::startWrite();
+#endif
+		}
+	}
+	void endWrite(void) {
+		if(--_nestCount == 0) {
+#if defined(__STM32F1__)
+			Adafruit_ILI9341_STM::endWrite();
+#else
+			Adafruit_ILI9341::endWrite();
+#endif
+		}
+	}
+
 	void drawString(char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor);
 	void drawString(const char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor)
 	{
@@ -89,7 +112,25 @@ class Guitft : public Adafruit_ILI9341{
 	void setScrollArea(uint16_t topFixed, uint16_t scrollLines, uint16_t bottomFixed);
 	void setScrollStart(uint16_t line);
 
+#if defined(ESP8266) || defined(ESP32)
+	// SPI fast path — overrides Adafruit_GFX virtual methods to bypass
+	// writeColor() which has delay(1) on ESP8266. Uses SPI.writeBytes()
+	// for bulk FIFO writes at full SPI clock speed.
+	void writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+	void writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+	void writeFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+	void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+	void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+	void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+#endif
+
 	uint8_t layoutMode;
+
+private:
+	uint8_t _nestCount = 0;
+#if defined(ESP8266) || defined(ESP32)
+	void writeColorFast(uint16_t color, uint32_t len);
+#endif
 };
 #endif
 

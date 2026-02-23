@@ -77,7 +77,7 @@ public:
 
 	Button* targetButton;
 	void targetEventHandler();
-	char selection = NULL;
+	char selection = 0;
 	
 private:
 	//Methods

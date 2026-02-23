@@ -38,18 +38,18 @@ class Terminal : public Widget {
 		
 		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
 		~Terminal();
-		void print(char* string, uint16_t highColor = NULL);
-		void printf(char* string, int num, uint16_t highColor = NULL);
-		void print(const char* string, uint16_t highColor = NULL){
+		void print(char* string, uint16_t highColor = 0);
+		void printf(char* string, int num, uint16_t highColor = 0);
+		void print(const char* string, uint16_t highColor = 0){
 			print((char*) string, highColor);
 		}
-		void print(String str, uint16_t highColor = NULL){
+		void print(String str, uint16_t highColor = 0){
 			char buffer[str.length()];
 			str.toCharArray(buffer,str.length()+1);
 			print(buffer,highColor);
 		}
-		//void print(char* string, int num,uint16_t highColor = NULL);
-		//void print(int num,uint16_t highColor = NULL);
+		//void print(char* string, int num,uint16_t highColor = 0);
+		//void print(int num,uint16_t highColor = 0);
 		void clear();
 		void scroll();
 		void scrollDown();
@@ -57,7 +57,7 @@ class Terminal : public Widget {
 		void enableHardwareScroll();
 
 		//inherited methods:
-		bool checkTouch(Point* p){};
+		bool checkTouch(Point* p){ return false; }
 		void show();
 		void update();		
 		

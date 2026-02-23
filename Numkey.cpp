@@ -333,7 +333,7 @@ void Numkey::targetEventHandler(){
 }
 
 void Numkey::reset(){
-	entry = NULL;
+	entry = 0;
 }
 
 /* New method to make it easier to use,

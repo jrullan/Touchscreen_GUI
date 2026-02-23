@@ -122,7 +122,6 @@ void Slider::update(){
 	if(!_dirty) return;
 	_dirty = false;
 	myCanvas->tft->startWrite();
-	drawBorder();
 	drawCV(currentValue);
 	myCanvas->tft->endWrite();
 }

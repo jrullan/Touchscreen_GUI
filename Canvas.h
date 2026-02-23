@@ -25,7 +25,11 @@
 
 #define DEBOUNCE 0
 #define TOUCH_SAMPLING_TIME 0
-#define SCAN_SAMPLING_TIME 20
+#ifdef ESP32
+  #define SCAN_SAMPLING_TIME 20
+#else
+  #define SCAN_SAMPLING_TIME 100
+#endif
 
 
 // Required includes:

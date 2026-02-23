@@ -64,7 +64,7 @@ public:
 
 	Button* targetButton;
 	void targetEventHandler();
-	int entry = NULL;
+	int entry = 0;
 		
 private:
 	//String text;

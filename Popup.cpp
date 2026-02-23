@@ -201,7 +201,7 @@ void Popup::hide(){
 }
 
 void Popup::reset(){
-	selection = NULL;
+	selection = 0;
 }
 
 void Popup::update(){

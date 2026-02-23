@@ -51,7 +51,7 @@ void Terminal::print(char* string,uint16_t highColor){
 		scroll();
 	}
 
-	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
+	linesColors[lineIndex] = (highlightColor == 0) ? fgColor : highlightColor;
 
 	for(int i=0; i<length; i++){
 		linesBuffer[lineIndex][i] = string[i];
@@ -83,7 +83,7 @@ void Terminal::printf(char* string, int num, uint16_t highColor){
 		scroll();
 	}
 	
-	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
+	linesColors[lineIndex] = (highlightColor == 0) ? fgColor : highlightColor;
 	
 
 	// Here is the code when the characters are copied to the terminal buffer

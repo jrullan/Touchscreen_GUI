@@ -17,14 +17,15 @@
 
 
 // Architecture specific pins:
-// For Wemos Mini D1 (ESP8266)
-#define TFT_CS 16 // Wemos D1 Mini D0
-#define TFT_DS 15 // Wemos D1 Mini D8
-#define TS_CS 0   // Wemos D1 Mini D3
-// For MH-ET Live esp32 MiniKit (ESP32)
-#define TFT_CS 26 // esp32 MiniKit D0
-#define TFT_DS 5  // esp32 MiniKit D8
-#define TS_CS 17  // esp32 MiniKit D3
+#ifdef ESP32
+  #define TFT_CS 26
+  #define TFT_DS 5
+  #define TS_CS 17
+#else
+  #define TFT_CS 16
+  #define TFT_DS 15
+  #define TS_CS 0
+#endif
 
 // TGUI's objects declarations:
 TouchDriver_XPT2046 touchDriver(TS_CS);
