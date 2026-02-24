@@ -351,6 +351,13 @@ void Trend::addValue(uint8_t val, bool updateTrend){
 	writeIndex = (writeIndex + 1) % maxValues;
 	if(count < maxValues) count++;
 
+	//--update setpoint to buffer average
+	if(count > 0){
+		unsigned long sum = 0;
+		for(int i = 0; i < count; i++) sum += getValueAt(i);
+		setpoint = sum / count;
+	}
+
 	if(updateTrend) update();
 }
 

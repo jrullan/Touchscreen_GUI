@@ -159,6 +159,7 @@ void setup() {
   trend.setpointColor = MX_CYAN;
   trend.borderWidth = 1;
   trend.showXScale = false;
+  trend.enableAutoFit = true;
   canvas.add(&trend, 6, 134);
 
   tft->drawFastHLine(0, 194, 240, MX_DGREEN);
@@ -210,10 +211,10 @@ void loop() {
     gauge.setCV(memLoad);
   }
 
-  if(trendTimer.repeat()) {
-    //uint8_t v = random(1, scanning ? 95 : 20);
-    uint8_t v = random(-5, 6);
-    trend.addValue(cpuLoad+v);
+  if(trendTimer.repeat() && wifiConnected) {
+    int rssi = WiFi.RSSI();
+    int quality = constrain(map(rssi, -90, -30, 0, 100), 0, 100);
+    trend.addValue(quality);
   }
 
   if(termTimer.repeat()) {

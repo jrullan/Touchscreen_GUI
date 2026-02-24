@@ -98,6 +98,10 @@ void setup() {
   // ============================================================
 
   // --- Basic Button ---
+  // init() — must be called before customization.
+  // Sets default values for lastMillis, debounce, borderWidth, etc.
+  btnBasic.init();
+
   // setColors(bgColor, fgColor, borderColor)
   //   bgColor:     button fill color
   //   fgColor:     text color
@@ -125,10 +129,11 @@ void setup() {
   // Lower = more responsive but may double-trigger
   // Higher = more stable but feels sluggish
   btnBasic.setDebounce(200);
-
+  
   canvas.add(&btnBasic, 4, 22);
 
   // --- Styled Button ---
+  btnStyled.init();
   btnStyled.setColors(RED, WHITE, YELLOW);
   btnStyled.setSize(110, 36);
   btnStyled.fontSize = 1;
@@ -142,14 +147,16 @@ void setup() {
   canvas.add(&btnStyled, 122, 22);
 
   // --- Toggle Button ---
+  btnToggle.init();
   btnToggle.setColors(GRAY2, WHITE, WHITE);
   btnToggle.setSize(232, 40);
   btnToggle.fontSize = 2;
   btnToggle.setText("OFF");
 
-  // block — when true, touch event stops propagating to widgets below
-  // Useful when buttons overlap or to prevent background widgets from firing
-  btnToggle.block = true;
+  // block — when true, ALL touch events stop propagating to widgets
+  // added before this one (even touches outside this button's area).
+  // Only use when this button fully overlaps other buttons.
+  // Default is false.
 
   btnToggle.setEventHandler(&onToggle);
   canvas.add(&btnToggle, 4, 66);
