@@ -156,6 +156,7 @@ bool cbReadIreg(Modbus::ResultCode event, uint16_t transactionId, void* data) {
 void onButtonPress(Button* btn) {
     for (int i = 0; i < BTN_COUNT; i++) {
         if (btn == &buttons[i]) {
+            if (btnPending[i]) break;  // ignore repeat fires while coil is still ON
             Serial.printf("HMI: Button %d pressed\n", i + 1);
             if (mbConnected) {
                 mb.writeCoil(plcIP, MB_COIL_BTN_BASE + i, true, nullptr, PLC_UNIT_ID);
