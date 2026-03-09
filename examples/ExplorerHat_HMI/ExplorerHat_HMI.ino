@@ -78,6 +78,13 @@ bool ledCoilValues[LED_COUNT] = {false, false, false, false};  // Read buffer fo
 uint16_t processValue = 0;    // Last read from PLC input register
 bool mbConnected = false;     // Modbus TCP connection state
 
+// ---- Connection Health ----
+unsigned long lastSuccessTime   = 0;  // millis() of last successful response
+int consecutiveFailures         = 0;  // reset on any success
+int pollsInFlight               = 0;  // outstanding read transactions
+#define MB_RESPONSE_TIMEOUT_MS  15000 // force reconnect if silent this long
+#define MAX_FAILURES            5     // force reconnect after N timeouts
+
 // ---- Momentary Button State ----
 unsigned long btnPressTime[BTN_COUNT] = {0, 0, 0, 0};
 bool btnPending[BTN_COUNT] = {false, false, false, false};
@@ -102,8 +109,21 @@ void drawLED(int index, bool on) {
 // Modbus Callbacks
 // ============================================================
 
+void onMbFailure() {
+    if (++consecutiveFailures >= MAX_FAILURES) {
+        Serial.printf("MB: %d consecutive failures, disconnecting\n", consecutiveFailures);
+        mb.disconnect(plcIP);
+        mbConnected = false;
+        pollsInFlight = 0;
+        consecutiveFailures = 0;
+    }
+}
+
 bool cbReadLedCoils(Modbus::ResultCode event, uint16_t transactionId, void* data) {
+    pollsInFlight--;
     if (event == Modbus::EX_SUCCESS) {
+        consecutiveFailures = 0;
+        lastSuccessTime = millis();
         for (int i = 0; i < LED_COUNT; i++) {
             if (ledCoilValues[i] != ledState[i]) {
                 ledState[i] = ledCoilValues[i];
@@ -112,13 +132,19 @@ bool cbReadLedCoils(Modbus::ResultCode event, uint16_t transactionId, void* data
         }
     } else {
         Serial.printf("MB LED read FAIL: 0x%02X\n", event);
+        onMbFailure();
     }
     return true;
 }
 
 bool cbReadIreg(Modbus::ResultCode event, uint16_t transactionId, void* data) {
+    pollsInFlight--;
     if (event == Modbus::EX_SUCCESS) {
+        consecutiveFailures = 0;
+        lastSuccessTime = millis();
         gauge.setCV(processValue);
+    } else {
+        onMbFailure();
     }
     return true;
 }
@@ -154,7 +180,13 @@ bool checkWiFi() {
 bool connectModbus() {
     if (!checkWiFi()) return false;
     if (mb.isConnected(plcIP)) return true;
-    return mb.connect(plcIP, PLC_PORT);
+    bool ok = mb.connect(plcIP, PLC_PORT);
+    if (ok) {
+        lastSuccessTime = millis();  // grace period for first response
+        consecutiveFailures = 0;
+        pollsInFlight = 0;
+    }
+    return ok;
 }
 
 void updateStatus() {
@@ -311,10 +343,21 @@ void loop() {
         }
     }
 
-    // (4) Poll LED coils + process value from PLC (every POLL_INTERVAL_MS)
-    if (now - lastPollTime >= POLL_INTERVAL_MS) {
+    // (4) Stale connection watchdog — no response for MB_RESPONSE_TIMEOUT_MS
+    if (mbConnected && lastSuccessTime > 0 &&
+        now - lastSuccessTime > MB_RESPONSE_TIMEOUT_MS) {
+        Serial.println("MB: Response timeout, forcing reconnect");
+        mb.disconnect(plcIP);
+        mbConnected = false;
+        pollsInFlight = 0;
+        consecutiveFailures = 0;
+    }
+
+    // (5) Poll LED coils + process value — only when no reads are in flight
+    if (pollsInFlight == 0 && now - lastPollTime >= POLL_INTERVAL_MS) {
         lastPollTime = now;
         if (mbConnected) {
+            pollsInFlight = 2;  // two reads issued; each callback decrements
             // Read LED coils — callback updates LED indicators
             mb.readCoil(plcIP, MB_COIL_LED_BASE, ledCoilValues, LED_COUNT,
                         cbReadLedCoils, PLC_UNIT_ID);
@@ -324,7 +367,7 @@ void loop() {
         }
     }
 
-    // (5) Connection status check (every STATUS_INTERVAL_MS)
+    // (6) Connection status check (every STATUS_INTERVAL_MS)
     if (now - lastStatusTime >= STATUS_INTERVAL_MS) {
         lastStatusTime = now;
         updateStatus();
