@@ -31,15 +31,18 @@ public:
 
 	// Attributes
 	byte gridSize = 2;
-	byte columns;
-	byte rows;
+	byte columns = 0;
+	byte rows = 0;
 	byte hGap = 0;
 	byte vGap = 0;
 	unsigned char config = 0;
-	int btnWidth,btnHeight;
+	int btnWidth = 0, btnHeight = 0;
 	unsigned char lastPressed = 0; //Last pressed button ID (number)
-	char** labels;
-	unsigned char* states;
+    // Owned arrays indexed 1..rows*columns; index 0 is reserved.
+    // Do not free/rebind arrays or label entries; use setLabel/configure.
+    // rows/columns describe allocated storage: change only via configure.
+    char** labels = NULL;
+	unsigned char* states = NULL;
 	int highlightColor = YELLOW;
 	unsigned char maintained = 1; // used to decide if to redraw as a maintained or as a momentary
 	
@@ -47,7 +50,8 @@ public:
 	void init();
 	void setSize(int width, int height);
 	void configure(byte gridSize);
-	void setLabel(unsigned char id,  char name[8]);
+    // Copies at most eight characters plus NUL; NULL clears an entry.
+    void setLabel(unsigned char id, char name[8]);
 	
 	/* NOT WORKING
 	void setLabel(unsigned char id,  char c);
@@ -70,12 +74,14 @@ public:
 	
 private:
 	//String text;
-	char* text; 
+	unsigned int allocatedCount = 0;
+    bool allocateGrid(unsigned char r, unsigned char c);
+    void releaseGrid();
 	char charPos;
 	// Modified the special declaration of eventHandler to accept
 	// a second argument which would be the value of the button pressed
 	// This is set in the checkTouch method.
-	void (*eventHandler)(Buttongrid*, unsigned char);
+	void (*eventHandler)(Buttongrid*, unsigned char) = NULL;
 
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)

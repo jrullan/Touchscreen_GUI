@@ -1,5 +1,26 @@
 #include "Buttongrid.h"
 
+void Buttongrid::releaseGrid() {
+    if (labels) for (unsigned int i = 0; i <= allocatedCount; ++i) free(labels[i]);
+    free(labels); free(states);
+    labels = NULL; states = NULL; allocatedCount = 0;
+}
+bool Buttongrid::allocateGrid(unsigned char r, unsigned char c) {
+    unsigned int count = (unsigned int)r * c;
+    if (!r || !c || count > 255) return false;
+    unsigned char* newStates = (unsigned char*)calloc(count + 1, sizeof(unsigned char));
+    if (!newStates) return false;
+    char** newLabels = NULL;
+    if (config & BUTTONGRID_USELABELS) {
+        newLabels = (char**)calloc(count + 1, sizeof(char*));
+        if (!newLabels) { free(newStates); return false; }
+    }
+    releaseGrid();
+    states = newStates; labels = newLabels; allocatedCount = count;
+    rows = r; columns = c; lastPressed = 0;
+    return true;
+}
+
 /*
 Buttongrid::Buttongrid(unsigned char size){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); 
@@ -22,37 +43,23 @@ Buttongrid::Buttongrid(unsigned char size){
 }
 */
 
-Buttongrid::Buttongrid(unsigned char r, unsigned char c, unsigned char cfg){
-	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1);
-	columns = c;
-	rows = r;
-	this->config = cfg;
-	
-	//Allocate memory for labels and states
-	
-	if(rows >= 0 && columns >= 0){
-		char qty = rows * columns;
-		char chars = ((config&BUTTONGRID_NUMLABELS)?1:8);
-		if(config&BUTTONGRID_USELABELS){
-			if(labels = (char**) malloc(qty * chars * sizeof(char))){
-				memset(labels,0,qty*chars*sizeof(char));
-			}
-		}
-		if(states = (unsigned char*)malloc(qty)){
-			memset(states,0,qty);
-		}
-	}
-	this->init();
+Buttongrid::Buttongrid(unsigned char r, unsigned char c, unsigned char cfg) {
+    config = cfg;
+    init();
+    allocateGrid(r, c);
+    setSize(w, h);
 }
 
-Buttongrid::~Buttongrid(){
-	if(text) free(text);
+Buttongrid::~Buttongrid() {
+    releaseGrid();
 }
 
-void Buttongrid::setSize(int width, int height){
-	Widget::setSize(width,height);
-	btnWidth = (w-(borderWidth*(columns+1)))/columns;
-	btnHeight = (h-(borderWidth*(rows+1)))/rows;
+void Buttongrid::setSize(int width, int height) {
+    Widget::setSize(width > 0 ? width : 0, height > 0 ? height : 0);
+    int availableWidth = w - borderWidth * (columns + 1);
+    int availableHeight = h - borderWidth * (rows + 1);
+    btnWidth = columns && availableWidth > 0 ? availableWidth / columns : 0;
+    btnHeight = rows && availableHeight > 0 ? availableHeight / rows : 0;
 }
 
 void Buttongrid::init(){
@@ -62,14 +69,15 @@ void Buttongrid::init(){
 	charPos = 0;
 }
 
-void Buttongrid::configure(byte size){
-	columns = size;
-	rows = size;
-	gridSize = size;
-	show();
+void Buttongrid::configure(byte size) {
+    if (!allocateGrid(size, size)) return;
+    gridSize = size;
+    setSize(w, h);
+    show();
 }
 
 void Buttongrid::drawGrid(){
+    if (!canDraw() || !allocatedCount || btnWidth <= 0 || btnHeight <= 0) return;
 	int xPos,yPos,width,height;
 	xPos = x;	
 	yPos = y;
@@ -109,9 +117,9 @@ void Buttongrid::drawGrid(){
 	//-- draw contents  
 	byte colIndex=0;
 	byte rowIndex=0;
-	for(byte r=1; r<=rows; r++)
+	for(int r=1; r<=rows; r++)
 	{
-	  for(byte c=1; c<=columns; c++)
+	  for(int c=1; c<=columns; c++)
 	  {
 		  drawLabel(getId(r,c));
 	  }
@@ -120,12 +128,13 @@ void Buttongrid::drawGrid(){
 }
 
 void Buttongrid::drawLabel(unsigned char id){
+    if (!canDraw() || !id || id > allocatedCount || !getColumn(id) || !getRow(id)) return;
 	unsigned char colIndex = getColumn(id)-1;
 	unsigned char rowIndex = getRow(id)-1;
 	unsigned char length;
 	int xPos,yPos;
 	
-	if((config&BUTTONGRID_USELABELS) && (labels[id] != 0)){
+	if((config&BUTTONGRID_USELABELS) && labels && (labels[id] != 0)){
 		length = getTextLength(labels[id]);
 	}else{
 		length = myCanvas->tft->Get_Digits(id);
@@ -134,7 +143,7 @@ void Buttongrid::drawLabel(unsigned char id){
 	xPos = getCenterTextX(x+(colIndex*btnWidth)+borderWidth*(1+colIndex), btnWidth, length);
 	yPos = getCenterTextY(y+(rowIndex*btnHeight)+borderWidth*(1+rowIndex), btnHeight);
 
-	if((config&BUTTONGRID_USELABELS) && (labels[id] != 0)){
+	if((config&BUTTONGRID_USELABELS) && labels && (labels[id] != 0)){
 		myCanvas->tft->drawString(labels[id],xPos,yPos,fontSize,fgColor);
 	}else{
 		myCanvas->tft->drawNumber(id,xPos,yPos,fontSize,fgColor);
@@ -146,27 +155,31 @@ void Buttongrid::setEventHandler(void (*functionPointer)(Buttongrid *, unsigned 
 	eventHandler = functionPointer;
 }
 
-unsigned char Buttongrid::getColumn(unsigned char num){
-	unsigned char val = num%columns;
-	return val==0 ? columns : val;
+unsigned char Buttongrid::getColumn(unsigned char num) {
+    if (!columns || !num || num > allocatedCount) return 0;
+    return (num - 1) % columns + 1;
 }
 
-unsigned char Buttongrid::getRow(unsigned char num){
-	num -= 1;
-	unsigned char mod = num%columns;		
-	return num/columns + 1;
+unsigned char Buttongrid::getRow(unsigned char num) {
+    if (!columns || !num || num > allocatedCount) return 0;
+    return (num - 1) / columns + 1;
 }
 
-unsigned char Buttongrid::getId(unsigned char row, unsigned char column){
-	unsigned char val = column + (row - 1) * columns;
-	return val;
+unsigned char Buttongrid::getId(unsigned char row, unsigned char column) {
+    if (!row || !column || row > rows || column > columns) return 0;
+    unsigned int id = column + (row - 1) * columns;
+    return id <= allocatedCount ? id : 0;
 }
 
-void Buttongrid::setLabel(unsigned char id, char name[8]){
-	if((config&BUTTONGRID_USELABELS) && !(config&BUTTONGRID_NUMLABELS)){
-		labels[id] = name;
-	}		
-	return;
+void Buttongrid::setLabel(unsigned char id, char name[8]) {
+    if (!labels || !id || id > allocatedCount || (config & BUTTONGRID_NUMLABELS)) return;
+    if (!name) { free(labels[id]); labels[id] = NULL; return; }
+    size_t size = 0;
+    while (size < 8 && name[size]) ++size;
+    char* copy = (char*)malloc(size + 1);
+    if (!copy) return;
+    memcpy(copy, name, size); copy[size] = 0;
+    free(labels[id]); labels[id] = copy;
 }
 
 /* NOT WORKING
@@ -186,6 +199,7 @@ void Buttongrid::clear(){
  
 //Overriden virtual methods
 bool Buttongrid::checkTouch(Point* p){
+    if (!p || !states || !allocatedCount || !rows || !columns || btnWidth <= 0 || btnHeight <= 0) return true;
 	int boundX1, boundX2, boundY1, boundY2;	
 	bool pressed = false;
 	if(lastMillis + debounceTime < millis()){ 
@@ -204,19 +218,20 @@ bool Buttongrid::checkTouch(Point* p){
 					boundX2 = boundX1 + btnWidth;
 					
 					int id = columns*(r - 1) + c;
+                    if (id > allocatedCount) continue;
 					if((p->x > boundX1) && (p->x < boundX2) && (p->y > boundY1) && (p->y < boundY2)){
 						
 						if(config & BUTTONGRID_MAINTAINED){
 							states[id] = (states[id])?0:1;
-							if(config&BUTTONGRID_HIGHLIGHT){
+							if((config&BUTTONGRID_HIGHLIGHT) && canDraw()){
 								myCanvas->tft->fillRect(boundX1,boundY1,btnWidth,btnHeight,(states[id])?highlightColor:bgColor);
 								drawLabel(id);
 							}
 						}else{
-							if ((config&BUTTONGRID_HIGHLIGHT) && (lastPressed != 0)){
+							if ((config&BUTTONGRID_HIGHLIGHT) && canDraw() && (lastPressed != 0) && lastPressed <= allocatedCount){
 								// Restore last button pressed appearance
-								char cIndex = getColumn(lastPressed) - 1;
-								char rIndex = getRow(lastPressed) - 1;
+								int cIndex = getColumn(lastPressed) - 1;
+								int rIndex = getRow(lastPressed) - 1;
 								int lastX = x + btnWidth*cIndex + borderWidth*(cIndex + 1);
 								int lastY = y + btnHeight*rIndex + borderWidth*(rIndex + 1);
 								myCanvas->tft->fillRect(lastX,lastY,btnWidth,btnHeight,bgColor);
@@ -226,7 +241,7 @@ bool Buttongrid::checkTouch(Point* p){
 							}
 						}
 						// Call event handler with pressed button id
-						eventHandler(this,id);
+						if (eventHandler) eventHandler(this,id);
 						pressed = true;
 						lastPressed = id;
 					}
@@ -240,6 +255,7 @@ bool Buttongrid::checkTouch(Point* p){
 }
 
 void Buttongrid::show(){
+    visible = true;
 	drawGrid();
 	update();
 }

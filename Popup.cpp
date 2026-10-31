@@ -1,23 +1,17 @@
 #include "Popup.h"
 
-Popup::Popup(){
-	if(text = (char *)malloc(8+1)) memset(text,0,8+1); //Had to add one more, to avoid some bug
-}
+Popup::Popup() { init(); setText(NULL); }
 
 //Popup::Popup(unsigned char type, char* message){
 Popup::Popup(char* message){
-	unsigned char text_length = getTextLength(message);
-	if(text = (char *)malloc(text_length+1)) memset(text,0,text_length+1); //Had to add one more, to avoid some bug
-	if(btn1Text = (char *)malloc(8+1)) memset(btn1Text,0,8+1); //Had to add one more, to avoid some bug
-	if(btn2Text = (char *)malloc(8+1)) memset(btn2Text,0,8+1); //Had to add one more, to avoid some bug
-	text = message;
-	this->init();
+    init();
+    setText(message);
 }
 
 Popup::~Popup(){
 	if(text) free(text);
-	if(btn1Text) free(btn1Text);
-	if(btn2Text) free(btn2Text);
+
+
 	
 }
 
@@ -30,6 +24,7 @@ void Popup::init(){
 }
 
 void Popup::drawFrame(int pX, int pY, int wW, int hH){
+    if (!canDraw()) return;
 	for(unsigned char i=0; i<borderWidth; i++)
 	{
 		myCanvas->tft->drawRect(pX+i,pY+i,wW-i*2,hH-i*2,borderColor);
@@ -37,14 +32,16 @@ void Popup::drawFrame(int pX, int pY, int wW, int hH){
 	//Serial.println("Drew frame");
 }
 
-void Popup::drawText(int pX, int pY, int wW, int hH, char* t){
+void Popup::drawText(int pX, int pY, int wW, int hH, const char* t){
+    if (!canDraw()) return;
 	if(!t) return;
-	int stringX = getCenterTextX(pX,wW,getTextLength(t));//pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
+	int stringX = getCenterTextX(pX,wW,strlen(t));//pX+wW/2-(getTextLength(t)*FONT_SPACE*fontSize)/2;
 	int stringY = getCenterTextY(pY,hH);//pY+hH/2-(FONT_Y*fontSize)/2;
 	myCanvas->tft->drawString(t,stringX,stringY,fontSize,fgColor);
 }
 
 void Popup::draw(){
+    if (!canDraw()) return;
 	int btnPoX, btnPoY;
 	
 	if(popup_type==POPUP_OK){
@@ -106,7 +103,13 @@ void Popup::setEventHandler(void (*functionPointer)(Popup*,unsigned char)){
 } 
 
 void Popup::setText(char* _text){
-	text = _text;
+    const char* source = _text ? _text : "";
+    size_t length = strlen(source);
+    char* copy = (char*)malloc(length + 1);
+    if (!copy) return;
+    memcpy(copy, source, length + 1);
+    free(text);
+    text = copy;
 }
 /*
 void Popup::setText(char* _text, char* _btn1, char* _btn2){
@@ -119,12 +122,13 @@ void Popup::setText(char* _text, char* _btn1, char* _btn2){
 void Popup::processEvent(unsigned char btnNo){
 	//process event
 	selection = btnNo;
-	eventHandler(this,btnNo); // Call event handler	& pass button number
+	if (eventHandler) eventHandler(this,btnNo); // Call event handler	& pass button number
 	//Serial.println("Processing Event");	
 }
 
 // Overrides
 bool Popup::checkTouch(Point* p){
+    if (!p) return false;
 	int boundX1, boundX2, boundY1, boundY2;
 	int btnWidth, btnHeight;
 	bool pressed = false;
@@ -186,23 +190,26 @@ void Popup::show(Button* btn){
 }
 
 void Popup::targetEventHandler(){
-	targetButton->eventHandler(targetButton);
+	if (targetButton && targetButton->eventHandler) targetButton->eventHandler(targetButton);
 }
 
 void Popup::show(){
+    visible = true;
 	draw();
 	update();
 	this->visible = true;
 }
 
 void Popup::hide(){
-	this->visible = false;	
+    const bool drawable = canDraw();
+	this->visible = false;
+    if (!drawable) return;
 	myCanvas->tft->fillRect(x,y,w,h,myCanvas->bgColor);
 	myCanvas->redraw();
 }
 
 void Popup::reset(){
-	selection = NULL;
+	selection = 0;
 }
 
 void Popup::update(){

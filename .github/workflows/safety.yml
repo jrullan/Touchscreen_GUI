@@ -1,0 +1,11 @@
+name: Safety regression tests
+on: [push, pull_request]
+jobs:
+  host-sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Strict return checks
+        run: python3 tests/host/check_returns.py
+      - name: Address, undefined behavior and leak regression tests
+        run: python3 tests/host/run.py

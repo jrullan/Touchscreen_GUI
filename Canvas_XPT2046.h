@@ -28,11 +28,12 @@ class Canvas_XPT2046: public Canvas{
 	Canvas_XPT2046(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){
 		this->init();
 	};
-	~Canvas_XPT2046(){
-		
-	};
+	~Canvas_XPT2046(){ delete pendingTouch; };
 	void init();
 	Point* getTouchedPoint();
+private:
+	// Keep failed startup owned but unavailable to Canvas::scan().
+	Touch* pendingTouch = nullptr;
 };
 
 
@@ -41,7 +42,8 @@ class Canvas_XPT2046: public Canvas{
  * the TFT, the touch chipset
  * and other timing variables
  */
-void Canvas_XPT2046::init(){
+inline void Canvas_XPT2046::init(){
+	if (initialized || !tft) return;
 	tft->begin();
 	tft->fillScreen(bgColor);
 	lastMillis = millis();
@@ -52,12 +54,16 @@ void Canvas_XPT2046::init(){
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
 	
-	ts = new XPT2046_Touchscreen(ts_cs);
-	ts->begin(0);
+	if (!pendingTouch) pendingTouch = new (std::nothrow) XPT2046_Touchscreen(ts_cs);
+	if (!pendingTouch || !pendingTouch->begin(0)) return;
+	ts = pendingTouch;
+	pendingTouch = nullptr;
+	initialized = true;
 }
 
-Point* Canvas_XPT2046::getTouchedPoint(){
-	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
+inline Point* Canvas_XPT2046::getTouchedPoint(){
+	if (!initialized || !ts || !tft) return NULL;
+	if (static_cast<unsigned long>(millis() - touchSampling) > TOUCH_SAMPLING_TIME) {
 		Point p = ts->getPoint();
 		// Invert x and y
 		int oldX = p.x;		

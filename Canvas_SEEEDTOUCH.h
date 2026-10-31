@@ -33,7 +33,8 @@ class Canvas_SEEEDTOUCH: public Canvas{
  * the TFT, the touch chipset
  * and other timing variables
  */
-void Canvas_SEEEDTOUCH::init(){
+inline void Canvas_SEEEDTOUCH::init(){
+	if (initialized || !tft) return;
 	tft->begin();
 	tft->fillScreen(bgColor);		
 	lastMillis = millis();
@@ -44,11 +45,14 @@ void Canvas_SEEEDTOUCH::init(){
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
 	
-	ts = new SeeedstudioTouch(XP,YP,XM,YM);	
+	if (!ts) ts = new (std::nothrow) SeeedstudioTouch(XP,YP,XM,YM);
+	if (!ts) return;
+	initialized = true;
 }
 
-Point* Canvas_SEEEDTOUCH::getTouchedPoint(){
-	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
+inline Point* Canvas_SEEEDTOUCH::getTouchedPoint(){
+	if (!ts || !tft) return NULL;
+	if (static_cast<unsigned long>(millis() - touchSampling) > TOUCH_SAMPLING_TIME) {
 		Point p = ts->getPoint();
 		
 		//Serial.println("-----------");

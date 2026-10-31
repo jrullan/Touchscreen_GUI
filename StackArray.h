@@ -51,6 +51,8 @@
 
 // include Arduino basic header.
 #include <Arduino.h>
+#include <limits.h>
+#include <stdlib.h>
 
 // the definition of the stack class.
 template<typename T>
@@ -65,7 +67,12 @@ class StackArray {
     ~StackArray ();
 
     // push an item to the stack.
-    void push (const T i);
+    // False leaves previous storage/items/count intact on allocation failure.
+    bool push (const T i);
+    bool remove(const T item);
+    bool contains(const T item) const;
+    StackArray(const StackArray&) = delete;
+    StackArray& operator=(const StackArray&) = delete;
 
     // pop an item from the stack.
     T pop ();
@@ -73,7 +80,7 @@ class StackArray {
     // get an item from the stack.
     T peek () const;
     
-    T operator[](int i);
+    T operator[](int i) const;
 
     // check if the stack is empty.
     bool isEmpty () const;
@@ -89,7 +96,7 @@ class StackArray {
 
   private:
     // resize the size of the stack.
-    void resize (const int s);
+    bool resize (const int s);
 
     // exit report method in case of error.
     void exit (const char * m) const;
@@ -120,11 +127,7 @@ StackArray<T>::StackArray () {
   contents = (T *) malloc (sizeof (T) * initialSize);
 
   // if there is a memory allocation error.
-  if (contents == NULL)
-    exit ("STACK: insufficient memory to initialize stack.");
-
-  // set the initial size of the stack.
-  size = initialSize;
+  size = contents ? initialSize : 0;
 }
 
 
@@ -136,14 +139,11 @@ StackArray<T>::StackArray (int s) {
   printer = NULL; // set the printer of stack to point nowhere.
 
   // allocate enough memory for the array.
-  contents = (T *) malloc (sizeof (T) * s);
+  contents = (s > 0 && static_cast<size_t>(s) <= static_cast<size_t>(-1) / sizeof(T))
+      ? (T *) malloc (sizeof (T) * s) : NULL;
 
   // if there is a memory allocation error.
-  if (contents == NULL)
-    exit ("STACK: insufficient memory to initialize stack.");
-
-  // set the initial size of the stack.
-  size = s;
+  size = contents ? s : 0;
 }
 
 
@@ -161,40 +161,34 @@ StackArray<T>::~StackArray () {
 
 // resize the size of the stack.
 template<typename T>
-void StackArray<T>::resize (const int s) {
-  // defensive issue.
-  if (s <= 0)
-    exit ("STACK: error due to undesirable size for stack size.");
-
-  // reallocate enough memory for the array.
-  contents = (T *) realloc (contents, sizeof (T) * s);
-
-  // if there is a memory allocation error.
-  if (contents == NULL)
-    exit ("STACK: insufficient memory to resize stack.");
-
-  // set the new size of the stack.
+bool StackArray<T>::resize (const int s) {
+  if (s <= 0 || s < top || static_cast<size_t>(s) > static_cast<size_t>(-1) / sizeof(T)) return false;
+  T* replacement = (T*) realloc(contents, sizeof(T) * s);
+  if (!replacement) return false;
+  contents = replacement;
   size = s;
+  return true;
 }
 
 // push an item to the stack.
 template<typename T>
-void StackArray<T>::push (const T i) {
+bool StackArray<T>::push (const T i) {
   // check if the stack is full.
-  if (isFull ())
-    // double size of array.
-    resize (size * 2);
+  if (isFull ()) {
+    if (size > INT_MAX / 2) return false;
+    if (!resize(size ? size * 2 : initialSize)) return false;
+  }
 
   // store the item to the array.
   contents[top++] = i;
+  return true;
 }
 
 // pop an item from the stack.
 template<typename T>
 T StackArray<T>::pop () {
   // check if the stack is empty.
-  if (isEmpty ())
-    exit ("STACK: can't pop item from stack: stack is empty.");
+  if (isEmpty ()) return T();
 
   // fetch the top item from the array.
   T item = contents[--top];
@@ -211,8 +205,7 @@ T StackArray<T>::pop () {
 template<typename T>
 T StackArray<T>::peek () const {
   // check if the stack is empty.
-  if (isEmpty ())
-    exit ("STACK: can't peek item from stack: stack is empty.");
+  if (isEmpty ()) return T();
 
   // get the top item from the array.
   return contents[top - 1];
@@ -220,8 +213,8 @@ T StackArray<T>::peek () const {
 
 
 template<typename T>
-T StackArray<T>::operator[](int index){
-	return contents[index];
+T StackArray<T>::operator[](int index) const {
+	return (index >= 0 && index < top) ? contents[index] : T();
 }
 
 
@@ -275,6 +268,24 @@ void StackArray<T>::blink () const {
   }
 
   // solution selected due to lack of exit() and assert().
+}
+
+template<typename T>
+bool StackArray<T>::contains(const T item) const {
+  for (int i = 0; i < top; ++i) if (contents[i] == item) return true;
+  return false;
+}
+
+template<typename T>
+bool StackArray<T>::remove(const T item) {
+  for (int i = 0; i < top; ++i) {
+    if (contents[i] == item) {
+      for (int j = i + 1; j < top; ++j) contents[j - 1] = contents[j];
+      --top;
+      return true;
+    }
+  }
+  return false;
 }
 
 #endif // _STACKARRAY_H

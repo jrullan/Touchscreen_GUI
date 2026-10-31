@@ -24,11 +24,7 @@ IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const ui
 	lastMillis = millis();	
 	*/
 
-	int labelSize = Widget::getTextLength(_label);
-	if( (label = (char *)malloc(labelSize+1)) ){ 
-		memset(label,0,labelSize+1);
-		label = _label;
-	}	
+	setLabel(_label);
 	fgColor = WHITE;
 	type = 0x35;
 	debounceTime = DEBOUNCE;
@@ -47,6 +43,7 @@ IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const ui
 IconButton::~IconButton(){}
 
 void IconButton::show(){
+    visible = true;
 	drawLabel();
 	update();
 }
@@ -78,6 +75,7 @@ void IconButton::update(){
 // Modified version of Adafruit_GFX drawRGBBitmap to support defining one color as transparent
 // void Adafruit_GFX::drawRGBBitmap(int16_t x, int16_t y,
 void IconButton::drawRGBABitmap(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, int16_t h, uint16_t transparentColor) {
+    if (!canDraw() || !bitmap || w <= 0 || h <= 0) return;
 	uint16_t pixelColor;
     myCanvas->tft->startWrite();
 		for(int16_t j=0; j<h; j++, y++) {

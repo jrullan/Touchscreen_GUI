@@ -11,7 +11,8 @@
 #ifndef INDICATOR_H
 #define INDICATOR_H
 
-#define BUF_SIZE 8
+// Decimal digits, optional sign, and terminator for every supported int width.
+#define BUF_SIZE (3 * sizeof(int) + 2)
 
 #include <Arduino.h>
 #include "Canvas.h"
@@ -24,27 +25,29 @@ class Indicator : public Widget{
 		~Indicator();
 		
 		// Attributes
-		unsigned int hiLimit;
-		unsigned int lowLimit;
-		unsigned int setpoint;
-		unsigned int scaleMin;
-		unsigned int scaleMax;
-		unsigned int currentValue;
-		unsigned int previousValue;
+		unsigned int hiLimit = 100;
+		unsigned int lowLimit = 0;
+		unsigned int setpoint = 0;
+		unsigned int scaleMin = 0;
+		unsigned int scaleMax = 100;
+		unsigned int currentValue = 0;
+		unsigned int previousValue = 0;
 
-		int hiLimitColor;
-		int lowLimitColor;	
-		int setpointColor;			
+		int hiLimitColor = 0xf800;
+		int lowLimitColor = 0x07e0;
+		int setpointColor = 0xffff;
 		
 		// Methods
 		void init();
 		void clear();		
 		void setCV(int cv, boolean show = true);
+		void setCV(unsigned int cv, boolean show = true);
 		void setHiLimit(unsigned int h, int color);		
 		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
 		void setLowLimit(unsigned int l, int color);
 		void setSP(unsigned int sp, int color);
 		void setNum(int num);
+		void setNum(unsigned int num);
 		unsigned int getCV();
 
 		// Overriden methods
@@ -54,6 +57,8 @@ class Indicator : public Widget{
 		
 	protected:
 		char* buf;
+		int mapScale(int64_t value, int bottom, int top) const;
+		void setCVValue(int64_t cv, boolean show);
 		
 	private:
 		//Methods

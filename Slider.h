@@ -25,22 +25,22 @@ class Slider : public Indicator
 		void show();	
 		void update();
 
-	void (*eventHandler)(Slider*);
+	void (*eventHandler)(Slider*) = NULL;
 	bool block = false;
-	unsigned long lastMillis;
+	unsigned long lastMillis = 0;
 	
 protected:	
 	unsigned int debounceTime = DEBOUNCE;	
 };
 
 
-Slider::Slider(){
+inline Slider::Slider(){
 	init();
 };
 
-Slider::~Slider(){}
+inline Slider::~Slider(){}
 
-void Slider::init(){
+inline void Slider::init(){
 	type=0x24;
 	borderWidth = 2;
 	scaleMax = 100;
@@ -53,13 +53,15 @@ void Slider::init(){
 	this->isButton = true;
 }
 
-void Slider::drawBorder(){
+inline void Slider::drawBorder(){
+	if (!canDraw()) return;
 	for(byte i=0; i<borderWidth;i++){
 		myCanvas->tft->drawRect(x+i,y+i,w-i*2,h-i*2,borderColor);
 	}	
 }
 
-void Slider::drawCV(int cv){
+inline void Slider::drawCV(int cv){
+	if (!canDraw()) return;
 	int cvY = map(cv,scaleMin,scaleMax,y+h-borderWidth,y+borderWidth);
 	
 	//		Draw the background
@@ -73,17 +75,17 @@ void Slider::drawCV(int cv){
 	myCanvas->tft->fillRect(x+borderWidth, startFill, w-2*borderWidth, fillHeight, this->fgColor);
 }
 
-void Slider::setDebounce(int debounce){
+inline void Slider::setDebounce(int debounce){
 	this->debounceTime = debounce;
 }
 
-void Slider::setEventHandler(void (*functionPointer)(Slider *)){
+inline void Slider::setEventHandler(void (*functionPointer)(Slider *)){
 	eventHandler = functionPointer;
 }
 
-bool Slider::checkTouch(Point* p){
+inline bool Slider::checkTouch(Point* p){
 	// Early exit if no event handler was defined
-	if(!*eventHandler) return false;
+	if (!p || !canDraw() || !eventHandler) return false;
 	
 	if(lastMillis + debounceTime < millis()){ 
 		// 1. Check if touch event falls within the bounds of this widget
@@ -111,13 +113,14 @@ bool Slider::checkTouch(Point* p){
 	return !block;
 }
 
-void Slider::update(){
+inline void Slider::update(){
 	drawBorder();
 	drawCV(currentValue);
 	//myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,this->fgColor);
 }
 
-void Slider::show(){
+inline void Slider::show(){
+	visible = true;
 	drawBorder();
 	drawCV(currentValue);
 	//myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,this->fgColor);

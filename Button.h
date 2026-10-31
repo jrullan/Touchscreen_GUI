@@ -50,9 +50,10 @@ public:
 	virtual void show();
 	virtual void update();	
 	bool checkTouch(Point* p);
-	void (*eventHandler)(Button*);
+	void (*eventHandler)(Button*) = NULL;
 	
 	//Attributes
+	// Owned pointers: do not delete/free/rebind; use setText/setLabel.
 	Text* contents;		// changed from a Text object to a pointer: 6 bytes less in Program Memory and 4 less bytes in RAM
 	char* label = 0;	// had to initilize to zero to avoid trying to get it in getLabelSize if not initialized
 	char labelPos = LABEL_LEFT; //label position: 0-left, 1-top, 2-right, 3-bottom

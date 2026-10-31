@@ -37,15 +37,16 @@ class TrendBase : public Indicator{
 		void init();
 		int getXVal(int index);
 		int getYVal(int value);
+		int getYVal(unsigned int value);
 		void setWindow(int min, int max);
 		void setMaxX(int maxX);      // 0 = raw sample indices, else elapsed s
 
 		// Attributes (shared)
-		uint8_t maxValues;           // samples per series ring
+		uint8_t maxValues = MAX_TREND_VALUES;           // samples per series ring
 		bool    enableAutoFit = false;
 		bool    forceSquareWaveform = false;
 		int     maxX = 0;            // seconds per whole window; 0=indices
-		struct TrendWindow { int minValue; int maxValue; } trendWindow;
+		struct TrendWindow { int minValue; int maxValue; } trendWindow = {0, MAX_TREND_VALUES ? MAX_TREND_VALUES-1 : 0};
 
 		// Chrome toggles (defaults reproduce the full classic look; set false
 		// for a bare/dashboard variant where the host draws its own chrome).
@@ -61,6 +62,7 @@ class TrendBase : public Indicator{
 
 	protected:
 		// Shared chrome + plotting. values = pointer to this series' ring.
+		int getYValValue(int64_t value);
 		void drawBorder();
 		void drawYScale();
 		void drawXScale();

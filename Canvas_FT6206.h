@@ -23,9 +23,12 @@ class Canvas_FT6206: public Canvas{
 	Canvas_FT6206(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){
 		this->init();
 	};
-	~Canvas_FT6206(){};
+	~Canvas_FT6206(){ delete pendingTouch; };
 	void init();
 	Point* getTouchedPoint();
+private:
+	// Keep failed startup owned but unavailable to Canvas::scan().
+	Touch* pendingTouch = nullptr;
 };
 
 /*
@@ -33,7 +36,8 @@ class Canvas_FT6206: public Canvas{
  * the TFT, the touch chipset
  * and other timing variables
  */
-void Canvas_FT6206::init(){
+inline void Canvas_FT6206::init(){
+	if (initialized || !tft) return;
 	tft->begin();
 	tft->fillScreen(bgColor);
 	lastMillis = millis();
@@ -44,12 +48,16 @@ void Canvas_FT6206::init(){
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
 	
-	ts = new Adafruit_FT6206();
-	ts->begin(FT62XX_DEFAULT_THRESHOLD);
+	if (!pendingTouch) pendingTouch = new (std::nothrow) Adafruit_FT6206();
+	if (!pendingTouch || !pendingTouch->begin(FT62XX_DEFAULT_THRESHOLD)) return;
+	ts = pendingTouch;
+	pendingTouch = nullptr;
+	initialized = true;
 }
 
-Point* Canvas_FT6206::getTouchedPoint(){
-	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
+inline Point* Canvas_FT6206::getTouchedPoint(){
+	if (!initialized || !ts || !tft) return NULL;
+	if (static_cast<unsigned long>(millis() - touchSampling) > TOUCH_SAMPLING_TIME) {
 		Point p = ts->getPoint();
 		
 		if(tft->layoutMode == TFT_PORTRAIT){

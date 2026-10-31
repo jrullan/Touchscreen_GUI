@@ -62,6 +62,7 @@
 
 
 // Required includes:
+#include <new>
 #include "StackArray.h"
 #include "Point.h"
 #include "GUI_TFT.h"
@@ -83,8 +84,13 @@ public:
 	// Methods
 	void portrait();
 	void landscape();
+	// Non-owning: remove widgets before either side dies if the other remains usable.
+	// Each widget belongs to one registry; duplicate adds here are ignored.
 	void add(Widget* widget, int x, int y, uint8_t show = true);
 	Widget* pop();
+	bool remove(Widget* widget);
+	Canvas(const Canvas&) = delete;
+	Canvas& operator=(const Canvas&) = delete;
 	void showWidgets();
 	bool touchWidgets(Point* p);
 	bool scan();
@@ -110,6 +116,7 @@ public:
 	int yTouchBuffer[TOUCH_BUFFER_SIZE];
 	int touchType;
 	int ts_cs;
+	// Exclusively owned drivers; never assign shared/stack objects.
 	Guitft* tft;
 	Touch* ts;
 	Point touchedPoint;	
@@ -118,9 +125,10 @@ public:
 	unsigned int _mode;	
 	
 protected:
+	bool initialized = false;
 	unsigned long lastMillis;
 	unsigned long touchSampling;
-	unsigned int scanSampling;
+	unsigned long scanSampling;
 	unsigned int scanSampleDelay;
 };
 

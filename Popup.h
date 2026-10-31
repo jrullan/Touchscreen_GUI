@@ -32,7 +32,7 @@ public:
 	
 	void init();
 	void drawFrame(int pX, int pY, int wW, int hH);
-	void drawText(int pX, int pY, int wW, int hH, char* t);
+	void drawText(int pX, int pY, int wW, int hH, const char* t);
 	void draw();
 	void processEvent(unsigned char btnNo);
 	void setEventHandler(void (*functionPointer)(Popup*, unsigned char));
@@ -72,21 +72,21 @@ public:
 	virtual void update();	
 	
 	//Attributes
-	unsigned char popup_type; // Type of Pop-up (One or Two buttons)
+	unsigned char popup_type = POPUP_OK; // Type of Pop-up (One or Two buttons)
 	unsigned char fontSize = 2;
 
-	Button* targetButton;
+	Button* targetButton = NULL;
 	void targetEventHandler();
-	char selection = NULL;
+	char selection = 0;
 	
 private:
 	//Methods
 	
 	//Attributes
-	char* text; // Holds the message
-	char* btn1Text;
-	char* btn2Text;
-	void (*eventHandler)(Popup*, unsigned char); // Sets address of external function to call upon checkTouch
+	char* text = NULL; // Owned copy of the message
+	const char* btn1Text = NULL; // Borrowed static caption; never freed
+	const char* btn2Text = NULL; // Borrowed static caption; never freed
+	void (*eventHandler)(Popup*, unsigned char) = NULL; // Sets address of external function to call upon checkTouch
 };
 
 #endif

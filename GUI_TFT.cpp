@@ -104,6 +104,7 @@ uint8_t Guitft::drawNumber(long long_num,uint16_t poX, uint16_t poY,uint16_t siz
 	setTextSize(size);
 	setTextColor(fgcolor);
 	print(long_num);
+	return 0;
 }
 
 // Needed to declare in GUI_TFT.h as extern

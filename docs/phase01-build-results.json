@@ -1,0 +1,67 @@
+{
+  "board": "esp8266:esp8266:d1_mini",
+  "core": "3.1.2",
+  "upstream_base": "46b03f5",
+  "builds": {
+    "sizes": {
+      "static_ram_bytes": 29608,
+      "iram_including_cache_bytes": 59143,
+      "flash_bytes": 233332
+    },
+    "dashboard": {
+      "static_ram_bytes": 30412,
+      "iram_including_cache_bytes": 60743,
+      "flash_bytes": 286020
+    },
+    "terminal": {
+      "static_ram_bytes": 29156,
+      "iram_including_cache_bytes": 60019,
+      "flash_bytes": 249136
+    },
+    "instrumentation": {
+      "static_ram_bytes": 29372,
+      "iram_including_cache_bytes": 60623,
+      "flash_bytes": 260472
+    },
+    "trend": {
+      "static_ram_bytes": 29344,
+      "iram_including_cache_bytes": 60019,
+      "flash_bytes": 254416
+    },
+    "input": {
+      "static_ram_bytes": 29112,
+      "iram_including_cache_bytes": 60019,
+      "flash_bytes": 251264
+    },
+    "display": {
+      "static_ram_bytes": 29080,
+      "iram_including_cache_bytes": 60019,
+      "flash_bytes": 248336
+    }
+  },
+  "target_object_sizes_bytes": {
+    "Button": 76,
+    "Canvas_XPT2046": 144,
+    "Dial": 112,
+    "Display": 56,
+    "Gauge": 96,
+    "Indicator": 92,
+    "MultiTrend": 168,
+    "Screen": 48,
+    "Text": 8,
+    "Trend": 140,
+    "TrendBase": 132,
+    "Widget": 48
+  },
+  "installed_dashboard_baseline": {
+    "static_ram_bytes": 30504,
+    "iram_including_cache_bytes": 60743,
+    "flash_bytes": 284468
+  },
+  "hardware_execution": false,
+  "notes": [
+    "Object sizes exclude pointed-to allocations.",
+    "Installed baseline differs by historical local fixes from upstream.",
+    "Full-dashboard totals include networking/JSON; no speedup measured."
+  ]
+}

@@ -1,6 +1,13 @@
 # Touchscreen_GUI
 GUI Library for Seeedstudio Touchscreen Shield v2.0
 
+## Safety refactor validation
+
+See [Phase 0/1 validation and compatibility notes](docs/phase01-validation.md)
+for host sanitizer tests, exact-library Arduino builds, optional device
+instrumentation, ownership contracts, and unverified platform limitations.
+
+
 
 See the wiki: https://github.com/jrullan/Touchscreen_GUI/wiki
 

@@ -38,7 +38,7 @@ class Dial : public Indicator{
 		//Attributes
 		unsigned char gap;
 		int minDegree,maxDegree;
-		unsigned char radius;
+		unsigned char radius = 0;
 		unsigned char tickDegree;
 		unsigned char tickSize;
 		bool showVal;
@@ -49,7 +49,7 @@ class Dial : public Indicator{
 		//Methods
 		void drawBorder();
 		void drawFace();
-		void drawNeedle(int cX, int cY, int degree, int radius, int color);
+		void drawNeedle(int cX, int cY, unsigned int value, int radius, int color);
 		void drawNeedleAndValue();
 		int getX(int cX, int deg, int radius);
 		int getY(int cY, int deg, int radius);

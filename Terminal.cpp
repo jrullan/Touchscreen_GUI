@@ -1,197 +1,119 @@
- #include "Terminal.h"
- 
-Terminal::Terminal(int width, int height, uint8_t dir, int fontSize){
-	this->w = width;
-	this->h = height;
-	this->fontSize = fontSize;
-	
-	bgColor = BLACK;
-	fgColor = GRAY1;
-	borderColor = GRAY1;
-	
-	direction = dir;
-	keepColors = true;
-	borderWidth = 1;
-	horizontalBleed = horizontalBleed * fontSize*FONT_X;
-	verticalBleed = verticalBleed * fontSize*FONT_Y / 2;
-	lineSpace = fontSize*FONT_Y / 2;	
-	lines  = (this->h-2*borderWidth-2*verticalBleed)/(fontSize*FONT_Y+lineSpace);
-	lines = (lines > MAX_LINES) ? MAX_LINES : lines;
-	memset(linesBuffer, 0, MAX_LINES * sizeof(char*));
-	
-	// Calculate characters based on fontSize and width
-	maxCharacters = (this->w - 2*borderWidth - 2*horizontalBleed)/(fontSize*FONT_X);
-	// Allocate memory for characters
-	for(int i = 0; i < lines; i++){
-		if(linesBuffer[i] = (char*) malloc((maxCharacters+1) * sizeof(char))){
-				memset(linesBuffer[i],0,(maxCharacters+1)*sizeof(char));
-		}
-	}
+#include "Terminal.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
+Terminal::Terminal(int width, int height, uint8_t dir, int size) {
+    w = width > 0 ? width : 0;
+    h = height > 0 ? height : 0;
+    // Keep public byte-sized font geometry representable.
+    fontSize = size < 1 ? 1 : (size > 31 ? 31 : size);
+    bgColor = BLACK; fgColor = borderColor = GRAY1;
+    direction = dir == TERMINAL_SCROLL_UP ? TERMINAL_SCROLL_UP : TERMINAL_SCROLL_DOWN;
+    keepColors = true; borderWidth = 1; highlightColor = 0;
+    horizontalBleed = fontSize * FONT_X;
+    verticalBleed = fontSize * FONT_Y / 2;
+    fontHeight = fontSize * FONT_Y;
+    lineSpace = fontHeight / 2;
+    memset(linesBuffer, 0, sizeof linesBuffer);
+    for (int i = 0; i < MAX_LINES; ++i) linesColors[i] = fgColor;
+    int usableWidth = w - 2 * borderWidth - 2 * horizontalBleed;
+    int usableHeight = h - 2 * borderWidth - 2 * verticalBleed;
+    maxCharacters = usableWidth > 0 ? usableWidth / (fontSize * FONT_X) : 0;
+    int count = usableHeight > 0 ? usableHeight / (fontHeight + lineSpace) : 0;
+    lines = maxCharacters > 0 ? (count > MAX_LINES ? MAX_LINES : count) : 0;
+    for (int i = 0; i < lines; ++i) {
+        linesBuffer[i] = (char*)calloc((size_t)maxCharacters + 1, 1);
+        if (!linesBuffer[i]) {
+            // Atomic initialization: an OOM terminal is empty and inert.
+            for (int j = 0; j < i; ++j) { free(linesBuffer[j]); linesBuffer[j] = NULL; }
+            lines = 0;
+            break;
+        }
+    }
 }
- 
-Terminal::~Terminal(){}
- 
-/*
- * Main print function.
- * Prints a char array, given by a pointer with the highlight color
- * specified. 
- */
-void Terminal::print(char* string,uint16_t highColor){
-	highlightColor = highColor;
-	int length = Widget::getTextLength(string);
-	length = (length > maxCharacters) ? maxCharacters : length;
-	char lineIndex = (direction == TERMINAL_SCROLL_DOWN) ? 0 : lines - 1;
-	
-	// Only scroll if:
-	if(direction==TERMINAL_SCROLL_UP && linesIndex <= lines -1){
-		lineIndex = linesIndex++;
-	}else{
-		scroll();
-	}
-	
-	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
-	
-	for(int i=0; i<length; i++){
-		linesBuffer[lineIndex][i] = string[i];
-	}
-	linesBuffer[lineIndex][length] = 0;
-	
-	update();
+Terminal::~Terminal() {
+    for (int i = 0; i < MAX_LINES; ++i) free(linesBuffer[i]);
 }
-
-/*
- * Implementation of print("some %d characters",4)
- * similar to C++ printf function. Only %d is recognized here.
- * First searches for the position of the % symbol in the string.
- * Then if the next character is d then convert the number to 
- * a character array in num_string using Widget's convert_str
- * and copy them into the new_string in the inverted order. 
- * Then update the indexes and keep copying the rest of the characters
- * into the new_string array. 
- */
-void Terminal::printf(char* string, int num, uint16_t highColor){
-	highlightColor = highColor;
-	char lineIndex = (direction == TERMINAL_SCROLL_DOWN) ? 0 : lines - 1;
-	
-	// Only scroll up when it is already in the last line:
-	if(direction==TERMINAL_SCROLL_UP && linesIndex <= lines -1){
-		lineIndex = linesIndex++;
-	}else{
-		scroll();
-	}
-	
-	linesColors[lineIndex] = (highlightColor == NULL) ? fgColor : highlightColor;
-	
-
-	// Here is the code when the characters are copied to the terminal buffer
-	uint8_t str_size = Widget::getTextLength(string);
-	uint8_t num_size = Widget::getIntLength(num);
-	char temp;
-	char* new_string = linesBuffer[lineIndex];
-
-	uint8_t j = 0;
-	for(uint8_t i=0; i<str_size; i++){
-
-		// Scan for the %d placeholder in the provided string
-		if(string[i] == '%' && string[i+1] == 'd'){
-			
-			//Convert the number to characters and put them in the
-			//new_string starting at the current position (i)
-			Widget::convert_str(num,&new_string[i]);			
-			j += num_size-1;
-			i++;
-		}else{
-			new_string[j] = string[i];			
-		}
-		// Exit if at the end of the terminal buffer
-		if(j>=maxCharacters-1) break;
-		j++;
-	}
-	new_string[j] = 0;
-
-	update();
+void Terminal::print(char* string, uint16_t highColor) {
+    writeLine(string, 0, false, highColor);
 }
-
-
-/*
- * Calls the corresponding scroll function based on the
- * direction property.
- */
-void Terminal::scroll(){
-	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
-
-	if(direction){
-		scrollDown();
-	}else{
-		scrollUp();
-	}
+void Terminal::printf(char* string, int num, uint16_t highColor) {
+    writeLine(string, num, true, highColor);
 }
-
-void Terminal::scrollDown(){
-	// Scroll Down
-	for(int line = lines-1; line!=0; line--){
-		for(int i=0; i<maxCharacters; i++){
-			linesBuffer[line][i] = linesBuffer[line-1][i];
-		}
-		linesColors[line] = linesColors[line-1];
-	}
+void Terminal::writeLine(const char* string, int num, bool formatted, uint16_t highColor) {
+    if (!lines || maxCharacters <= 0) return;
+    if (!string) string = "";
+    highlightColor = highColor;
+    int index = direction == TERMINAL_SCROLL_DOWN ? 0 : lines - 1;
+    if (direction == TERMINAL_SCROLL_UP && linesIndex < lines) index = linesIndex++;
+    else scroll();
+    char* output = linesBuffer[index];
+    if (!output) return;
+    linesColors[index] = highColor ? highColor : fgColor;
+    char number[3 * sizeof(int) + 3];
+    if (formatted) snprintf(number, sizeof number, "%d", num);
+    size_t used = 0, capacity = (size_t)maxCharacters;
+    while (*string && used < capacity) {
+        if (formatted && string[0] == '%' && string[1] == 'd') {
+            for (size_t i = 0; number[i] && used < capacity; ++i) output[used++] = number[i];
+            string += 2;
+        } else output[used++] = *string++;
+    }
+    output[used] = 0;
+    update();
 }
-
-void Terminal::scrollUp(){
-	// Scroll Up
-	for(int line = 0; line<lines-1; line++){
-		for(int i=0; i<maxCharacters; i++){
-			linesBuffer[line][i] = linesBuffer[line+1][i];
-		}
-		linesColors[line] = linesColors[line+1];
-	}
+void Terminal::scroll() {
+    if (!lines) return;
+    if (canDraw()) myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,bgColor);
+    if (direction == TERMINAL_SCROLL_DOWN) scrollDown(); else scrollUp();
 }
-
-	/*
-	* Clears the terminal and all lines text are cleared
-	*/
-void Terminal::clear(){
-	for(int i=0;i<lines;i++){
-		linesBuffer[i][0]=0;
-	}
-	linesIndex = 0;
-	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
+void Terminal::scrollDown() {
+    for (int line = (int)lines - 1; line > 0; --line) {
+        if (linesBuffer[line] && linesBuffer[line - 1])
+            memmove(linesBuffer[line], linesBuffer[line - 1], (size_t)maxCharacters + 1);
+        linesColors[line] = linesColors[line - 1];
+    }
 }
-
-void Terminal::drawFrame(){
-  int xPos = x;	
-  int width = w;
-  int yPos = y;
-  int height = h;
-  for(int i=borderWidth; i!=0;i--){
-    myCanvas->tft->drawRect(xPos++,yPos++,width--,height--,borderColor);
-    width--;
-    height--;
-  }
+void Terminal::scrollUp() {
+    for (int line = 0; line + 1 < lines; ++line) {
+        if (linesBuffer[line] && linesBuffer[line + 1])
+            memmove(linesBuffer[line], linesBuffer[line + 1], (size_t)maxCharacters + 1);
+        linesColors[line] = linesColors[line + 1];
+    }
 }
-
-void Terminal::show(){
-	drawFrame();
-	myCanvas->tft->fillRect(this->x+borderWidth,this->y+borderWidth,this->w-2*borderWidth,this->h-2*borderWidth,this->bgColor);
-	update();
+void Terminal::clear() {
+    for (int i = 0; i < lines; ++i) {
+        if (linesBuffer[i]) linesBuffer[i][0] = 0;
+        linesColors[i] = fgColor;
+    }
+    linesIndex = 0;
+    if (canDraw() && w > 2*borderWidth && h > 2*borderWidth)
+        myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,bgColor);
 }
-
-void Terminal::update(){
-	uint16_t color;
-	
-	//Calculate position for first line
-	int lineX = this->x + borderWidth + horizontalBleed;
-	int lineY = this->y + borderWidth + verticalBleed;
-
-	char lineIndex = (direction) ? 0 : lines - 1;
-	
-	for(int i=0; i<lines; i++){
-		if(i==lineIndex){
-			color = linesColors[i];
-		}else{
-			color = (keepColors)?linesColors[i]:fgColor;
-		}
-		myCanvas->tft->drawString(linesBuffer[i], lineX, lineY+(i*(fontSize*FONT_Y+lineSpace)), this->fontSize, color);//color);
-	}
+void Terminal::drawFrame() {
+    if (!canDraw()) return;
+    int px=x, py=y, width=w, height=h;
+    for (int i=0; i<borderWidth && width>0 && height>0; ++i) {
+        myCanvas->tft->drawRect(px++,py++,width,height,borderColor);
+        width-=2; height-=2;
+    }
+}
+void Terminal::show() {
+    visible = true;
+    if (!canDraw()) return;
+    drawFrame();
+    if (w > 2*borderWidth && h > 2*borderWidth)
+        myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,w-2*borderWidth,h-2*borderWidth,bgColor);
+    update();
+}
+void Terminal::update() {
+    if (!canDraw()) return;
+    int lineX=x+borderWidth+horizontalBleed, lineY=y+borderWidth+verticalBleed;
+    int current = direction == TERMINAL_SCROLL_DOWN ? 0 : (int)lines-1;
+    for (int i=0; i<lines; ++i) {
+        uint16_t color = i == current || keepColors ? linesColors[i] : fgColor;
+        if (linesBuffer[i]) myCanvas->tft->drawString(linesBuffer[i],lineX,
+            lineY+i*(fontSize*FONT_Y+lineSpace),fontSize,color);
+    }
 }

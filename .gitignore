@@ -4,3 +4,5 @@
 .vs/slnx.sqlite
 .vs/Touchscreen_GUI/v16/.suo
 .vs/VSWorkspaceState.json
+.host-build/
+__pycache__/

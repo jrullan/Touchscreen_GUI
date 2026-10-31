@@ -23,11 +23,13 @@ public:
 	void drawFrame();
 	void fitToText();	
 	long getNum();
+	// Borrowed view of the owned buffer: do not free/rebind; may be NULL on OOM.
 	char* getText();
 	byte getTextSize();
 	void init();
 	
-	void setNum(int num);
+    // Decimal representation, safely truncated to DISPLAY_SIZE characters.
+    void setNum(int num);
 	void setEventHandler(void (*functionPointer)(Numkey*));
 	void deleteChar();
 	void clear();
@@ -62,16 +64,16 @@ public:
 	
 	bool autoremove; //Forces autoremove from Canvas when = is pressed.
 
-	Button* targetButton;
+	Button* targetButton = NULL;
 	void targetEventHandler();
-	int entry = NULL;
+	int entry = 0;
 		
 private:
 	//String text;
-	char* text; 
+	char* text = NULL;
 	char charPos;
 	byte getTextLength(char* c);
-	void (*eventHandler)(Numkey*);
+	void (*eventHandler)(Numkey*) = NULL;
 
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)
