@@ -60,8 +60,8 @@ class MultiTrend : public TrendBase{
 		//Attributes
 		uint8_t  numSeries;
 		uint8_t  maxSeries;
-		uint8_t* values;        // [maxSeries][maxValues], series-major
-		int*     seriesColor;   // [maxSeries]
+		uint8_t* values = nullptr;        // [maxSeries][maxValues], series-major
+		int*     seriesColor = nullptr;   // [maxSeries]
 		bool     forcedUpdate = false;
 		uint8_t  markerRadius = 0;   // draw a puck at each series' newest sample (0=off)
 		// Optional severity tinting of the marker (0 disables): >=markerCrit uses
@@ -76,7 +76,7 @@ class MultiTrend : public TrendBase{
 		void drawSeries(uint8_t series, uint16_t color);
 		void eraseMarkers();
 		void drawMarkers();
-		const uint8_t* row(uint8_t series) const{ return values + (uint32_t)series*maxValues; }
+		const uint8_t* row(uint8_t series) const{ return values && maxValues && series < maxSeries ? values + (uint32_t)series*maxValues : nullptr; }
 
 		// previous per-series marker Y (pixels, -1 = unknown) so a moved puck
 		// can be erased exactly without clipping the newly drawn line

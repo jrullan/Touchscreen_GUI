@@ -1,145 +1,83 @@
 #include "Display.h"
+#include <new>
 
-Display::Display(unsigned char textLength){
-	x=0;
-	y=0;
-	contents = new Text(textLength);
-	this->init();
+Display::Display(unsigned char textLength) {
+    myCanvas = NULL;
+    x = y = 0;
+    contents = new (std::nothrow) Text(textLength);
+    init();
 }
-
-Display::Display(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char textLength){
-	x = 0;
-	y = 0;
-	contents = new Text(textLength);
-	this->setSize(width,height);
-	this->setColors(backgroundColor,textColor,borderColor);
-	this->init();
+Display::Display(unsigned int width, unsigned int height, int backgroundColor,
+                 int textColor, int borderColor, unsigned char textLength) {
+    myCanvas = NULL;
+    x = y = 0;
+    contents = new (std::nothrow) Text(textLength);
+    setSize(width, height);
+    setColors(backgroundColor, textColor, borderColor);
+    init();
 }
-
-Display::~Display(){
-	free(contents->text);
+Display::~Display() { delete contents; }
+void Display::init() {
+    type = 0x10;
+    borderWidth = 2;
+    charPos = 0;
+    isButton = false;
 }
-
-void Display::init(){
-	type = 0x10;
-	borderWidth = 2;
-	charPos = 0;
-	isButton = false;
-}
-
-void Display::drawFrame(){
-  int xPos = x;	
-  int width = w;
-  byte yPos = y;
-  byte height = h;
-  for(byte i=borderWidth; i!=0;i--){
-    myCanvas->tft->drawRect(xPos++,yPos++,width--,height--,borderColor);
-    width--;
-    height--;
-  }
-}
-
-void Display::drawText(int color){
-	if(*contents->text){
-		char size = contents->getTextSize();
-		int stringX = getCenterTextX(x,w,size);
-		int stringY = getCenterTextY(y,h);
-		myCanvas->tft->drawString(contents->text,stringX,stringY,fontSize,color);
-		//Serial.print("Draw ");Serial.print(contents->text); Serial.print(" with color "); Serial.println(color);
-	}
-}
-
-void Display::append(char* c){
-	byte cSize = getTextLength(c);
-	byte txtSize = getTextLength(contents->text);//getTextSize();
-	byte space = contents->_textSize - txtSize;
-	
-	//Check that there space available to append
-	if(txtSize < contents->_textSize){
-		for(int i=0; i<space; i++)
-		{
-			contents->text[i+txtSize] = c[i];
-		}
-	}
-	update();
-}
-
-//New testing out...
-void Display::append(char c){
-	byte txtSize = getTextLength(contents->text);
-	//Check that there space available to append
-	if(txtSize < contents->_textSize){
-		contents->text[txtSize] = c;
-	}
-	update();	
-}
-
-void Display::fitToText(){
-  if(*contents->text){
-	/*
-    char* chars = contents->text;
-    char size = 0;
-    while(*chars){
-      *chars++;
-      size++;
+void Display::drawFrame() {
+    if (!canDraw()) return;
+    int px = x, py = y, width = w, height = h;
+    for (int i = 0; i < borderWidth && width > 0 && height > 0; ++i) {
+        myCanvas->tft->drawRect(px++, py++, width, height, borderColor);
+        width -= 2; height -= 2;
     }
-	*/
-	char size = contents->getTextSize();
-    w = size * FONT_SPACE * borderWidth + FONT_SPACE;
-    h = FONT_Y * borderWidth + FONT_Y;
-  }
 }
-
-/*
- * See notes in Text.cpp
-void Display::setNum(int num, bool force){
-	Serial.println("In Display's setNum, calling Text's getNum");
-	int prev = contents->getNum();
-	if(prev == num) return;
-	if(force) drawText(bgColor);
-	
-	Serial.print("Previous value = "); Serial.println(prev);
-	Serial.println("In Display's setNum, calling Text's setNum");
-	//Serial.print("Setting Num to: ");Serial.println(num);
-	contents->setNum(num);
-	
-	if(force) drawText(fgColor);
+void Display::drawText(int color) {
+    if (!canDraw() || !contents || !contents->text || !*contents->text) return;
+    int sx = getCenterTextX(x, w, contents->getTextSize());
+    myCanvas->tft->drawString(contents->text, sx, getCenterTextY(y, h), fontSize, color);
 }
-*/
-
-void Display::setText(char* _text, bool force){
-	if(force) drawText(this->bgColor);
-	contents->setText(_text);
-	//contents->text = _text; // changed from calling setText to just passing the pointer, reduced 4 bytes in program memory
-	if(force) drawText(this->fgColor);
+void Display::append(char* value) {
+    if (!contents || !contents->text || !value) return;
+    size_t used = contents->getTextSize();
+    size_t count = 0, space = contents->_textSize - used;
+    while (count < space && value[count]) ++count;
+    memmove(contents->text + used, value, count);
+    contents->text[used + count] = 0;
+    update();
 }
-
-void Display::deleteChar(){
-	byte textSize = contents->getTextSize();
-	if(textSize){
-		for(int i = textSize-1; i >= 0; i--)
-		{
-			if(contents->text[i] != 0){
-				contents->text[i] = 0;
-				break;
-			}
-		}
-	}
-	update();
+void Display::append(char value) {
+    if (!contents || !contents->text) return;
+    size_t used = contents->getTextSize();
+    if (used < contents->_textSize) {
+        contents->text[used] = value;
+        contents->text[used + 1] = 0;
+    }
+    update();
 }
-
-//Overriden virtual methods
-
-bool Display::checkTouch(Point* p){
-	return true;
+void Display::fitToText() {
+    if (contents && contents->getTextSize()) {
+        w = contents->getTextSize() * FONT_SPACE * borderWidth + FONT_SPACE;
+        h = FONT_Y * borderWidth + FONT_Y;
+    }
 }
-
-void Display::show(){
-	drawFrame();
-	update();
+void Display::setText(char* value, bool force) {
+    if (force) drawText(bgColor);
+    if (contents) contents->setText(value);
+    if (force) drawText(fgColor);
 }
-
-void Display::update(){
-	myCanvas->tft->fillRect(x+borderWidth, y+borderWidth, w-(2*borderWidth),h-(2*borderWidth),bgColor);
-	drawText(fgColor);
+void Display::deleteChar() {
+    if (contents && contents->text) {
+        size_t used = contents->getTextSize();
+        if (used) contents->text[used - 1] = 0;
+    }
+    update();
+}
+bool Display::checkTouch(Point*) { return true; }
+void Display::show() { visible = true; drawFrame(); update(); }
+void Display::update() {
+    if (!canDraw()) return;
+    if (w > 2 * borderWidth && h > 2 * borderWidth)
+        myCanvas->tft->fillRect(x + borderWidth, y + borderWidth,
+                              w - 2 * borderWidth, h - 2 * borderWidth, bgColor);
+    drawText(fgColor);
 }

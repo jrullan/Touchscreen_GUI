@@ -23,9 +23,12 @@ class Canvas_STMPE610: public Canvas{
 	Canvas_STMPE610(int mode, int color, int tft_cs, int tft_ds, int ts_cs):Canvas(mode, color, tft_cs, tft_ds, ts_cs){
 		this->init();
 	};
-	~Canvas_STMPE610(){};
+	~Canvas_STMPE610(){ delete pendingTouch; };
 	void init();
 	Point* getTouchedPoint();
+private:
+	// Keep failed startup owned but unavailable to Canvas::scan().
+	Touch* pendingTouch = nullptr;
 };
 
 /*
@@ -33,7 +36,8 @@ class Canvas_STMPE610: public Canvas{
  * the TFT, the touch chipset
  * and other timing variables
  */
-void Canvas_STMPE610::init(){
+inline void Canvas_STMPE610::init(){
+	if (initialized || !tft) return;
 	tft->begin();
 	tft->fillScreen(bgColor);
 	lastMillis = millis();
@@ -44,17 +48,17 @@ void Canvas_STMPE610::init(){
 	if(_mode == TFT_PORTRAIT) portrait();
 	if(_mode == TFT_LANDSCAPE) landscape();	
 	
-	ts = new Adafruit_STMPE610(STMPE_CS);
-	// Wait until the touchscreen is started.
-	// Original driver has an apparent bug,
-	// sometimes it did start other times it didn't.
-	while(!ts->begin(STMPE_ADDR)){
-		Serial.print(".");
-	}
+	if (!pendingTouch) pendingTouch = new (std::nothrow) Adafruit_STMPE610(STMPE_CS);
+	// One attempt per init(): callers may retry without blocking forever.
+	if (!pendingTouch || !pendingTouch->begin(STMPE_ADDR)) return;
+	ts = pendingTouch;
+	pendingTouch = nullptr;
+	initialized = true;
 }
 
-Point* Canvas_STMPE610::getTouchedPoint(){
-	if((millis() > touchSampling + TOUCH_SAMPLING_TIME)){
+inline Point* Canvas_STMPE610::getTouchedPoint(){
+	if (!initialized || !ts || !tft) return NULL;
+	if (static_cast<unsigned long>(millis() - touchSampling) > TOUCH_SAMPLING_TIME) {
 		Point p = ts->getPoint();		
 		p.x = map(p.x, STMPE_MINX, STMPE_MAXX, 0, 240);
 		p.y = map(p.y, STMPE_MINY, STMPE_MAXY, 0, 320);	

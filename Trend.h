@@ -50,8 +50,8 @@ class Trend : public TrendBase{
 		void update();
 		
 		//Attributes
-		uint8_t* values;  // Array of values to plot
-		uint8_t vals;     // number of values in the array
+		uint8_t* values = nullptr;  // Array of values to plot
+		uint8_t vals = 0;     // number of values in the array
 		bool forcedUpdate = false;
 		
 	private:

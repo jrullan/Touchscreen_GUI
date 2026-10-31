@@ -35,7 +35,7 @@ void OptionButton::init(){
 	y = 0;
 	lastMillis = millis();	
 	*/
-	if( (label = (char *)malloc(DISPLAY_SIZE+1)) ) memset(label,0,DISPLAY_SIZE+1);
+
 	type = 0x34;
 	debounceTime = 500;
 	isButton = true;
@@ -46,7 +46,8 @@ void OptionButton::init(){
 	fgColor = BLACK;
 	borderColor = WHITE;
 	setSize(40,40);
-	setLabel("Option");
+	char defaultLabel[] = "Option";
+	setLabel(defaultLabel);
 	labelPos = 2;
 	x = 0;
 	y = 0;
@@ -54,6 +55,7 @@ void OptionButton::init(){
 }
 
 void OptionButton::update(){
+    if (!canDraw()) return;
 	int radius = this->w/2;
 	
 	if(this->touched){
@@ -64,6 +66,8 @@ void OptionButton::update(){
 }
 
 void OptionButton::show(){
+    visible = true;
+    if (!canDraw()) return;
 	int radius = this->w/2;
 
 	drawLabel();

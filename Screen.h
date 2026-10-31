@@ -23,27 +23,35 @@ class Screen{
 		Screen();
 		Screen(Canvas* c, int _x, int _y, int _w, int _h);
 		~Screen();
+		Screen(const Screen&) = delete;
+		Screen& operator=(const Screen&) = delete;
 		
 		//Methods
 		void init();
 		void add(Widget* w,int x, int y);
+		bool remove(Widget* widget);
+		Widget* pop();
+		// Call before this Screen or its Canvas dies if the other remains usable.
+		// Registrations are retained; widget drawing contexts become null.
+		void detach();
 		void touchWidgets(Point* p);
 		void hide();
 		void show();
 		void setCanvas(Canvas* c);
 		
 		//Attributes
+		// Non-owning; remove before destroying a widget while this Screen is usable.
 		StackArray<Widget*> widgets;
-		Canvas* canvas;
+		Canvas* canvas = NULL;
 				
 		//int borderWidth;		
-		int bgColor;
-		int fgColor;
-		int borderColor;
-		int x;
-		int y;		
-		int w;
-		int h;
+		int bgColor = 0;
+		int fgColor = 0;
+		int borderColor = 0;
+		int x = 0;
+		int y = 0;
+		int w = 0;
+		int h = 0;
 		
 	private:
 };

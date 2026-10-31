@@ -1,12 +1,11 @@
 #include "Dial.h"
 //Constructor
 Dial::Dial(){
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); 
+	init();
 }
 
 Dial::Dial(unsigned int radius, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit)
 {	
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1);
 	this->setSize(radius);
 	this->setLimits(minLimit,setpoint,maxLimit);
 	this->setColors(BLACK,BLUE,WHITE);
@@ -32,10 +31,7 @@ void Dial::init(){
 }
 
 void Dial::clear(){
-	for(int i = BUF_SIZE-1; i >= 0; i--)
-	{
-			buf[i] = 0;
-	}
+	Indicator::clear();
 }
 
 void Dial::setSize(int radius){
@@ -63,7 +59,7 @@ void Dial::drawBorder(){
 
 void Dial::drawFace(){
 	// Draw face
-	myCanvas->tft->fillCircle(x,y,radius - this->borderWidth,this->bgColor);
+	myCanvas->tft->fillCircle(x,y,(radius > borderWidth ? radius-borderWidth : 0),this->bgColor);
 	
 	// Draw border  
 	//drawBorder();
@@ -71,7 +67,7 @@ void Dial::drawFace(){
 	int X1,Y1,X2,Y2;
 	  
   // Draw ticks
-	if(showTicks){
+	if(showTicks && tickDegree){
 		for(int i=maxDegree; i<=minDegree; i+=tickDegree)
 		{
 			X1 = getX(x,i,radius-tickSize);
@@ -98,7 +94,7 @@ void Dial::drawFace(){
 	
 	// Draw Setpoint line
 	if(setpoint){
-		int i = map(setpoint,scaleMin,scaleMax,minDegree,maxDegree);
+		int i = mapScale(setpoint,minDegree,maxDegree);
 		X1 = getX(x,i,radius-tickSize);
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
@@ -108,7 +104,7 @@ void Dial::drawFace(){
 	
 	// Draw High limit line
 	if(hiLimit < scaleMax){
-		int i = map(hiLimit,scaleMin,scaleMax,minDegree,maxDegree);
+		int i = mapScale(hiLimit,minDegree,maxDegree);
 		X1 = getX(x,i,radius-tickSize);
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
@@ -118,7 +114,7 @@ void Dial::drawFace(){
 	
 	// Draw Low Limit line
 	if(lowLimit > scaleMin){
-		int i = map(lowLimit,scaleMin,scaleMax,minDegree,maxDegree);
+		int i = mapScale(lowLimit,minDegree,maxDegree);
 		X1 = getX(x,i,radius-tickSize);
 		Y1 = getY(y,i,radius-tickSize);
 		X2 = getX(x,i,radius-borderWidth);
@@ -136,8 +132,8 @@ void Dial::drawFace(){
 
 }
 
-void Dial::drawNeedle(int cX, int cY, int degree, int radius, int color){
-	degree = map(constrain(degree,scaleMin,scaleMax),scaleMin,scaleMax,585,315);
+void Dial::drawNeedle(int cX, int cY, unsigned int value, int radius, int color){
+	const int degree = mapScale(value,585,315);
 
 	int pX1,pY1,pX2,pY2,pX3,pY3;
 
@@ -166,12 +162,13 @@ void Dial::drawNeedleAndValue(){
 		if(currentValue>99) dSpace = 9 * fontSize;
 		if(currentValue>999) dSpace = 12 * fontSize;
 		myCanvas->tft->fillRect(x-12*fontSize,y+radius-16*fontSize,24*fontSize,8*fontSize,bgColor);
-		myCanvas->tft->drawNumber(currentValue,x-dSpace,y+radius-16*fontSize,fontSize,color);
+		setNum(currentValue);
+		myCanvas->tft->drawString(buf,x-dSpace,y+radius-16*fontSize,fontSize,color);
 	}	
 	
 	// Draw needle
-	drawNeedle(x,y,previousValue,radius-tickSize-gap,bgColor);
-	drawNeedle(x,y,currentValue,radius-tickSize-gap,color);
+	drawNeedle(x,y,previousValue,(radius > tickSize+gap ? radius-tickSize-gap : 0),bgColor);
+	drawNeedle(x,y,currentValue,(radius > tickSize+gap ? radius-tickSize-gap : 0),color);
 }
 
 int Dial::getX(int cX,int deg, int radius){
@@ -185,6 +182,8 @@ int Dial::getY(int cY, int deg, int radius){
 
 //Overriden virtual methods
 void Dial::show(){
+	visible = true;
+	if(!canDraw() || !buf) return;
 	// Draw face
 	drawBorder();
 	drawFace();
@@ -193,6 +192,7 @@ void Dial::show(){
 }
 
 void Dial::update(){
+	if(!canDraw() || !buf) return;
 	if(!visible) return;
 	
 	if(!forcedUpdate){	

@@ -15,13 +15,14 @@
  */
 
 #include "Button.h"
+#include <new>
 
 
 /*
  * Basic Constructor, no parameters
  */
 Button::Button(){
-	contents = new Text(8);	
+	contents = new (std::nothrow) Text(8);
 	init();
 }
 
@@ -29,7 +30,7 @@ Button::Button(){
  * Constructor with initial "Text" and optional "Label"
  */
 Button::Button(char* text, char* _label){
-	contents = new Text(Widget::getTextLength(text));	
+	contents = new (std::nothrow) Text(text ? (strlen(text) > 255 ? 255 : strlen(text)) : 0);
 	init();
 	
 	if(_label){
@@ -42,7 +43,7 @@ Button::Button(char* text, char* _label){
  * Constructor for a typical rectangle button
  */
 Button::Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor,unsigned char textLength){
-	contents = new Text(textLength);	
+	contents = new (std::nothrow) Text(textLength);
 	init();
 	this->setSize(width,height);
 	this->setColors(backgroundColor,textColor,borderColor);
@@ -52,7 +53,7 @@ Button::Button(unsigned int width, unsigned int height, int backgroundColor, int
  * Constructor for a round button
  */
 Button::Button(unsigned int radius, int backgroundColor, int textColor, int borderColor){
-	contents = new Text(8);
+	contents = new (std::nothrow) Text(8);
 	init();
 	this->isRound = true;
 	x = radius;
@@ -63,7 +64,7 @@ Button::Button(unsigned int radius, int backgroundColor, int textColor, int bord
 
 
 Button::~Button(){
-	free(contents->text);
+	delete contents;
 	free(label);
 }
 
@@ -91,9 +92,10 @@ void Button::init(){
  * Draws the background of the button
  */
 void Button::drawBackground(int color){
+    if (!canDraw()) return;
 	int labelWidth = getLabelSize();
-	int xl;
-	int wl;
+	int xl = x;
+	int wl = w;
 	
 	// Label Background
 	if(labelPos == LABEL_TOP){
@@ -128,11 +130,12 @@ void Button::drawBackground(int color){
  * Draws the text inside the button
  */
 void Button::drawText(){
+    if (!canDraw()) return;
 
 	int labelWidth=getLabelSize();
 	// Draw contents text
-	if(*contents->text){
-		char length = getTextLength(contents->text);//contents.getTextSize();
+	if(contents && contents->text && *contents->text){
+		int length = contents->getTextSize();//contents.getTextSize();
 		//int stringX = getCenterTextX(x+labelWidth,w,length);
 		int stringX = getCenterTextX(x,w,length);
 		int stringY = getCenterTextY(y,h);
@@ -144,8 +147,9 @@ void Button::drawText(){
  * Draws the border of the button
  */
 void Button::drawBorder(){
+    if (!canDraw()) return;
 	int labelWidth = getLabelSize();
-	int xl;
+	int xl = x;
 	
 	if(labelPos == LABEL_TOP){
 	
@@ -162,7 +166,7 @@ void Button::drawBorder(){
 	int xPos = x;	
 	int width = w;
 	int yPos = y;
-	uint8_t height = h;
+	int height = h;
   
 	for(byte i=borderWidth; i!=0;i--){
 		if(!this->isRound){
@@ -185,6 +189,7 @@ void Button::drawBorder(){
  * Maximum length is DISPLAY_SIZE
  */
 void Button::drawLabel(){
+    if (!canDraw()) return;
 	int xl=0;
 	int yl=0;
 	int labelWidth=getLabelSize();
@@ -219,6 +224,7 @@ void Button::drawLabel(){
  * void function() = 0;
  */
 void Button::show(){
+    visible = true;
 	drawLabel();	
 	drawBackground(bgColor);
 	update();
@@ -237,7 +243,7 @@ void Button::update(){
  */
 bool Button::checkTouch(Point* p){
 	// Early exit if no event handler was defined
-	if(!*eventHandler) return false;
+	if (!p || !eventHandler) return false;
 	
 	int labelWidth = getLabelSize();
 	int xl = x;
@@ -303,39 +309,39 @@ void Button::setNum(int num){
 
 void Button::setText(char* _text){
   //contents->text = _text;
-  contents->setText(_text);
+  if (contents) contents->setText(_text);
 }
 
 void Button::setText(const char* _text){
   //contents->text = _text;
-  contents->setText(_text);
+  if (contents) contents->setText(_text);
 }
 
 
 void Button::setLabel(char* _label){
-	if(!*label){ // if not already set (initialized...)
-		int labelSize = Widget::getTextLength(_label);
-		if(label = (char *)malloc(labelSize+1)){ 
-			memset(label,0,labelSize+1);
-			label = _label;
-		}
-	}
+    if (!_label) { free(label); label = NULL; return; }
+    size_t size = strlen(_label);
+    char* copy = (char*)malloc(size + 1);
+    if (!copy) return; // Keep the previous owned value on OOM.
+    memcpy(copy, _label, size + 1);
+    free(label);
+    label = copy;
 }
 
 
 char* Button::getText(){
-  return contents->text;
+  return contents ? contents->text : NULL;
 }
 
 
 long Button::getNum(){
-	return contents->getNum();
+	return contents ? contents->getNum() : 0;
 }
 
 
 void Button::fitToText(){
-  if(*contents->text){
-	char length = getTextLength(contents->text);//contents.getTextSize();
+  if(contents && contents->text && *contents->text){
+	int length = contents->getTextSize();//contents.getTextSize();
     w = length * FONT_X * fontSize + FONT_SPACE;
     h = FONT_Y * fontSize + FONT_Y;
   }

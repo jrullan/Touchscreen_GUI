@@ -18,11 +18,16 @@
 //#include "Adafruit_STMPE610.h"
 
 
-Canvas::Canvas(int mode, int color, int tft_cs, int tft_ds, int ts){
+Canvas::Canvas(int mode, int color, int tft_cs, int tft_ds, int ts)
+ : x(0), y(0), w(mode == TFT_LANDSCAPE ? 320 : 240),
+   h(mode == TFT_LANDSCAPE ? 240 : 320), xTouchBuffer{}, yTouchBuffer{},
+   touchType(0), tft(NULL), ts(NULL), lastMillis(0), touchSampling(0),
+   scanSampling(0), scanSampleDelay(SCAN_SAMPLING_TIME) {
 	_mode = mode;
 	bgColor = color;
 	ts_cs = ts;
-	tft = new Guitft(tft_cs,tft_ds);
+	tft = new (std::nothrow) Guitft(tft_cs,tft_ds);
+	if (tft) tft->layoutMode = mode;
 	
 	/*
 	#if defined(ESP32)
@@ -36,7 +41,8 @@ Canvas::Canvas(int mode, int color, int tft_cs, int tft_ds, int ts){
 }
 
 Canvas::~Canvas(){
-
+	delete ts;
+	delete tft;
 }
 
 // Initializes the LCD screen (tft) and sets debounce and lastmillis variables.
@@ -77,6 +83,7 @@ void Canvas::init(){
 	
 // This method sets the TFT orientation mode to landscape.
 void Canvas::landscape(){
+	if (!tft) return;
 	tft->layoutMode = TFT_LANDSCAPE;
 	tft->setRotation(3);
 	w=320;
@@ -85,6 +92,7 @@ void Canvas::landscape(){
 
 // This method sets the TFT orientation mode to portrait.
 void Canvas::portrait(){
+	if (!tft) return;
 	tft->layoutMode = TFT_PORTRAIT;
 	tft->setRotation(0);
 	w=240;
@@ -94,11 +102,18 @@ void Canvas::portrait(){
 // This method adds a widget to the widgets array and places it in the X,Y
 // position of the canvas. The value passed is the address of the widget object.
 void Canvas::add(Widget* widget, int x, int y, uint8_t show){
-	widgets.push(widget);
+	if (!widget || widgets.contains(widget)) return;
+	if (!widgets.push(widget)) return;
 	widget->setCanvas(this);
 	widget->x = x;
 	widget->y = y;
-	if(widget->visible && show) widget->show();
+	if(tft && widget->visible && show) widget->show();
+}
+
+bool Canvas::remove(Widget* widget) {
+    if (!widget || !widgets.remove(widget)) return false;
+    widget->setCanvas(NULL);
+    return true;
 }
 
 void Canvas::setScreen(Screen* screen, uint8_t show){
@@ -106,13 +121,17 @@ void Canvas::setScreen(Screen* screen, uint8_t show){
 		currentScreen->hide();
 	}
 	currentScreen = screen;
-	if(show) currentScreen->show();
+	if (screen) screen->setCanvas(this);
+	if(show && currentScreen) currentScreen->show();
 }
 
 // This method can be invoked to remove the last widget added to the canvas.
 Widget* Canvas::pop(){
+	if (widgets.isEmpty()) return NULL;
 	Widget* widget = widgets.pop();
-	tft->fillRect(widget->x,widget->y,widget->w,widget->h,this->bgColor);
+	if (!widget) return NULL;
+	if (tft) tft->fillRect(widget->x,widget->y,widget->w,widget->h,this->bgColor);
+	widget->setCanvas(NULL);
 	redraw();
 	return widget;
 }
@@ -120,10 +139,12 @@ Widget* Canvas::pop(){
 // This method scans the touchscreen for touch events.
 // If an event is detected, all registered widgets are notified of the event by
 // calling its event handler function.
-bool Canvas::scan(){		
+bool Canvas::scan(){
+	if (!ts || !tft) return false;
 
-	if(millis() > (scanSampling + scanSampleDelay)){
-			scanSampling = millis();
+	const unsigned long now = millis();
+	if (static_cast<unsigned long>(now - scanSampling) > scanSampleDelay) {
+			scanSampling = now;
 			//Early exits
 			if(!ts->touched()){
 				//Serial.println("!touched()");
@@ -207,6 +228,7 @@ Point* Canvas::getTouchedPoint(){
 // Determines if the given point falls
 // within the Bounds of the layout chosen
 bool Canvas::inBounds(Point* tP){
+	if (!tP || !tft) return false;
 	if(tft->layoutMode == TFT_LANDSCAPE){
 		if(tP->x > 319 || tP->y > 239) return false;
 	}else{
@@ -230,10 +252,11 @@ void Canvas::setDebounce(unsigned int d){
  * involves calling the widget's checkTouch method and passing the touched Point.
  */
 bool Canvas::touchWidgets(Point* p){
-	byte cnt = widgets.count();
+	if (!p) return true;
+	int cnt = widgets.count();
 	for(int i=1; i<=cnt; i++){
 		// Only send touch event to visible Buttons
-		if(widgets[cnt-i]->isButton && widgets[cnt-i]->visible){
+		if(widgets[cnt-i] && widgets[cnt-i]->isButton && widgets[cnt-i]->visible){
 			if(!widgets[cnt-i]->checkTouch(p)) return false;  //Break if widget blocks event after handling it.
 		}
 	}
@@ -249,8 +272,9 @@ void Canvas::redraw(){
 }
 
 void Canvas::showWidgets(){
+	if (!tft) return;
 	for(int i=0; i<widgets.count(); i++){
-		if(widgets[i]->visible) widgets[i]->show();
+		if(widgets[i] && widgets[i]->visible) widgets[i]->show();
 	}
 }
 

@@ -8,8 +8,7 @@
 #include "Widget.h"
 #include "Canvas.h"
 
-Widget::Widget(){
-
+Widget::Widget(): x(0), y(0), h(0), w(0), borderWidth(0), bgColor(0), fgColor(0xFFFF), borderColor(0xFFFF), myCanvas(NULL){
 }
 
 Widget::~Widget(){
@@ -20,7 +19,12 @@ Widget::~Widget(){
  * Hides the widget
  */
 void Widget::hide(){
-	myCanvas->tft->fillRect(x,y,w,h,myCanvas->bgColor);
+	if(canDraw() && w > 0 && h > 0) myCanvas->tft->fillRect(x,y,w,h,myCanvas->bgColor);
+	visible = false;
+}
+
+bool Widget::canDraw() const {
+	return myCanvas && myCanvas->tft && visible;
 }
 
 void Widget::setCanvas(Canvas* c){

@@ -30,34 +30,36 @@ class Terminal : public Widget {
 		uint8_t linesIndex = 0;
 		uint16_t highlightColor;
 		uint16_t linesColors[MAX_LINES];
-		char* linesBuffer[MAX_LINES];
+        // Owned buffers: do not free/rebind entries. Direct edits must remain
+        // NUL-terminated within maxCharacters. lines/maxCharacters are read-only
+        // allocation geometry after construction (use a new Terminal to resize).
+        char* linesBuffer[MAX_LINES];
 		//char** linesBuffer;
 		
 		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
 		~Terminal();
-		void print(char* string, uint16_t highColor = NULL);
-		void printf(char* string, int num, uint16_t highColor = NULL);
-		void print(const char* string, uint16_t highColor = NULL){
+		void print(char* string, uint16_t highColor = 0);
+		void printf(char* string, int num, uint16_t highColor = 0);
+		void print(const char* string, uint16_t highColor = 0){
 			print((char*) string, highColor);
 		}
-		void print(String str, uint16_t highColor = NULL){
-			char buffer[str.length()];
-			str.toCharArray(buffer,str.length()+1);
-			print(buffer,highColor);
+		void print(String str, uint16_t highColor = 0){
+            print(str.c_str(), highColor);
 		}
-		//void print(char* string, int num,uint16_t highColor = NULL);
-		//void print(int num,uint16_t highColor = NULL);
+		//void print(char* string, int num,uint16_t highColor = 0);
+		//void print(int num,uint16_t highColor = 0);
 		void clear();
 		void scroll();
 		void scrollDown();
 		void scrollUp();
 		
 		//inherited methods:
-		bool checkTouch(Point* p){};
+		bool checkTouch(Point*) { return true; }
 		void show();
 		void update();		
 		
 	private:
 		void drawFrame();
+        void writeLine(const char* string, int num, bool formatted, uint16_t highColor);
 };
 #endif

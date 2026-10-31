@@ -61,6 +61,9 @@ public:
 
 	// Methods
 	void hide();
+	bool canDraw() const;
+	Widget(const Widget&) = delete;
+	Widget& operator=(const Widget&) = delete;
 	void setCanvas(Canvas* c);
 	void setColors(int bgColor,int fgColor, int borderColor);
 	void setSize(int width, int height);
@@ -91,6 +94,7 @@ public:
 	 *		IconButton - 0x35
 	 */ 
 	static const char* getType(Widget* w){
+		if(!w) return "unknown";
 		if((w->type & 0xFF) == 0x00){ 
 			return "widget";
 		}else if ((w->type & 0xFF) == 0x10){
@@ -119,10 +123,12 @@ public:
 			return "option";
 		}else if ((w->type & 0xFF) == 0x35){
 			return "iconbutton";
-		}		
+		}
+		return "unknown";
 	};
 	
 	static uint8_t getTextLength(char* c){
+		if(!c) return 0;
 		uint8_t size = 0;
 		//Serial.println("In Widget's getTextLength");
 		if(*c){
@@ -138,7 +144,7 @@ public:
 	// Calculate the number of characters required to represent an int
 	static uint8_t getIntLength(int num){
 		uint8_t size = 0;
-		int absNum = abs(num);
+		unsigned int absNum = num < 0 ? 0u - static_cast<unsigned int>(num) : static_cast<unsigned int>(num);
 		// Get the last digit for each power of ten
 		while(absNum >= 10){
 			absNum /= 10;
@@ -149,7 +155,7 @@ public:
 	
 	static void convert_str(int num, char* string, uint8_t invert = 1){
 		uint8_t chars = 0;
-		int absNum = abs(num);
+		unsigned int absNum = num < 0 ? 0u - static_cast<unsigned int>(num) : static_cast<unsigned int>(num);
 		uint8_t temp;
 		
 		while(absNum >= 10)

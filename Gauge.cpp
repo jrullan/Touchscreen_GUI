@@ -1,14 +1,16 @@
 #include "Gauge.h"
 //Constructor
 Gauge::Gauge(){
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
+	init();
 }
 
 Gauge::Gauge(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit)
 {	
-	if(buf = (char *)malloc(BUF_SIZE+1)) memset(buf,0,BUF_SIZE+1); //Had to add one more, to avoid some bug
 	this->setSize(width,height);
 	this->setLimits(minLimit,setpoint,maxLimit);
+	this->hiLimit = scaleMax;
+	this->lowLimit = scaleMin;
+	this->currentValue = this->setpoint;
 	this->setColors(BLACK,BLUE,WHITE);
 	init();
 }
@@ -26,16 +28,14 @@ void Gauge::init(){
 }
 
 void Gauge::clear(){
-	for(int i = BUF_SIZE-1; i >= 0; i--)
-	{
-			buf[i] = 0;
-	}
+	Indicator::clear();
 }
 
 void Gauge::drawLimits(){
 }
 
 void Gauge::drawScale(){
+	if(!canDraw() || !buf) return;
 //=======================================
 	//Draw Y SCALE
 	int textWidth = 3 * FONT_X;
@@ -73,15 +73,24 @@ void Gauge::drawScale(){
 }
 
 int Gauge::getYVal(int value){
-	int yBase = y ;
-	int maxHeight = h-borderWidth;
-	unsigned int val = constrain(value,scaleMin,scaleMax);
-	val = map(val,scaleMin,scaleMax,maxHeight,borderWidth+1);
-	return yBase + val;
+	return getYValValue(value);
+}
+
+int Gauge::getYVal(unsigned int value){
+	return getYValValue(value);
+}
+
+int Gauge::getYValValue(int64_t value){
+	const int last = h > 0 ? h-1 : 0;
+	const int top = constrain(borderWidth+1, 0, last);
+	const int bottom = constrain(h-borderWidth, top, last);
+	return y + mapScale(value, bottom, top);
 }
 
 //Overriden virtual methods
 void Gauge::show(){
+	visible = true;
+	if(!canDraw() || !buf) return;
 	if(this->visible){
 		myCanvas->tft->fillRect(x,y,w,h,bgColor);
 		this->drawScale();
@@ -91,14 +100,15 @@ void Gauge::show(){
 }
 
 void Gauge::drawBorder(){
+	if(!canDraw() || !buf) return;
 	int xPos = x + yScaleWidth;
 	int width = w;
-	byte yPos = y;
-	byte height = h;
+	int yPos = y;
+	int height = h;
 	
 	//Draw the Vertical Bar
 	//--border
-	for(byte i=borderWidth; i!=0;i--){
+	for(int i=borderWidth; i>0 && width>0 && height>0; --i){
 		myCanvas->tft->drawRect(xPos++,yPos++,width--,height--,borderColor);
 		width--;
 		height--;
@@ -106,21 +116,19 @@ void Gauge::drawBorder(){
 }
 
 void Gauge::drawFill(){
-	int xPos = x + yScaleWidth;
-	int width = w;
-	byte yPos = y;
-	byte height = h;
-	unsigned int val = map(currentValue,scaleMin,scaleMax,h-borderWidth,borderWidth);
-
-	//--background fill
-	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+borderWidth, w-(2*borderWidth), val-1,bgColor);
-	//--bar fill
+	if(!canDraw() || !buf || w <= 0 || h <= 0) return;
+	const int bw = borderWidth > 0 ? borderWidth : 0;
+	const int width = w-2*bw, bottom = h-bw;
+	if(width <= 0 || bottom <= bw) return;
+	const int val = mapScale(currentValue, bottom, bw);
+	if(val > bw) myCanvas->tft->fillRect(x+bw+yScaleWidth,y+bw,width,val-bw,bgColor);
 	int color=fgColor;
-	if(currentValue >= this->hiLimit) color = hiLimitColor;
-	if(currentValue <= this->lowLimit) color = lowLimitColor;
-	myCanvas->tft->fillRect(x+borderWidth+yScaleWidth, y+val, w-(2*borderWidth),h-val-borderWidth,color);	
+	if(currentValue >= hiLimit) color = hiLimitColor;
+	if(currentValue <= lowLimit) color = lowLimitColor;
+	if(bottom > val) myCanvas->tft->fillRect(x+bw+yScaleWidth,y+val,width,bottom-val,color);
 }
 
 void Gauge::update(){
+	if(!canDraw() || !buf) return;
 	drawFill();
 }

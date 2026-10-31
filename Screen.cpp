@@ -10,7 +10,7 @@ Screen::Screen(Canvas* c, int _x, int _y, int _w, int _h){
 	this->y = _y;
 	this->w = _w;
 	this->h = _h;
-	this->bgColor = canvas->bgColor;
+	this->bgColor = canvas ? canvas->bgColor : 0;
 	this->init();
 }
 
@@ -25,7 +25,8 @@ void Screen::init(){
 }
 
 void Screen::add(Widget* widget, int wX, int wY){
-	widgets.push(widget);
+	if (!widget || widgets.contains(widget)) return;
+	if (!widgets.push(widget)) return;
 	widget->setCanvas(canvas);
 	widget->x = wX + this->x;
 	widget->y = wY + this->y;
@@ -34,36 +35,60 @@ void Screen::add(Widget* widget, int wX, int wY){
 
 void Screen::hide(){
 	//canvas->tft->fillRect(x,y,w,h,canvas->bgColor);
-	byte cnt = this->widgets.count();
+	int cnt = this->widgets.count();
 	for(int i=0;i<cnt;i++){
 		//if(this->widgets[i]->visible) this->widgets[i]->hide();
-		this->widgets[i]->visible = false;
+		if (widgets[i]) widgets[i]->visible = false;
 	}	
 }
 
 void Screen::show(){
-	if(this->canvas->currentScreen != this) return; // Do not draw if not canvas' current screen.
+	if(!canvas || !canvas->tft || canvas->currentScreen != this) return; // Do not draw if not canvas' current screen.
 	canvas->tft->fillRect(x,y,w,h,bgColor);
-	byte cnt = this->widgets.count();
+	int cnt = this->widgets.count();
 	for(int i=0;i<cnt;i++){
 		//if(this->widgets[i]->visible) this->widgets[i]->show();
+		if (!widgets[i]) continue;
 		this->widgets[i]->visible = true;
 		this->widgets[i]->show();
 	}	
 }
 
 void Screen::setCanvas(Canvas* c){
-	canvas = c;
+    if (canvas && canvas != c && canvas->currentScreen == this) canvas->setScreen(NULL);
+    canvas = c;
+    for (int i = 0; i < widgets.count(); ++i) {
+        if (widgets[i]) widgets[i]->setCanvas(c);
+    }
+}
+
+bool Screen::remove(Widget* widget) {
+    if (!widget || !widgets.remove(widget)) return false;
+    widget->setCanvas(NULL);
+    return true;
+}
+
+Widget* Screen::pop() {
+    if (widgets.isEmpty()) return NULL;
+    Widget* widget = widgets.pop();
+    if (widget) widget->setCanvas(NULL);
+    return widget;
+}
+
+void Screen::detach() {
+    hide();
+    setCanvas(NULL);
 }
 
 void Screen::touchWidgets(Point* p){
+	if (!p) return;
 	//Serial.println("Screen touchWidgets()");
-	byte cnt = widgets.count();
-	char j;
+	int cnt = widgets.count();
+	int j;
 	for(int i=1; i<=cnt; i++){
 		j = cnt-i;
 		//Serial.print("Touching widget ");Serial.println(Widget::getType(widgets[j]));
-		if(widgets[j]->isButton && widgets[j]->visible){
+		if(widgets[j] && widgets[j]->isButton && widgets[j]->visible){
 			//Serial.print("Checking touch for widget: ");Serial.println(Widget::getType(widgets[j]));
 			if(!widgets[j]->checkTouch(p)) break;  //Break if widget blocks event after handling it.
 		}

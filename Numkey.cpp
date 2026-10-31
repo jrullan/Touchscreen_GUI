@@ -1,4 +1,5 @@
 #include "Numkey.h"
+#include <stdio.h>
 
 Numkey::Numkey(){
 	if(text = (char *)malloc(DISPLAY_SIZE+1)) memset(text,0,DISPLAY_SIZE+1); //Had to add one more, to avoid some bug
@@ -28,6 +29,7 @@ void Numkey::init(){
 }
 
 void Numkey::drawFrame(){
+    if (!canDraw()) return;
   int xPos,yPos,width,height;
   int btnWidth,btnHeight;
   
@@ -89,23 +91,17 @@ void Numkey::drawFrame(){
   myCanvas->tft->drawString("=",x+xPos+(xF++)*btnWidth,y+yPos+(yF*btnHeight),fontSize,fgColor);
 }
 
-void Numkey::append(char* c){
-	byte cSize = getTextLength(c);
-	byte txtSize = getTextLength(text);//getTextSize();
-	byte space = DISPLAY_SIZE - txtSize;
-	
-	//Check that there space available to append
-	if(txtSize < DISPLAY_SIZE){
-		//Serial.print("Space available: ");Serial.println(space);
-		for(int i=0; i<space; i++)
-		{
-			text[i+txtSize] = c[i];
-		}
-	}
-	update();
+void Numkey::append(char* c) {
+    if (!text || !c) return;
+    size_t used = getTextSize(), count = 0;
+    while (count < DISPLAY_SIZE - used && c[count]) ++count;
+    memmove(text + used, c, count);
+    text[used + count] = 0;
+    update();
 }
 
 void Numkey::appendNum(unsigned char c){
+    if (!text) return;
 	//Serial.print("Append num ");Serial.println((byte)c);
 
 	if(c > 9){ 
@@ -123,7 +119,7 @@ void Numkey::appendNum(unsigned char c){
 }
 
 void Numkey::fitToText(){
-  if(*text){
+  if(text && *text){
     char* chars = text;
     char size = 0;
     while(*chars){
@@ -136,58 +132,27 @@ void Numkey::fitToText(){
   }
 }
 
-long Numkey::getNum(){
-	char size = getTextSize();
-	long result = 0;
-	for(int i = 0; i<size; i++){
-		if(text[i] == '.') break;  // Only process integer side
-		result = result * 10 + text[i]-'0';
-	}
-	return result;
+long Numkey::getNum() {
+    return text ? strtol(text, NULL, 10) : 0;
 }
 
 char* Numkey::getText(){
   return text;
 }
 
-byte Numkey::getTextLength(char* c){
-	char size = 0;
-	if(*c){
-    char* chars = c;
-    while(*chars){
-      *chars++;
-      size++;
-    }
-  }
-  return size;
+byte Numkey::getTextLength(char* c) {
+    byte length = 0;
+    if (c) while (length < DISPLAY_SIZE && c[length]) ++length;
+    return length;
 }
 
 byte Numkey::getTextSize(){
   return getTextLength(text);
 }
 
-void Numkey::setNum(int num){
-	clear();
-	char numChar[DISPLAY_SIZE];
-	char chars = 0;
-	
-	// Extract characters representing the powers of ten
-	while(num >= 10)
-	{
-		numChar[chars++] = num%10;
-		num /= 10;
-		//Serial.print("num ");Serial.println(num);
-	}
-	
-	numChar[chars++] = num;
-	
-	for(int j = 0; j < chars; j++)//DISPLAY_SIZE; j++)
-	{
-		text[chars-1-j] = '0'+numChar[j];
-		//Serial.print("text[i] ");Serial.println(text[j]);
-	}
-	text[chars]=0;
-	//update();
+void Numkey::setNum(int num) {
+    if (!text) return;
+    snprintf(text, DISPLAY_SIZE + 1, "%d", num);
 }
 
 void Numkey::setEventHandler(void (*functionPointer)(Numkey *)){
@@ -205,52 +170,23 @@ void Numkey::setText(char* _text){
 }
 */
 
-void Numkey::deleteChar(){
-	int btnWidth = w / 3;
-  int btnHeight = h / 5;
-	byte textSize = getTextSize();
-	//Serial.print("Size is ");Serial.println(textSize);
-	if(!textSize) return;
-
-	// last character, forcefully erase it now because update wont
-	if(textSize==1){
-		myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);  
-	}
-
-	// clear character in last position
-	for(int i = textSize-1; i >= 0; i--)
-	{
-		if(text[i] != 0){
-			text[i] = 0;
-			break;
-		}
-	}
-	
-	update();
+void Numkey::deleteChar() {
+    if (!text) return;
+    byte used = getTextSize();
+    if (used) text[used - 1] = 0;
+    if (canDraw()) myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(w/3*2)-borderWidth,h/5-borderWidth*2,BLACK);
+    update();
 }
 
-void Numkey::clear(){
-	byte textSize = getTextSize();
-	if(textSize){
-		for(int i = textSize-1; i >= 0; i--)
-		{
-			text[i] = 0;
-		}
-	}
-	
-  int btnWidth = w / 3;
-  int btnHeight = h / 5;
-  // clear area
-  if(!autoremove){
-		myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(btnWidth*2)-borderWidth,btnHeight-borderWidth*2,BLACK);
-  }else{
-		update();
-  }
+void Numkey::clear() {
+    if (text) memset(text, 0, DISPLAY_SIZE + 1);
+    if (canDraw()) myCanvas->tft->fillRect(x+borderWidth,y+borderWidth,(w/3*2)-borderWidth,h/5-borderWidth*2,BLACK);
 }
 
 //Overriden virtual methods
 
 bool Numkey::checkTouch(Point* p){
+    if (!p) return false;
 	int boundX1, boundX2, boundY1, boundY2;
 	int btnWidth = w/3;
 	int btnHeight = h/5;
@@ -290,17 +226,18 @@ bool Numkey::checkTouch(Point* p){
 						
 						if(num==10){
 							//Serial.println(". pressed");
-							append(".");
+							char decimalPoint[] = ".";
+							append(decimalPoint);
 						}else if(num==12){
 							//Serial.println("= pressed");
 							entry = getNum();
-							if(autoremove){
-								if(myCanvas->widgets.peek() == this){ // check if top widget is this numkey
+							if(autoremove && myCanvas){
+								if(!myCanvas->widgets.isEmpty() && myCanvas->widgets.peek() == this){ // check if top widget is this numkey
 									myCanvas->pop();				  // Remove this numkey from the canvas...
 									//this->hide();
 								}
 							}
-							eventHandler(this);		// <<<------ Event handler called when = signed is pressed
+							if (eventHandler) eventHandler(this);		// <<<------ Event handler called when = signed is pressed
 						}else{
 							appendNum(char(num));//setNum(num);
 						}
@@ -318,6 +255,7 @@ bool Numkey::checkTouch(Point* p){
 }
 
 void Numkey::show(){
+    visible = true;
 	drawFrame();
 	update();
 	if(!visible) visible = true;
@@ -329,28 +267,30 @@ void Numkey::show(Button* btn){
 }
 
 void Numkey::targetEventHandler(){
-	targetButton->eventHandler(targetButton);
+	if (targetButton && targetButton->eventHandler) targetButton->eventHandler(targetButton);
 }
 
 void Numkey::reset(){
-	entry = NULL;
+	entry = 0;
 }
 
 /* New method to make it easier to use,
  * automatically redraw the canvas when hidden.
  */
-void Numkey::hide(){
-	//Widget::hide();
-	myCanvas->tft->fillRect(x,y,w,h,this->myCanvas->bgColor);
-	visible = false;
-	this->myCanvas->redraw();
+void Numkey::hide() {
+    const bool drawable = canDraw();
+    visible = false;
+    if (!drawable) return;
+    myCanvas->tft->fillRect(x,y,w,h,myCanvas->bgColor);
+    myCanvas->redraw();
 }
 
 void Numkey::update(){
+    if (!canDraw()) return;
   int btnWidth = w / 3;
   int btnHeight = h / 5;
   
-  if(*text){
+  if(text && *text){
     char* chars = text;
 		
 		//Count characters to center on the button - Nice trick from the myCanvas->tft2 library

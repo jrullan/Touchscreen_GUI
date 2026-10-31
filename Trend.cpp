@@ -3,6 +3,7 @@
 // NOTE: buf is allocated by the Indicator base constructor; do NOT malloc it
 // again here (would leak the base's allocation).
 Trend::Trend(){
+	init();
 }
 
 Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values)
@@ -14,7 +15,7 @@ Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, uns
 	init();
 }
 
-Trend::~Trend(){}
+Trend::~Trend(){ free(values); }
 
 //Methods
 void Trend::init(){
@@ -23,7 +24,9 @@ void Trend::init(){
 
 	// Reserve memory for trend values (values is NULL on failure; every
 	// consumer checks it before dereferencing).
-	values = (uint8_t *)malloc(maxValues);
+	free(values);
+	values = maxValues ? (uint8_t *)malloc(maxValues) : nullptr;
+	vals = 0;
 	if(values){
 		memset(values,0,maxValues*sizeof(uint8_t));
 	}
@@ -44,6 +47,7 @@ void Trend::clear(){
 }
 
 void Trend::addValue(uint8_t val, bool updateTrend){
+	if(!values || !maxValues) return;
 	previousValue = currentValue;
 	currentValue = val;
 
@@ -73,24 +77,13 @@ void Trend::eraseTrend(){
 }
 
 void Trend::autoFit(bool scale){
+	if(!values || !maxValues) return;
 	eraseTrend();
 	
 	if(scale){
-		int inc = 2;
-		int min = getMin();
-		int max = getMax();
-		
-		if(min <= scaleMin && min != 0){ 
-			scaleMin = min-inc;
-		}else{
-			if(min-scaleMin > inc) scaleMin = min - inc;
-		}
-		
-		if(max >= scaleMax){
-			scaleMax = max+inc;
-		}else{
-			if(scaleMax-max > inc) scaleMax = max + inc;
-		}
+		const int mn = getMin(), mx = getMax();
+		scaleMin = mn > 2 ? mn-2 : 0;
+		scaleMax = mx+2;
 	}
 	
 	drawYScale();
@@ -108,6 +101,8 @@ int Trend::getMax(){
 
 //Overriden virtual methods
 void Trend::show(){
+	visible = true;
+	if(!canDraw() || !buf) return;
 	if(this->visible){
 	  myCanvas->tft->fillRect(x,y,w,h,bgColor);
 	  this->drawYScale();
@@ -118,12 +113,13 @@ void Trend::show(){
 }
 
 void Trend::update(){
+	if(!canDraw() || !buf || !values || !maxValues) return;
 	if(!forcedUpdate){	
 		if(!visible) return;
 	}
 	
 	if(enableAutoFit){
-		if(values[0] >= scaleMax - 2 || values[0] <= scaleMin + 2){
+		if(values[0] >= (int64_t)scaleMax - 2 || values[0] <= (int64_t)scaleMin + 2){
 			autoFit(true);
 			return;
 		}

@@ -29,6 +29,7 @@ class Gauge : public Indicator{
 		void drawBorder();
 		void drawFill();
 		int getYVal(int value);
+		int getYVal(unsigned int value);
 		
 		//Overriden methods
 		void show();
@@ -39,6 +40,7 @@ class Gauge : public Indicator{
 		
 	private:
 		//Methods
+		int getYValValue(int64_t value);
 		void drawLimits();
 		void drawScale();
 };

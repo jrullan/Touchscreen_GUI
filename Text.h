@@ -15,8 +15,12 @@ class Text
 		
 		Text(unsigned char textSize = 8);
 		~Text();
+        Text(const Text&) = delete;
+        Text& operator=(const Text&) = delete;
 		
-		char* text;
+        // Owned capacity+1 buffer. May be NULL on OOM. Do not free/rebind;
+        // direct edits must stay within _textSize and keep a trailing NUL.
+        char* text;
 		
 		//=====Getters and Setters======
 		//void setNum(int num); -- Had to be removed, see cpp --
@@ -29,6 +33,7 @@ class Text
 		//=====Utilities======
 		void clear();
 		
-		unsigned char _textSize;
+        // Allocation capacity (read-only after construction).
+        unsigned char _textSize;
 };
 #endif

@@ -22,7 +22,7 @@ class SeeedstudioTouch : public Touch
 {   
     public:
     SeeedstudioTouch(unsigned char xp, unsigned char yp, unsigned char xm, unsigned char ym);
-	bool begin(uint8_t threshold = 0){};
+	bool begin(uint8_t threshold = 0){ (void)threshold; return true; };
     bool isTouching(void);
 	uint8_t touched(void);
     Point getPoint();

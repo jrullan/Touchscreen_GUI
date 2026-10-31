@@ -19,6 +19,7 @@ public:
 	virtual ~Display();
 
 	// Attributes	
+	// Owned Text object; do not delete/rebind. May be NULL on OOM.
 	Text* contents;		
 
 	// Methods

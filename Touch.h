@@ -29,7 +29,7 @@
  {
 	public:
 		Touch(void);
-		~Touch(void);
+		virtual ~Touch(void);
 		
 		virtual bool begin(uint8_t thresh) = 0;
 		virtual Point getPoint(void) = 0;
