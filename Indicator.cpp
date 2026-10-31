@@ -37,6 +37,10 @@ void Indicator::setCV(unsigned int cv, boolean show){
 	setCVValue(cv, show);
 }
 
+void Indicator::setCV(long cv, boolean show){
+	setCVValue(cv, show);
+}
+
 void Indicator::setCVValue(int64_t cv, boolean show){
 	previousValue = currentValue;
 	currentValue = cv < 0 || (uint64_t)cv < scaleMin ? scaleMin :

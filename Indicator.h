@@ -42,6 +42,8 @@ class Indicator : public Widget{
 		void clear();		
 		void setCV(int cv, boolean show = true);
 		void setCV(unsigned int cv, boolean show = true);
+		// Arduino map() returns long; preserve existing callers without narrowing.
+		void setCV(long cv, boolean show = true);
 		void setHiLimit(unsigned int h, int color);		
 		void setLimits(unsigned int min, unsigned int sp, unsigned int max);
 		void setLowLimit(unsigned int l, int color);
