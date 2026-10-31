@@ -11,7 +11,7 @@ sketches=[(n,r/'tests/arduino'/n) for n in ('display','input','terminal','trend'
 sketches.append(('instrumentation',r/'examples/Phase01_Baseline'))
 if a.dashboard:sketches.append(('dashboard',a.dashboard.resolve()))
 for name,sketch in sketches:
- cmd=[a.cli,'compile','--fqbn',a.fqbn,'--library',str(r),'--output-dir',str(out/name),str(sketch)]
+ cmd=[a.cli,'compile','--clean','--fqbn',a.fqbn,'--library',str(r),'--output-dir',str(out/name),str(sketch)]
  print('BUILD',name,flush=True)
  result=subprocess.run(cmd,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
  (out/(name+'.log')).write_text(result.stdout)

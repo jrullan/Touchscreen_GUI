@@ -23,10 +23,11 @@ MultiTrend::~MultiTrend(){
 void MultiTrend::init(){
 	if(maxSeries > MAX_MULTITREND_SERIES) maxSeries = MAX_MULTITREND_SERIES;
 	if(numSeries > maxSeries) numSeries = maxSeries;
+	resetRenderCache();
 	TrendBase::init();
 	type = 0x26;
 
-	// One ring buffer per series (series-major layout) + one color slot each.
+	// Newest-first shift history per series + one color slot each.
 	free(values);
 	free(seriesColor);
 	values = maxSeries && maxValues ? (uint8_t *)malloc((uint32_t)maxSeries * maxValues) : nullptr;
@@ -40,7 +41,7 @@ void MultiTrend::init(){
 			seriesColor[s] = (s==0)?BLUE:(s==1)?GREEN:RED;
 		}
 	}
-	for(uint8_t s = 0; s < maxSeries; s++) markerPrevY[s] = -1;
+
 	
 	this->hiLimit = scaleMax;
 	this->lowLimit = scaleMin;
@@ -77,7 +78,6 @@ void MultiTrend::addValue(uint8_t series, uint8_t val, bool updateTrend){
 	currentValue = val;
 	uint8_t* rowp = values + (uint32_t)series*maxValues;
 
-	if(visible) drawSeries(series, this->bgColor);   // erase old line for this series
 
 	for(int i = maxValues; i!=0; i--){
 		if(i==1){
@@ -94,27 +94,11 @@ void MultiTrend::drawSeries(uint8_t series, uint16_t color){
 	drawValuesSeries(row(series), color);
 }
 
-// Erase the previous puck of every series (bg circle at the recorded Y).
-// An old puck is a 2·markerRadius blob that sticks out beyond the 1px line,
-// so erasing the line alone leaves artifacts — erase the puck explicitly.
-// Must run AFTER the line erasure and BEFORE redrawing lines.
-void MultiTrend::eraseMarkers(){
-	if(!canDraw() || !buf) return;
-	if(!markerRadius) return;
-	int lx = latestX();
-	for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
-		if(markerPrevY[s] >= 0){
-			myCanvas->tft->fillCircle(lx, markerPrevY[s], markerRadius+1, this->bgColor);
-			markerPrevY[s] = -1;
-		}
-	}
-}
-
 // Draw a puck at each series' newest sample (rightmost), in the series color
-// (or severity-tinted). Records the Y used so eraseMarkers() can clear it.
+// (or severity-tinted). Commit-time geometry is retained by TrendBase.
 void MultiTrend::drawMarkers(){
 	if(!canDraw() || !buf) return;
-	if(!markerRadius) return;
+	if(!markerRadius || w<=0 || h<=0) return;
 	if(!values) return;
 	int lx = latestX();
 	for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
@@ -124,11 +108,13 @@ void MultiTrend::drawMarkers(){
 		else if(markerWarn > 0 && v >= markerWarn)  c = markerWarnColor;
 		int ly = latestY(s);
 		myCanvas->tft->fillCircle(lx, ly, markerRadius, c);
-		markerPrevY[s] = ly;
+
 	}
 }
 
 void MultiTrend::drawTrend(){
+    // Retain every intermediate layer footprint until a coherent commit.
+    retainLegacyBounds(values,min((int)numSeries,min((int)maxSeries,MAX_MULTITREND_SERIES)),markerRadius);
 	this->drawThresholdLines(true);
 	for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
 		drawSeries(s, seriesColor?seriesColor[s]:BLUE);
@@ -137,11 +123,9 @@ void MultiTrend::drawTrend(){
 }
 
 void MultiTrend::eraseTrend(){
-	for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
-		drawSeries(s, this->bgColor);
-	}
-	eraseMarkers();   // clear pucks too
-	this->drawThresholdLines(false);
+    eraseCommitted();
+    retainLegacyBounds(nullptr,0);
+    this->drawThresholdLines(false);
 }
 
 uint8_t MultiTrend::latest(uint8_t series) const{
@@ -158,8 +142,12 @@ int MultiTrend::getMax(uint8_t series){
 }
 
 void MultiTrend::autoFit(bool scale){
+    fitScale(scale);
+    update();
+}
+
+void MultiTrend::fitScale(bool scale){
 	if(!values || !maxValues) return;
-	eraseTrend();
 	
 	if(scale && numSeries){
 		int mn = 255, mx = 0;
@@ -172,20 +160,13 @@ void MultiTrend::autoFit(bool scale){
 		scaleMax = mx+2;
 	}
 	
-	drawYScale();
-	drawTrend();	
+
 }
 
 void MultiTrend::show(){
-	visible = true;
-	if(!canDraw() || !buf) return;
-	if(this->visible){
-	  myCanvas->tft->fillRect(x,y,w,h,bgColor);
-	  this->drawYScale();
-	  this->drawXScale();
-	  this->drawBorder();
-	  this->update();
-	}
+    visible = true;
+    invalidate();
+    update();
 }
 
 void MultiTrend::update(){
@@ -197,22 +178,13 @@ void MultiTrend::update(){
 	if(enableAutoFit){
 		for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
 			if(row(s)[0] >= (int64_t)scaleMax - 2 || row(s)[0] <= (int64_t)scaleMin + 2){
-				autoFit(true);
-				return;
+				fitScale(true);
+                break;
 			}
 		}
 	}
 	
-	// Artifact-free static-under-dynamic: erase all series, repaint the
-	// gridlines they crossed, then draw all series on top.
-	for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
-		drawSeries(s, this->bgColor);          // erase old plot for this series
-	}
-	eraseMarkers();                            // clear moved pucks (after line erase)
-	if(showGridlines) drawGridlines();
-	this->drawThresholdLines(true);
-	for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
-		drawSeries(s, seriesColor?seriesColor[s]:BLUE);
-	}
-	drawMarkers();
+    const uint8_t count = min((int)numSeries,min((int)maxSeries,MAX_MULTITREND_SERIES));
+    commitFrame(values,count,seriesColor,markerRadius,markerWarn,markerCrit,
+                markerWarnColor,markerCritColor,forcedUpdate);
 }

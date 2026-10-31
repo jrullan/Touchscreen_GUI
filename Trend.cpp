@@ -19,6 +19,7 @@ Trend::~Trend(){ free(values); }
 
 //Methods
 void Trend::init(){
+	resetRenderCache();
 	TrendBase::init();
 	type = 0x23;
 
@@ -51,8 +52,6 @@ void Trend::addValue(uint8_t val, bool updateTrend){
 	previousValue = currentValue;
 	currentValue = val;
 
-	//--delete previous line (bgColor)
-	if(visible) drawValues(this->bgColor);
 
 	//--push value into the array
 	for(int i = maxValues; i!=0; i--){
@@ -67,28 +66,32 @@ void Trend::addValue(uint8_t val, bool updateTrend){
 }
 
 void Trend::drawTrend(){
+    // Retain every intermediate layer footprint until a coherent commit.
+    retainLegacyBounds(values,1);
 	this->drawThresholdLines(true);	
 	this->drawValues(this->fgColor);	
 }
 
 void Trend::eraseTrend(){
-	this->drawValues(this->bgColor);	//erase original line
-	this->drawThresholdLines(false); //erase threshold lines		
+    eraseCommitted();
+    retainLegacyBounds(nullptr,0);
+    this->drawThresholdLines(false); // erase current threshold chrome
 }
 
 void Trend::autoFit(bool scale){
+    fitScale(scale);
+    update();
+}
+
+void Trend::fitScale(bool scale){
 	if(!values || !maxValues) return;
-	eraseTrend();
 	
 	if(scale){
 		const int mn = getMin(), mx = getMax();
 		scaleMin = mn > 2 ? mn-2 : 0;
 		scaleMax = mx+2;
 	}
-	
-	drawYScale();
-	
-	drawTrend();	
+
 }
 
 int Trend::getMin(){
@@ -101,15 +104,9 @@ int Trend::getMax(){
 
 //Overriden virtual methods
 void Trend::show(){
-	visible = true;
-	if(!canDraw() || !buf) return;
-	if(this->visible){
-	  myCanvas->tft->fillRect(x,y,w,h,bgColor);
-	  this->drawYScale();
-	  this->drawXScale();
-	  this->drawBorder();
-	  this->update();
-	}
+    visible = true;
+    invalidate();
+    update();
 }
 
 void Trend::update(){
@@ -120,13 +117,12 @@ void Trend::update(){
 	
 	if(enableAutoFit){
 		if(values[0] >= (int64_t)scaleMax - 2 || values[0] <= (int64_t)scaleMin + 2){
-			autoFit(true);
-			return;
+			fitScale(true);
 		}
 	}
 	
-	this->drawThresholdLines(true);
-	this->drawValues(this->fgColor);	
+    const int color = fgColor;
+    commitFrame(values,1,&color,0,0,0,0,0,forcedUpdate);
 }
 
 void Trend::drawValues(uint16_t color){
