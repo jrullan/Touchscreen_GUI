@@ -12,8 +12,12 @@
 - Uploaded demo to /dev/ttyUSB0; esptool identified ESP8266EX MAC 18:fe:34:d2:ed:20 and reported flash hash verified, then reset the board.
 - A 12-second serial capture contained no recognized exception/watchdog markers. The demo has no startup diagnostic banner; this capture does not prove successful GUI initialization or heap stability.
 
-## Pending user/device acceptance
+## Physical acceptance and dashboard restoration
 
-The demo remains loaded for physical inspection. Verify the main screen and Terminal, Dial screen via the published demo PIN, slider response, icon-button toggles and repeated screen switching. These have not been independently observed by the assistant. Dynamic heap stability, calibrated touch accuracy and network recovery remain unverified. Do not restore the dashboard until the user finishes inspecting the demo.
+The user reported after testing the demo: "already verified, all seems to be working ok". This records user-reported visual/touch acceptance, not automated observation of each individual widget.
+
+After acceptance, the dashboard was rebuilt against the refactor library and uploaded. Flash hash verification passed. A 40-second serial capture showed WiFi association at 192.168.1.162, static rendering completion, seven HTTP 200 polls and zero recognized exception/watchdog markers. The dashboard is now loaded, replacing the demo. The serial log is preserved under `gui-phase01-hardware/dashboard-serial.log` in profile scratch.
+
+Long-duration dynamic heap stability, calibrated touch accuracy and deliberate network-loss recovery remain unverified. This short run is not a performance benchmark or endurance test.
 
 The rollback dashboard image and demo artifacts are in the active profile scratch directory under `gui-phase01-hardware/`; they contain firmware and must not be published indiscriminately. Installed and vendored libraries have not been replaced. No follow-up PR is opened by this checkpoint.
