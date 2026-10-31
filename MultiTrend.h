@@ -5,7 +5,7 @@
 //  Shares all chart chrome/geometry with Trend via TrendBase,
 //  but plots N colored series in ONE chart area (like the AI
 //  Panelboard cards that overlay CPU/GPU/NPU). Each series owns
-//  its own ring buffer and inherits the shared setWindow /
+//  its own newest-first history and inherits the shared setWindow /
 //  limits / thresholds / axis rendering.
 //
 //  Add values per series: multi.addValue(series, val).
@@ -48,7 +48,7 @@ class MultiTrend : public TrendBase{
 		int  getMax(uint8_t series);
 		void autoFit(bool scale);
 		// Newest sample (index 0 = rightmost) of a series, for host overlays
-		// (severity dots, % readouts) without reaching into the ring layout.
+		// (severity dots, % readouts) without reaching into the history layout.
 		uint8_t latest(uint8_t series) const;
 		int  latestX() { return getXVal(trendWindow.minValue); }
 		int  latestY(uint8_t series) { return getYVal(latest(series)); }
@@ -72,15 +72,12 @@ class MultiTrend : public TrendBase{
 		int      markerCritColor = 0xF8CE;   // red
 
 	private:
+		void fitScale(bool scale);
 		//Methods
 		void drawSeries(uint8_t series, uint16_t color);
-		void eraseMarkers();
 		void drawMarkers();
 		const uint8_t* row(uint8_t series) const{ return values && maxValues && series < maxSeries ? values + (uint32_t)series*maxValues : nullptr; }
 
-		// previous per-series marker Y (pixels, -1 = unknown) so a moved puck
-		// can be erased exactly without clipping the newly drawn line
-		int markerPrevY[MAX_MULTITREND_SERIES];
 };
 
 #endif // MULTITREND_H

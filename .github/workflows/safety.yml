@@ -7,5 +7,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Strict return checks
         run: python3 tests/host/check_returns.py
+      - name: Exact-library clean-build command regression
+        run: python3 tests/tools/test_check_arduino.py
       - name: Address, undefined behavior and leak regression tests
         run: python3 tests/host/run.py
+      - name: Fetch pinned real Adafruit GFX rasterizer
+        uses: actions/checkout@v4
+        with:
+          repository: adafruit/Adafruit-GFX-Library
+          ref: 85ce269b270eb1241e36a22cceec2c5e0905f48c
+          path: .test-deps/Adafruit-GFX-Library
+      - name: Real glyph cleanup regression tests
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run.py

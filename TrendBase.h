@@ -6,7 +6,7 @@
 //  multi-series MultiTrend have in common: the chart chrome
 //  (border, Y-scale, X-scale with optional time labels,
 //  threshold lines), the coordinate mappings, and a generic
-//  polyline plotters that draws a series' ring window using
+//  polyline plotters that draws a series' history window using
 //  the (fast, run-length) Guitft::drawLine.
 //
 //  Trend and MultiTrend each own their ring buffer(s) and
@@ -40,9 +40,11 @@ class TrendBase : public Indicator{
 		int getYVal(unsigned int value);
 		void setWindow(int min, int max);
 		void setMaxX(int maxX);      // 0 = raw sample indices, else elapsed s
+		// External painting/overlays: invalidate now, repaint on the next update.
+		void invalidate() { renderInvalid = true; }
 
 		// Attributes (shared)
-		uint8_t maxValues = MAX_TREND_VALUES;           // samples per series ring
+		uint8_t maxValues = MAX_TREND_VALUES;           // samples per series history
 		bool    enableAutoFit = false;
 		bool    forceSquareWaveform = false;
 		int     maxX = 0;            // seconds per whole window; 0=indices
@@ -61,7 +63,7 @@ class TrendBase : public Indicator{
 		int  bottomInset     = 0;       // px of clearance below the bottommost sample
 
 	protected:
-		// Shared chrome + plotting. values = pointer to this series' ring.
+		// Shared chrome + plotting. values = pointer to this series' history.
 		int getYValValue(int64_t value);
 		void drawBorder();
 		void drawYScale();
@@ -77,6 +79,27 @@ class TrendBase : public Indicator{
 		int chartX()  const { return showYScale ? yScaleWidth : 0; }
 		int chartH()  const { return showXScale ? (h - xScaleHeight) : h; }
 
+		void commitFrame(const uint8_t* data, uint8_t series, const int* colors,
+		                 int radius=0, int warn=0, int crit=0,
+		                 int warnColor=0, int critColor=0, bool force=false);
+		void eraseCommitted();
+		void resetRenderCache();
+		void retainLegacyBounds(const uint8_t* data, int series, int radius=0);
+
+	private:
+		int* rendered = nullptr; // shared X[N], Y[S*N], colors[S], marker colors[S], marker Y[S]
+		size_t renderedCapacity = 0;
+		int renderStyle[36] = {};
+		int renderedPoints = 0, renderedSeries = 0, renderedRadius = 0;
+		bool renderedSquare = false, renderValid = false, renderInvalid = true, hasFrame = false;
+		Canvas* renderedCanvas = nullptr;
+		Guitft* renderedDisplay = nullptr;
+		void paintCommitted(bool erase);
+		int dirtyBounds[4] = {}; // left, top, right, bottom (exclusive)
+		Canvas* dirtyCanvas = nullptr;
+		Guitft* dirtyDisplay = nullptr;
+
+	protected:
 		byte yScaleWidth  = 4 * FONT_X + 10; // four chars + 10px tick
 		byte xScaleHeight = 2 * FONT_Y + 10 + borderWidth;
 };

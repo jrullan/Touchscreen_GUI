@@ -55,8 +55,8 @@ class Trend : public TrendBase{
 		bool forcedUpdate = false;
 		
 	private:
+		void fitScale(bool scale);
 		//Methods
-		byte updates = 0;
 		void drawValues(uint16_t color);
 };
 
