@@ -63,6 +63,34 @@ class Guitft : public Adafruit_ILI9341{
 
 	~Guitft();
 
+	// Override the real Adafruit virtual API (implicit override also permits
+	// older nonvirtual host fixtures). Leave the legacy STM32 backend unchanged.
+	void startWrite();
+	void endWrite();
+
+	// Use stack scopes bounded to pixel drawing; never include begin(),
+	// setRotation(), invertDisplay(), scroll/control commands, touch, networking,
+	// explicit yields or unbounded loops. Backend-internal yields remain possible:
+	// this is not a shared-bus lock; coordinate other SPI users separately.
+	class ScopedWrite {
+	public:
+		explicit ScopedWrite(Guitft &display) : display_(display) { display_.startWrite(); }
+		~ScopedWrite() { display_.endWrite(); }
+		ScopedWrite(const ScopedWrite &) = delete;
+		ScopedWrite &operator=(const ScopedWrite &) = delete;
+		ScopedWrite(ScopedWrite &&) = delete;
+		ScopedWrite &operator=(ScopedWrite &&) = delete;
+	private:
+		Guitft &display_;
+	};
+
+private:
+#if !defined(__STM32F1__)
+	uint32_t transactionDepth_ = 0;
+	bool transactionOverflow_ = false;
+#endif
+public:
+
 	void drawString(char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor);
 	void drawString(const char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor)
 	{

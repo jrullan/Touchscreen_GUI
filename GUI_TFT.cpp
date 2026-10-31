@@ -1,5 +1,24 @@
 #include "GUI_TFT.h"
 
+void Guitft::startWrite(){
+#if !defined(__STM32F1__)
+	// Once depth cannot be represented, never guess when it is safe to
+	// release CS. Fail closed; recovery requires device reset/reconstruction.
+	if(transactionDepth_ == UINT32_MAX){
+		transactionOverflow_ = true;
+		return;
+	}
+	if(transactionDepth_++ == 0) Adafruit_ILI9341::startWrite();
+#endif
+}
+
+void Guitft::endWrite(){
+#if !defined(__STM32F1__)
+	if(!transactionOverflow_ && transactionDepth_ != 0 && --transactionDepth_ == 0)
+		Adafruit_ILI9341::endWrite();
+#endif
+}
+
 Guitft::~Guitft(){
 	
 }

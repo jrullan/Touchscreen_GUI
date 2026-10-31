@@ -21,3 +21,11 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run.py
+      - name: Nested SPI transaction dispatch regression tests
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/transactions/run.py
+      - name: Real glyph and transaction widget regression tests
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run_widgets.py

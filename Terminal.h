@@ -56,9 +56,27 @@ class Terminal : public Widget {
 		//inherited methods:
 		bool checkTouch(Point*) { return true; }
 		void show();
-		void update();		
+		void update();
+        // Explicit repaint after overlays/screens damage the panel.
+        void forceUpdate() { render(true); }
 		
 	private:
+        char* renderedText = NULL;
+        uint16_t renderedColors[MAX_LINES] = {};
+        struct Footprint { int16_t x, y; uint16_t w, h; };
+        Footprint renderedBounds[MAX_LINES] = {};
+        bool renderedValid = false;
+        bool restorePending = false;
+        struct RenderState {
+            Canvas* canvas;
+            Guitft* driver;
+            int x, y, w, h, borderWidth, bg, fg, border;
+            int panelW, panelH;
+            uint8_t font, direction, keepColors, lineSpace, fontHeight, horizontalBleed, verticalBleed;
+        } rendered = {};
+        void render(bool force);
+        RenderState state() const;
+        bool matchesStyle(const RenderState& s) const;
 		void drawFrame();
         void writeLine(const char* string, int num, bool formatted, uint16_t highColor);
 };
