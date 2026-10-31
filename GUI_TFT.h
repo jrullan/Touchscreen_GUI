@@ -70,6 +70,10 @@ class Guitft : public Adafruit_ILI9341{
 	}
 	void drawVerticalLine(uint16_t poX, uint16_t poY,uint16_t length,uint16_t color);
 	void drawHorizontalLine(uint16_t poX, uint16_t poY,uint16_t length,uint16_t color);
+	// Fast diagonal line: run-length sliced so consecutive same-row/-col
+	// pixels collapse into a single H/V block (one setAddrWindow) instead of
+	// one address-window + write per pixel (Adafruit's per-pixel drawLine).
+	void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
 	uint8_t drawNumber(long long_num,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor);
 	uint8_t Get_Digits(uint8_t x){
 		return (x < 10 ? 1 :   
