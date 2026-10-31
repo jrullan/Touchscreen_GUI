@@ -28,7 +28,10 @@ public:
 	void drawText(int color);
 	void fitToText();
 	//void setNum(int num, bool force = false); -- See Text.cpp --
+	// force requests immediate render-if-changed, not an unconditional repaint.
+	// update(), show(), and forceUpdate() explicitly repair external damage.
 	void setText(char* _text, bool force = false);
+	void forceUpdate() { update(); }
 	void append(char* c);
 	
 	//new testing out...
@@ -43,5 +46,19 @@ public:
 
 private:
 	char charPos;
+	// Exact retained-text snapshot; allocation failure disables suppression safely.
+	char* renderedText = NULL;
+	struct RenderState {
+		Canvas* canvas;
+		Guitft* driver;
+		int x, y, w, h, borderWidth, bg, fg, border;
+		unsigned char font, length;
+		int16_t textX, textY;
+		uint16_t textW, textH;
+	} rendered;
+	bool renderedValid = false;
+	void render(bool force);
+	bool matchesRendered() const;
+	void rememberRender();
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)

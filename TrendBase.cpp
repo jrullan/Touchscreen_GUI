@@ -5,6 +5,7 @@ TrendBase::TrendBase(){
 }
 
 TrendBase::~TrendBase(){
+	free(rendered);
 }
 
 // Shared: everything drawChart chrome needs. type stays in the concrete
@@ -198,6 +199,191 @@ int TrendBase::minOf(const uint8_t* values){
 	int val = values[0];
 	for(int i = 1; i<maxValues; i++) if(values[i] < val) val = values[i];
 	return val;
+}
+
+// Only committed geometry is erased. Pending history never reaches the display.
+void TrendBase::resetRenderCache(){
+    // init() releases projections, not the pixels already on the target.
+    if(renderValid && renderedRadius && renderedPoints) {
+        for(int s=0; s<renderedSeries; ++s) {
+            const int mx=rendered[0];
+            const int my=rendered[renderedPoints*(renderedSeries+1)+2*renderedSeries+s];
+            const int right=max(renderStyle[0]+renderStyle[2],mx+renderedRadius+1);
+            const int bottom=max(renderStyle[1]+renderStyle[3],my+renderedRadius+1);
+            renderStyle[0]=min(renderStyle[0],mx-renderedRadius);
+            renderStyle[1]=min(renderStyle[1],my-renderedRadius);
+            renderStyle[2]=right-renderStyle[0]; renderStyle[3]=bottom-renderStyle[1];
+        }
+    }
+    free(rendered); rendered = nullptr; renderedCapacity = 0;
+    renderValid = false; renderInvalid = true;
+}
+
+void TrendBase::paintCommitted(bool erase){
+    if(!rendered || !renderValid) return;
+    const int n = renderedPoints, sCount = renderedSeries;
+    const int* colors = rendered + n*(sCount+1);
+    for(int s=0; s<sCount; ++s){
+        const int* ys = rendered + n*(s+1);
+        const int color = erase ? renderStyle[4] : colors[s];
+        for(int j=n-1; j>0; --j){
+            if(renderedSquare){
+                myCanvas->tft->drawHorizontalLine(rendered[j],ys[j],rendered[j-1]-rendered[j]+1,color);
+                myCanvas->tft->drawVerticalLine(rendered[j-1],min(ys[j],ys[j-1]),abs(ys[j]-ys[j-1])+1,color);
+            }else myCanvas->tft->drawLine(rendered[j],ys[j],rendered[j-1],ys[j-1],color);
+        }
+    }
+    // All lines and then all old pucks disappear before any new foreground.
+    if(renderedRadius) for(int s=0; s<sCount; ++s){
+        const int mx=rendered[0], my=rendered[n*(sCount+1)+2*sCount+s];
+        myCanvas->tft->fillCircle(mx,my,renderedRadius,erase ? renderStyle[4] : colors[sCount+s]);
+        if(erase && renderStyle[4]!=myCanvas->bgColor){
+            // Widget background applies only inside the old widget. Restore
+            // bounded outlying strips to the canvas before any new foreground.
+            const int l=mx-renderedRadius, r=mx+renderedRadius+1;
+            const int t=my-renderedRadius, b=my+renderedRadius+1;
+            const int wl=renderStyle[0], wr=wl+renderStyle[2];
+            const int wt=renderStyle[1], wb=wt+renderStyle[3];
+            if(l<wl) myCanvas->tft->fillRect(l,t,min(r,wl)-l,b-t,myCanvas->bgColor);
+            if(r>wr) myCanvas->tft->fillRect(max(l,wr),t,r-max(l,wr),b-t,myCanvas->bgColor);
+            const int il=max(l,wl), ir=min(r,wr);
+            if(ir>il && t<wt) myCanvas->tft->fillRect(il,t,ir-il,min(b,wt)-t,myCanvas->bgColor);
+            if(ir>il && b>wb) myCanvas->tft->fillRect(il,max(t,wb),ir-il,b-max(t,wb),myCanvas->bgColor);
+        }
+    }
+}
+
+void TrendBase::eraseCommitted(){
+    if(!canDraw() || !buf) return;
+    if(renderedCanvas==myCanvas && renderedDisplay==myCanvas->tft) {
+        if(renderValid) paintCommitted(true);
+        else if(hasFrame && renderStyle[2]>0 && renderStyle[3]>0)
+            myCanvas->tft->fillRect(renderStyle[0],renderStyle[1],renderStyle[2],renderStyle[3],myCanvas->bgColor);
+    }
+    renderInvalid = true;
+}
+
+void TrendBase::retainLegacyBounds(const uint8_t* data, int series, int radius){
+    if(!canDraw() || !buf || w<=0 || h<=0) return;
+    int left=x, top=y, right=x+w, bottom=y+h;
+    if(data && maxValues && radius>0) for(int s=0;s<series;++s){
+        const int mx=getXVal(trendWindow.minValue), my=getYVal(data[(size_t)s*maxValues]);
+        left=min(left,mx-radius); top=min(top,my-radius);
+        right=max(right,mx+radius+1); bottom=max(bottom,my+radius+1);
+    }
+    if(dirtyCanvas==myCanvas && dirtyDisplay==myCanvas->tft){
+        left=min(left,dirtyBounds[0]); top=min(top,dirtyBounds[1]);
+        right=max(right,dirtyBounds[2]); bottom=max(bottom,dirtyBounds[3]);
+    }
+    dirtyBounds[0]=left; dirtyBounds[1]=top; dirtyBounds[2]=right; dirtyBounds[3]=bottom;
+    dirtyCanvas=myCanvas; dirtyDisplay=myCanvas->tft;
+    invalidate();
+}
+
+void TrendBase::commitFrame(const uint8_t* data, uint8_t series, const int* colors,
+                           int radius, int warn, int crit, int warnColor, int critColor, bool force){
+    if(!canDraw() || !buf || !data || !maxValues) return;
+    setWindow(trendWindow.minValue,trendWindow.maxValue);
+    const int first = trendWindow.minValue, n = trendWindow.maxValue-first+1;
+    // Exact comparison, not a hash: public style mutations cannot collide.
+    const int style[] = {x,y,w,h,bgColor,borderColor,borderWidth,
+        (int)scaleMin,(int)scaleMax,(int)setpoint,(int)hiLimit,(int)lowLimit,
+        hiLimitColor,lowLimitColor,setpointColor,showXScale,showYScale,showBorder,
+        showThresholds,showGridlines,rightInset,topInset,bottomInset,maxX,
+        first,trendWindow.maxValue,maxValues,series,forceSquareWaveform,
+        radius,warn,crit,warnColor,critColor,yScaleWidth,xScaleHeight};
+    static_assert(sizeof(style)<=sizeof(renderStyle),"render style capacity");
+    const bool sameTarget = renderedCanvas==myCanvas && renderedDisplay==myCanvas->tft;
+    bool full = force || renderInvalid || !renderValid || !sameTarget ||
+                memcmp(style,renderStyle,sizeof(style))!=0;
+    if(w<=0 || h<=0){
+        if(!full) return; // Empty states never compare or paint projected samples.
+        if(dirtyCanvas==myCanvas && dirtyDisplay==myCanvas->tft)
+            myCanvas->tft->fillRect(dirtyBounds[0],dirtyBounds[1],
+                dirtyBounds[2]-dirtyBounds[0],dirtyBounds[3]-dirtyBounds[1],myCanvas->bgColor);
+        dirtyCanvas=nullptr; dirtyDisplay=nullptr;
+        if(sameTarget && hasFrame){
+            paintCommitted(true);
+            if(renderStyle[2]>0 && renderStyle[3]>0)
+                myCanvas->tft->fillRect(renderStyle[0],renderStyle[1],renderStyle[2],renderStyle[3],myCanvas->bgColor);
+        }
+        memcpy(renderStyle,style,sizeof(style));
+        renderedPoints=renderedSeries=renderedRadius=0;
+        renderValid=true; renderInvalid=false; hasFrame=false;
+        renderedCanvas=myCanvas; renderedDisplay=myCanvas->tft;
+        return;
+    }
+    const size_t required = (size_t)n*(series+1)+3*series;
+    bool changed = full;
+    if(!changed){
+        for(int i=0;i<n;++i) if(rendered[i]!=getXVal(first+i)) changed=true;
+        for(int s=0;s<series;++s){
+            for(int i=0;i<n;++i)
+                if(rendered[n*(s+1)+i]!=getYVal(data[(size_t)s*maxValues+first+i])) changed=true;
+            const int color = colors ? colors[s] : BLUE;
+            const int v = data[(size_t)s*maxValues];
+            const int mc = crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color;
+            if(rendered[n*(series+1)+s]!=color || rendered[n*(series+1)+series+s]!=mc ||
+               (radius && rendered[n*(series+1)+2*series+s]!=getYVal(v))) changed=true;
+        }
+    }
+    if(!changed) return;
+    if(dirtyCanvas==myCanvas && dirtyDisplay==myCanvas->tft){
+        myCanvas->tft->fillRect(dirtyBounds[0],dirtyBounds[1],
+            dirtyBounds[2]-dirtyBounds[0],dirtyBounds[3]-dirtyBounds[1],myCanvas->bgColor);
+    }
+    dirtyCanvas=nullptr; dirtyDisplay=nullptr;
+    if(sameTarget && hasFrame){
+        paintCommitted(true);
+        if(full && renderStyle[2]>0 && renderStyle[3]>0)
+            myCanvas->tft->fillRect(renderStyle[0],renderStyle[1],renderStyle[2],renderStyle[3],myCanvas->bgColor);
+    }
+    if(required>renderedCapacity){
+        // Failed growth keeps the allocation owned and selects a safe full redraw.
+        int* replacement = (int*)realloc(rendered,required*sizeof(int));
+        if(replacement){ rendered=replacement; renderedCapacity=required; }
+        else full=true;
+    }
+    if(full && w>0 && h>0) myCanvas->tft->fillRect(x,y,w,h,bgColor);
+    if(full){ drawYScale(); drawXScale(); }
+    if(showGridlines) drawGridlines();
+    drawThresholdLines(true);
+    if(renderedCapacity>=required){
+        for(int i=0;i<n;++i) rendered[i]=getXVal(first+i);
+        for(int s=0;s<series;++s){
+            for(int i=0;i<n;++i) rendered[n*(s+1)+i]=getYVal(data[(size_t)s*maxValues+first+i]);
+            const int color = colors ? colors[s] : BLUE;
+            const int v = data[(size_t)s*maxValues];
+            rendered[n*(series+1)+s]=color;
+            rendered[n*(series+1)+2*series+s]=getYVal(v);
+            rendered[n*(series+1)+series+s]=crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color;
+        }
+        memcpy(renderStyle,style,sizeof(style));
+        renderedPoints=n; renderedSeries=series; renderedRadius=radius;
+        renderedSquare=forceSquareWaveform; renderValid=true;
+        renderedCanvas=myCanvas; renderedDisplay=myCanvas->tft; renderInvalid=false;
+        paintCommitted(false);
+    }else{
+        // OOM fallback has no partial frame, no history loss and no stale cache.
+        renderValid=false; renderInvalid=true;
+        memcpy(renderStyle,style,sizeof(style));
+        for(int s=0;s<series;++s) drawValuesSeries(data+(size_t)s*maxValues,colors?colors[s]:BLUE);
+        if(radius) for(int s=0;s<series;++s){
+            const int v=data[(size_t)s*maxValues], color=colors?colors[s]:BLUE;
+            const int mx=getXVal(first), my=getYVal(v);
+            myCanvas->tft->fillCircle(mx,my,radius,
+                crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color);
+            // Without projected geometry, retain an eraseable bounding rectangle,
+            // including public radii that extend beyond the widget itself.
+            const int right=max(renderStyle[0]+renderStyle[2],mx+radius+1);
+            const int bottom=max(renderStyle[1]+renderStyle[3],my+radius+1);
+            renderStyle[0]=min(renderStyle[0],mx-radius);
+            renderStyle[1]=min(renderStyle[1],my-radius);
+            renderStyle[2]=right-renderStyle[0]; renderStyle[3]=bottom-renderStyle[1];
+        }
+    }
+    hasFrame=true; renderedCanvas=myCanvas; renderedDisplay=myCanvas->tft;
+    drawBorder(); // Restore the frame after dynamic content, including square waves.
 }
 
 int TrendBase::maxOf(const uint8_t* values){
