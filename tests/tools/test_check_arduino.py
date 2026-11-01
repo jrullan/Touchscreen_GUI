@@ -24,6 +24,9 @@ class CleanBuildTest(unittest.TestCase):
         self.assertTrue(builds)
         self.assertTrue(any(Path(args[-1]).name == 'touch_mapper' for args in builds),
                         'Opt-in touch mapper must compile in the compatibility matrix')
+        for fixture in ('touch_ft6206', 'touch_stmpe610'):
+            self.assertTrue(any(Path(args[-1]).name == fixture for args in builds),
+                            fixture + ' must compile against the real controller API')
         for args in builds:
             self.assertIn('--clean', args)
             self.assertIn('--library', args)
