@@ -7,7 +7,7 @@ r=Path(__file__).resolve().parents[1];out=Path(a.output).resolve();out.mkdir(par
 subprocess.run([a.cli,'version'],check=True)
 subprocess.run([a.cli,'core','list'],check=True)
 subprocess.run([a.cli,'lib','list'],check=True)
-sketches=[(n,r/'tests/arduino'/n) for n in ('display','input','terminal','trend','sizes','touch_mapper','touch_ft6206','touch_stmpe610')]
+sketches=[(n,r/'tests/arduino'/n) for n in ('display','input','terminal','trend','sizes','touch_mapper','touch_ft6206','touch_stmpe610','keyboard')]
 sketches.append(('instrumentation',r/'examples/Phase01_Baseline'))
 if a.dashboard:sketches.append(('dashboard',a.dashboard.resolve()))
 for name,sketch in sketches:
