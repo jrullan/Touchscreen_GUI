@@ -1,6 +1,22 @@
 #include "TrendBase.h"
 #include <stdio.h>
 
+namespace {
+// Isolate classic 6x8 glyph state from the caller's font/cursor/style. This
+// lightweight stack object owns no pixels and never changes the shared TFT.
+// Only the common GFX drawPixel API is required (also by the STM32 AS backend).
+class XAxisGlyphs : public Adafruit_GFX {
+public:
+    explicit XAxisGlyphs(Guitft& tft)
+        : Adafruit_GFX(tft.width(), tft.height()), tft_(tft) {}
+    void drawPixel(int16_t x, int16_t y, uint16_t color) override {
+        tft_.drawPixel(x, y, color);
+    }
+private:
+    Guitft& tft_;
+};
+}
+
 TrendBase::TrendBase(){
 }
 
@@ -96,35 +112,67 @@ void TrendBase::drawYScale(){
 	}
 }
 
+int TrendBase::xScaleLabel(int offset, int& textX){
+	const int span = trendWindow.maxValue-trendWindow.minValue;
+	if(maxX > 0){
+		// maxX is seconds, not a millis() timestamp. Widen before multiplying.
+		const int secs = span ? (int)((int64_t)offset*maxX/span) : 0;
+		if(secs < 60) setNum(secs);
+		else snprintf(buf,BUF_SIZE+1,"%d:%02d",secs/60,secs%60);
+	}else setNum(trendWindow.minValue+offset);
+	// XAxisGlyphs renders size-one classic cells irrespective of the caller's
+	// GFX font or Widget::fontSize. Do not narrow text widths to a byte.
+	const int width = (int)strlen(buf)*FONT_X;
+	if(width > w) return 0;
+	textX = constrain(getXVal(trendWindow.minValue+offset)-width/2, x, x+w-width);
+	return width;
+}
+
 void TrendBase::drawXScale(){
 	if(!canDraw() || !buf || !showXScale || w <= chartX() || h <= 0 || !maxValues) return;
 	setWindow(trendWindow.minValue, trendWindow.maxValue);
+	const int height = chartH();
+	// No allocated scale strip: never send negative positions to uint16 APIs.
+	if(height < 0) return;
 	const int span = trendWindow.maxValue-trendWindow.minValue;
-	const int yPos = y+chartH()+borderWidth;
-	myCanvas->tft->fillRect(x,y+chartH(),w,xScaleHeight,bgColor);
+	const int yPos = y+height+borderWidth;
+	const int tickRoom = y+h-yPos;
+	myCanvas->tft->fillRect(x,y+height,w,h-height,bgColor);
+	if(yPos < y || tickRoom <= 0) return;
+	const int textY = min(yPos+10+FONT_Y,y+h-FONT_Y);
+	const bool textFits = textY >= yPos+10;
+	const int gap = 2;
+	int rightX = 0, leftX = 0;
+	const int rightWidth = xScaleLabel(0,rightX);
+	const int leftWidth = span ? xScaleLabel(span,leftX) : 0;
+	// Reserve the oldest endpoint only if it can coexist with the newest.
+	const bool reserveLeft = leftWidth && (!rightWidth || leftX+leftWidth+gap <= rightX);
+	int nextRight = x+w+gap;
 	const int width = w-chartX()-2*borderWidth;
-#if defined(__STM32F1__)
-	const int majorStep = width >= 10 ? width/10 : 1;
-#else
-	const int majorStep = 2;
-#endif
 	const int minorStep = width >= 15 ? width/15 : 1;
+	XAxisGlyphs glyphs(*myCanvas->tft);
 	for(int offset = 0; offset <= span; ++offset){
-		const int index = trendWindow.minValue+offset;
-		const int xp = getXVal(index);
-		if(offset == 0 || offset == span || offset%majorStep == 0){
-			myCanvas->tft->drawVerticalLine(xp,yPos,10,borderColor);
-			if(maxX > 0){
-				const int secs = span ? (int)((int64_t)offset*maxX/span) : 0;
-				if(secs < 60) setNum(secs);
-				else snprintf(buf,BUF_SIZE+1,"%d:%02d",secs/60,secs%60);
-			}else setNum(index);
-			int tx = xp-getTextLength(buf)*(FONT_X/2);
-			if(tx < x) tx = x;
-			myCanvas->tft->drawString(buf,tx,yPos+10+FONT_Y,1,borderColor);
-		}else if(offset%minorStep == 0){
-			myCanvas->tft->drawVerticalLine(xp,yPos,5,borderColor);
+		const int xp = getXVal(trendWindow.minValue+offset);
+		if(xp < x || xp >= x+w) continue;
+		bool labeled = false;
+		// Preserve classic even-offset candidates and endpoints; thin using
+		// their rendered rectangles, not an architecture-specific sample step.
+		if(textFits && (offset == 0 || offset == span || offset%2 == 0)){
+			int tx = 0;
+			const int tw = xScaleLabel(offset,tx);
+			if(tw && tx+tw+gap <= nextRight &&
+			   (!reserveLeft || offset == span || tx >= leftX+leftWidth+gap)){
+				for(int i = 0; buf[i]; ++i)
+					glyphs.drawChar(tx+i*FONT_X,textY,
+						static_cast<unsigned char>(buf[i]),borderColor,borderColor,1);
+				nextRight = tx;
+				labeled = true;
+			}
 		}
+		if(labeled || offset == 0 || offset == span)
+			myCanvas->tft->drawVerticalLine(xp,yPos,min(10,tickRoom),borderColor);
+		else if(offset%minorStep == 0)
+			myCanvas->tft->drawVerticalLine(xp,yPos,min(5,tickRoom),borderColor);
 	}
 }
 

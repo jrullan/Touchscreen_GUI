@@ -27,7 +27,7 @@ IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const ui
 	setLabel(_label);
 	fgColor = WHITE;
 	type = 0x35;
-	debounceTime = DEBOUNCE;
+	debounceTime = DEFAULT_DEBOUNCE_MS;
 	isButton = true;
 	isRound = false;
 	touched = false;

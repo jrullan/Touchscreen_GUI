@@ -35,10 +35,6 @@
 #include "Canvas.h"
 #include "Button.h"
 
-#if !defined(DEBOUNCE)
-#define DEBOUNCE 200
-#endif
-
 class IconButton : public Button
 {
 
@@ -56,6 +52,8 @@ public:
 	bool useTransparency = true;
 	
 private:
+	// Local default: independent of Canvas's DEBOUNCE; setDebounce(0) is valid.
+	static const unsigned int DEFAULT_DEBOUNCE_MS = 500;
 
 };
 #endif

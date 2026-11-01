@@ -1,7 +1,7 @@
 #pragma once
 #include "Arduino.h"
+#include "Adafruit_GFX.h"
 #include <vector>
-struct HostDraw {std::string name; int x,y,w,h; uint16_t color;};
 class Adafruit_ILI9341 {
  int width_=240,height_=320,cx=0,cy=0,sz=1;uint16_t fg=0xffff;
  public:
@@ -11,7 +11,7 @@ class Adafruit_ILI9341 {
  virtual ~Adafruit_ILI9341()=default;
  void begin(uint32_t=0){} int16_t width()const{return width_;} int16_t height()const{return height_;}
  void setRotation(uint8_t r){width_=(r&1)?320:240;height_=(r&1)?240:320;}
- void drawPixel(int16_t x,int16_t y,uint16_t c){if(x>=0&&y>=0&&x<width_&&y<height_)pixels[y*width_+x]=c;}
+ void drawPixel(int16_t x,int16_t y,uint16_t c){hostGlyphDestination=&ops;if(x>=0&&y>=0&&x<width_&&y<height_)pixels[y*width_+x]=c;}
  void writePixel(int16_t x,int16_t y,uint16_t c){drawPixel(x,y,c);}
  void fillRect(int16_t x,int16_t y,int16_t w,int16_t h,uint16_t c){ops.push_back({"fillRect",x,y,w,h,c});for(int yy=max(0,(int)y);yy<min((int)height_,y+(int)h);++yy)for(int xx=max(0,(int)x);xx<min((int)width_,x+(int)w);++xx)drawPixel(xx,yy,c);}
  void fillScreen(uint16_t c){fillRect(0,0,width_,height_,c);}
