@@ -11,6 +11,8 @@ jobs:
         run: python3 tests/tools/test_check_arduino.py
       - name: Address, undefined behavior and leak regression tests
         run: python3 tests/host/run.py
+      - name: Actual bundled XPT2046 lifecycle, mapping and cache regressions
+        run: python3 tests/xpt2046/run.py
       - name: Fetch pinned real Adafruit GFX rasterizer
         uses: actions/checkout@v4
         with:
