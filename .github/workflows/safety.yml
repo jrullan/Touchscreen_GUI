@@ -31,3 +31,7 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run_widgets.py
+      - name: Keyboard glyph bounds, restoration and shared-font regressions
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run_keyboard.py
