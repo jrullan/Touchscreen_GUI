@@ -82,8 +82,8 @@ public:
 	virtual ~Canvas();
 	
 	// Methods
-	void portrait();
-	void landscape();
+	virtual void portrait();
+	virtual void landscape();
 	// Non-owning: remove widgets before either side dies if the other remains usable.
 	// Each widget belongs to one registry; duplicate adds here are ignored.
 	void add(Widget* widget, int x, int y, uint8_t show = true);

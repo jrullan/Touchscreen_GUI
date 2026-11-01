@@ -22,6 +22,8 @@ class CleanBuildTest(unittest.TestCase):
                 runpy.run_path(str(root / 'tools/check_arduino.py'), run_name='__main__')
         builds = [args for args in calls if 'compile' in args]
         self.assertTrue(builds)
+        self.assertTrue(any(Path(args[-1]).name == 'touch_mapper' for args in builds),
+                        'Opt-in touch mapper must compile in the compatibility matrix')
         for args in builds:
             self.assertIn('--clean', args)
             self.assertIn('--library', args)
