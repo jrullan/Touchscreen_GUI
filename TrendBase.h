@@ -68,6 +68,9 @@ class TrendBase : public Indicator{
 		void drawBorder();
 		void drawYScale();
 		void drawXScale();
+		// Format a legacy X candidate and measure its fixed size-one classic cell
+		// footprint. Returns zero when the complete label cannot fit the widget.
+		int xScaleLabel(int offset, int& textX);
 		void drawThresholdLines(bool colors);
 		void drawGridlines();
 		// Plot one series' current window. Pass bgColor to erase it.

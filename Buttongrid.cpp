@@ -228,14 +228,16 @@ bool Buttongrid::checkTouch(Point* p){
 								drawLabel(id);
 							}
 						}else{
-							if ((config&BUTTONGRID_HIGHLIGHT) && canDraw() && (lastPressed != 0) && lastPressed <= allocatedCount){
-								// Restore last button pressed appearance
-								int cIndex = getColumn(lastPressed) - 1;
-								int rIndex = getRow(lastPressed) - 1;
-								int lastX = x + btnWidth*cIndex + borderWidth*(cIndex + 1);
-								int lastY = y + btnHeight*rIndex + borderWidth*(rIndex + 1);
-								myCanvas->tft->fillRect(lastX,lastY,btnWidth,btnHeight,bgColor);
-								drawLabel(lastPressed);
+							if ((config&BUTTONGRID_HIGHLIGHT) && canDraw()){
+								if ((lastPressed != 0) && lastPressed <= allocatedCount){
+									// Restore last button pressed appearance
+									int cIndex = getColumn(lastPressed) - 1;
+									int rIndex = getRow(lastPressed) - 1;
+									int lastX = x + btnWidth*cIndex + borderWidth*(cIndex + 1);
+									int lastY = y + btnHeight*rIndex + borderWidth*(rIndex + 1);
+									myCanvas->tft->fillRect(lastX,lastY,btnWidth,btnHeight,bgColor);
+									drawLabel(lastPressed);
+								}
 								myCanvas->tft->fillRect(boundX1,boundY1,btnWidth,btnHeight,highlightColor);
 								drawLabel(id);
 							}

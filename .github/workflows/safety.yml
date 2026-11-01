@@ -9,6 +9,8 @@ jobs:
         run: python3 tests/host/check_returns.py
       - name: Exact-library clean-build command regression
         run: python3 tests/tools/test_check_arduino.py
+      - name: Portable icon declarations and flash-storage regression tests
+        run: python3 tests/tools/test_icons.py
       - name: Address, undefined behavior and leak regression tests
         run: python3 tests/host/run.py
       - name: Actual bundled XPT2046 lifecycle, mapping and cache regressions
@@ -35,3 +37,7 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run_keyboard.py
+      - name: Chart X-axis spacing, glyph bounds and shared-font regressions
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run_xaxis.py

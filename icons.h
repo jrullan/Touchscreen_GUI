@@ -5,17 +5,17 @@
  * the underlying Adafruit_GFX library
  * uses drawRGBBitmap() method to draw from
  * program memory.
- * In AVR processors such as Arduino UNO ATMega328P
- * the image has to be stored using PROGMEM.
- * In ESP8266 and ESP32 you just have to declare them
- * as const.
+ * AVR and ESP8266 require PROGMEM (provided by Arduino.h) for flash storage.
+ * ESP32 and other memory-mapped targets use ordinary const arrays.
+ * IconButton reads these pixels with pgm_read_word on every target.
+ * Keep these asset definitions in one translation unit to avoid duplicate copies.
  */
  
 //60x30
 //const uint16_t slider_on[] = {
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
   const uint16_t slider_on[] PROGMEM = {
-#elif defined(ESP8266) || defined(ESP32)
+#else
   const uint16_t slider_on[] = {
 #endif
   0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x632c, 0x5bab, 0x5bab, 0x53ca, 0x53ea, 0x540a, 
@@ -135,9 +135,9 @@
 
 //60x30
 //const uint16_t slider_off[] = {
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
   const uint16_t slider_off[] PROGMEM = {
-#elif defined(ESP8266) || defined(ESP32)
+#else
   const uint16_t slider_off[] = {
 #endif	
   0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x632c, 0x738e, 0x738e, 0x73ae, 0x7bcf, 0x7bcf, 
@@ -257,9 +257,9 @@
 
 //50x50
 //const uint16_t on_full[] = {
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
   const uint16_t on_full[] PROGMEM = {
-#elif defined(ESP8266) || defined(ESP32)
+#else
   const uint16_t on_full[] = {
 #endif
   0x0000, 0x0000, 0x0000, 0x000f, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 0x0010, 
@@ -423,9 +423,9 @@
 
 //50x50
 //const uint16_t off_full[] = {
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
   const uint16_t off_full[] PROGMEM = {
-#elif defined(ESP8266) || defined(ESP32)
+#else
   const uint16_t off_full[] = {
 #endif
   0x0000, 0x0000, 0x0000, 0x7800, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 
@@ -589,9 +589,9 @@
 
 //50x50
 //const uint16_t lightbulb_on[] = {
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
   const uint16_t lightbulb_on[] PROGMEM = {
-#elif defined(ESP8266) || defined(ESP32)
+#else
   const uint16_t lightbulb_on[] = {
 #endif	
   0x0000, 0x0000, 0x0000, 0x7bef, 0x8410, 0x7bef, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 
@@ -755,9 +755,9 @@
 
 //50x50
 //const uint16_t lightbulb_off[] = {
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
   const uint16_t lightbulb_off[] PROGMEM = {
-#elif defined(ESP8266) || defined(ESP32)
+#else
   const uint16_t lightbulb_off[] = {
 #endif
   0x0000, 0x0000, 0x0000, 0x7bef, 0x8410, 0x7bef, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 0x8410, 
