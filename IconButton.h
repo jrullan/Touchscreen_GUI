@@ -39,7 +39,7 @@ class IconButton : public Button
 {
 
 public:
-	IconButton(int _width, int _height, const uint16_t* imageUnpressed, const uint16_t* imagePressed = NULL, char* label = (char*)"");
+	IconButton(int _width, int _height, const uint16_t* imageUnpressed, const uint16_t* imagePressed = NULL, char* label = (char*)"", TextStorage storage = TextStorage::Default);
 	~IconButton();
 	
 	void show();

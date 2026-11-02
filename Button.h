@@ -24,7 +24,11 @@ class Button : public Widget
 public:
 
 	//Button(unsigned char textLength = 8);
+	// Explicit opt-out for widgets that do not use inherited Button text.
+	// None leaves public contents null; text APIs stay inert (no lazy allocation).
+	enum class TextStorage : uint8_t { Default, None };
 	Button();
+	explicit Button(TextStorage storage);
 	Button(char* text, char* label = 0);
 	Button(unsigned int width, unsigned int height, int backgroundColor, int textColor, int borderColor, unsigned char textLength = 8);
 	Button(unsigned int radius, int backgroundColor, int textColor, int borderColor);
@@ -54,6 +58,7 @@ public:
 	
 	//Attributes
 	// Owned pointers: do not delete/free/rebind; use setText/setLabel.
+	// contents may be null on OOM or explicit TextStorage::None.
 	Text* contents;		// changed from a Text object to a pointer: 6 bytes less in Program Memory and 4 less bytes in RAM
 	char* label = 0;	// had to initilize to zero to avoid trying to get it in getLabelSize if not initialized
 	char labelPos = LABEL_LEFT; //label position: 0-left, 1-top, 2-right, 3-bottom

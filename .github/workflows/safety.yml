@@ -45,3 +45,9 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run_icon_runs.py
+      - name: Optional raster runner environment regression
+        run: python3 tests/tools/test_optional_raster_runner.py
+      - name: Opt-out text storage preserves keyboard and icon pixels
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/host/run_optional_raster.py

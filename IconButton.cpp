@@ -22,7 +22,7 @@ void writeIconRun(Display& display, int16_t x, int16_t y, int16_t w,
 }
 }
 
-IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed, char* _label){	
+IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed, char* _label, TextStorage storage) : Button(storage){
 	//Button::init();
 	/*
 	type = 0x30;

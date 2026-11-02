@@ -12,6 +12,8 @@ for name in names:
  test=ROOT/'tests/host'/('test_'+name+'.cpp')
  binary=BUILD/name
  cmd=['g++','-std=c++17','-g','-O1','-fno-omit-frame-pointer','-fno-pie','-no-pie','-fsanitize=address,undefined','-Wno-write-strings','-Wno-conversion-null','-Wno-return-type','-DARDUINO=10819','-DESP8266','-I'+str(ROOT/'tests/host/stubs'),'-I'+str(ROOT),str(test),str(ROOT/'tests/host/allocation_hooks.cpp'),*([str(ROOT/'tests/host/lifecycle_odr.cpp')] if name=='lifecycle' else []),*sources,'-Wl,--wrap=malloc,--wrap=calloc,--wrap=realloc','-o',str(binary)]
+ if name=='optional_allocations':
+  cmd += ['-DHOST_HEAP_MEASURE','-Wl,--wrap=free,--wrap=_Znwm,--wrap=_ZdlPv,--wrap=_ZdlPvm']
  print('BUILD',name,flush=True);subprocess.run(cmd,check=True)
  env=dict(os.environ,ASAN_OPTIONS='detect_leaks=1:halt_on_error=1',UBSAN_OPTIONS='halt_on_error=1:print_stacktrace=1')
  print('RUN',name,flush=True);subprocess.run([str(binary)],env=env,check=True)
