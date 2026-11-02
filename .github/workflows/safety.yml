@@ -41,3 +41,7 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run_xaxis.py
+      - name: Icon bitmap pixels, clipping, rotations and run batching
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run_icon_runs.py

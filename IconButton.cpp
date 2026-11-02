@@ -5,6 +5,23 @@
 ///////////////////////////////////////////////////////////
 #include "IconButton.h"
 
+namespace {
+// Prefer the transaction-free uniform-color primitive on modern GFX panels.
+// Legacy STM32 AS panels (and older drivers) expose only drawFastHLine.
+// Overload selection is compile-time: no buffer, runtime probe, or public API.
+template<class Display>
+auto writeIconRun(Display& display, int16_t x, int16_t y, int16_t w,
+                  uint16_t color, int)
+    -> decltype(display.writeFastHLine(x, y, w, color), void()) {
+    display.writeFastHLine(x, y, w, color);
+}
+template<class Display>
+void writeIconRun(Display& display, int16_t x, int16_t y, int16_t w,
+                  uint16_t color, long) {
+    display.drawFastHLine(x, y, w, color);
+}
+}
+
 IconButton::IconButton(int _w, int _h, const uint16_t* _imageUnpressed, const uint16_t* _imagePressed, char* _label){	
 	//Button::init();
 	/*
@@ -76,19 +93,33 @@ void IconButton::update(){
 // void Adafruit_GFX::drawRGBBitmap(int16_t x, int16_t y,
 void IconButton::drawRGBABitmap(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, int16_t h, uint16_t transparentColor) {
     if (!canDraw() || !bitmap || w <= 0 || h <= 0) return;
-	uint16_t pixelColor;
-    myCanvas->tft->startWrite();
-		for(int16_t j=0; j<h; j++, y++) {
-			for(int16_t i=0; i<w; i++ ) {
-				pixelColor = pgm_read_word(&bitmap[j*w+i]);
-				if(useTransparency){
-					if(pixelColor != transparentColor){
-						myCanvas->tft->writePixel(x+i, y, pixelColor);
-					}
-				}else{
-					myCanvas->tft->writePixel(x+i, y, pixelColor);
-				}				
-			}
-		}
-    myCanvas->tft->endWrite();
+    // Clip in wide destination coordinates before touching flash. In particular,
+    // neither x+w/y+h nor the source row product may use AVR's 16-bit int.
+    const int32_t left = x < 0 ? 0 : x;
+    const int32_t top = y < 0 ? 0 : y;
+    const int32_t rightEdge = int32_t(x) + w;
+    const int32_t bottomEdge = int32_t(y) + h;
+    const int32_t right = rightEdge < myCanvas->tft->width() ? rightEdge : myCanvas->tft->width();
+    const int32_t bottom = bottomEdge < myCanvas->tft->height() ? bottomEdge : myCanvas->tft->height();
+    if (left >= right || top >= bottom) return;
+
+    // One bounded scope, even for an all-transparent visible image: avoid a
+    // second flash pass or retained state just to eliminate an empty transaction.
+    Guitft::ScopedWrite write(*myCanvas->tft);
+    for (int32_t row = top; row < bottom; ++row) {
+        const int32_t offset = (row - int32_t(y)) * w + (left - int32_t(x));
+        int32_t runStart = left;
+        uint16_t runColor = pgm_read_word(&bitmap[offset]);
+        for (int32_t column = left + 1; column <= right; ++column) {
+            const uint16_t color = column < right
+                ? pgm_read_word(&bitmap[offset + column - left]) : 0;
+            if (column == right || color != runColor) {
+                if (!useTransparency || runColor != transparentColor)
+                    writeIconRun(*myCanvas->tft, int16_t(runStart), int16_t(row),
+                                 int16_t(column - runStart), runColor, 0);
+                runStart = column;
+                runColor = color;
+            }
+        }
+    }
 }
