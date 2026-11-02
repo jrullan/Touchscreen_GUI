@@ -27,10 +27,11 @@ class Trend : public TrendBase{
 	public:
 		//Constructor
 		Trend();
-		Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values=MAX_TREND_VALUES);
+		Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values=MAX_TREND_VALUES, HistoryStorage storage=HistoryStorage::NewestFirst);
 		~Trend();
 		
 		//Methods
+		uint8_t sample(int logicalIndex) const;
 		void init();
 		void clear();
 		void addValue(uint8_t val, bool updateTrend=true);
@@ -50,11 +51,13 @@ class Trend : public TrendBase{
 		void update();
 		
 		//Attributes
-		uint8_t* values = nullptr;  // Array of values to plot
+		uint8_t* values = nullptr;  // Default: contiguous newest-first; Circular: physical ring, use sample().
 		uint8_t vals = 0;     // number of values in the array
 		bool forcedUpdate = false;
 		
 	private:
+		HistoryStorage historyStorage = HistoryStorage::NewestFirst;
+		uint8_t headIndex = 0;
 		void fitScale(bool scale);
 		//Methods
 		void drawValues(uint16_t color);

@@ -36,7 +36,12 @@ class Terminal : public Widget {
         char* linesBuffer[MAX_LINES];
 		//char** linesBuffer;
 		
-		Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
+        // StableRows preserves borrowed row addresses (the default). RotateRows
+        // preserves row bytes/colors but borrowed pointers follow storage, not a
+        // logical row: reacquire linesBuffer[row] after any scroll or print.
+        enum class ScrollStorage : uint8_t { StableRows, RotateRows };
+        Terminal(int w, int h, uint8_t dir = TERMINAL_SCROLL_DOWN, int fontSize = 1);
+        Terminal(int w, int h, uint8_t dir, int fontSize, ScrollStorage storage);
 		~Terminal();
 		void print(char* string, uint16_t highColor = 0);
 		void printf(char* string, int num, uint16_t highColor = 0);
@@ -67,6 +72,7 @@ class Terminal : public Widget {
         Footprint renderedBounds[MAX_LINES] = {};
         bool renderedValid = false;
         bool restorePending = false;
+        ScrollStorage scrollStorage;
         struct RenderState {
             Canvas* canvas;
             Guitft* driver;

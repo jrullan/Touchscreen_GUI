@@ -6,12 +6,13 @@ Trend::Trend(){
 	init();
 }
 
-Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values)
+Trend::Trend(unsigned int width, unsigned int height, unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit, uint8_t max_trend_values, HistoryStorage storage)
 {	
 	this->setSize(width,height);
 	this->setLimits(minLimit,setpoint,maxLimit);
 	this->setColors(BLACK,BLUE,WHITE);
 	this->maxValues = max_trend_values;
+	historyStorage=storage;
 	init();
 }
 
@@ -19,6 +20,7 @@ Trend::~Trend(){ free(values); }
 
 //Methods
 void Trend::init(){
+	headIndex=0;
 	resetRenderCache();
 	TrendBase::init();
 	type = 0x23;
@@ -42,6 +44,7 @@ void Trend::init(){
 // buffer. Indicator::setNum() calls Indicator::clear() non-virtually, so
 // label rendering is unaffected.
 void Trend::clear(){
+	headIndex=0;
 	if(values){
 		memset(values,0,maxValues*sizeof(uint8_t));
 	}
@@ -53,21 +56,19 @@ void Trend::addValue(uint8_t val, bool updateTrend){
 	currentValue = val;
 
 
-	//--push value into the array
-	for(int i = maxValues; i!=0; i--){
-		if(i==1){
-			values[i-1] = val;
-		}else{
-			values[i-1] = values[i-2];
-		}
-	}
-	
+	if(historyStorage==HistoryStorage::Circular){
+        headIndex=headIndex ? headIndex-1 : maxValues-1;
+        values[headIndex]=val;
+    }else{
+        for(int i=maxValues-1;i>0;--i) values[i]=values[i-1];
+        values[0]=val;
+    }
 	if(updateTrend) update();
 }
 
 void Trend::drawTrend(){
     // Retain every intermediate layer footprint until a coherent commit.
-    retainLegacyBounds(values,1);
+    retainLegacyBounds(values,1,0,&headIndex);
 	this->drawThresholdLines(true);	
 	this->drawValues(this->fgColor);	
 }
@@ -116,15 +117,20 @@ void Trend::update(){
 	}
 	
 	if(enableAutoFit){
-		if(values[0] >= (int64_t)scaleMax - 2 || values[0] <= (int64_t)scaleMin + 2){
+		if(sample(0) >= (int64_t)scaleMax - 2 || sample(0) <= (int64_t)scaleMin + 2){
 			fitScale(true);
 		}
 	}
 	
     const int color = fgColor;
-    commitFrame(values,1,&color,0,0,0,0,0,forcedUpdate);
+    commitFrame(values,1,&color,0,0,0,0,0,forcedUpdate,&headIndex);
 }
 
 void Trend::drawValues(uint16_t color){
-	drawValuesSeries(values, color);
+	drawValuesSeries(values, color, headIndex);
+}
+
+uint8_t Trend::sample(int i) const{
+    if(!values || !maxValues || i<0 || i>=maxValues) return 0;
+    return values[((unsigned)headIndex+i)%maxValues];
 }

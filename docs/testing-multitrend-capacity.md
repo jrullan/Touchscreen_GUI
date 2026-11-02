@@ -1,5 +1,11 @@
 # MultiTrend exact-capacity characterization
 
+> Historical measurements below describe the pre-compaction baseline at `295748c`.
+> Current in-range projection caches use 16-bit slots, and the regression assertion
+> has been updated accordingly. Constructor capacity savings are unchanged; current
+> render-cache measurements, circular-history opt-in and object-size tradeoffs are
+> documented in [testing-chart-storage.md](testing-chart-storage.md).
+
 Scope: branch `test/multitrend-capacity`, base `05b3b16`. These tests characterize
 **existing behavior**, not a newly implemented optimization or a RED/GREEN feature.
 No production source or Designer source is changed. Public default remains four

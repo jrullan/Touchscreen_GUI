@@ -221,15 +221,15 @@ void TrendBase::drawThresholdLines(bool colors){
 	}
 }
 
-void TrendBase::drawValuesSeries(const uint8_t* values, uint16_t color){
+void TrendBase::drawValuesSeries(const uint8_t* values, uint16_t color, uint8_t headIndex){
 	if(!canDraw() || !buf || !values || !maxValues || w <= 0 || h <= 0) return;
 	// Validate the public window as well as setWindow() callers.
 	setWindow(trendWindow.minValue, trendWindow.maxValue);
 	const int first = constrain(trendWindow.minValue, 0, (int)maxValues-1);
 	const int last = constrain(trendWindow.maxValue, first, (int)maxValues-1);
-	int x2 = getXVal(last), y2 = getYVal(values[last]);
+	int x2 = getXVal(last), y2 = getYVal(values[((unsigned)headIndex+last)%maxValues]);
 	for(int j = last-1; j >= first; --j){
-		const int x1 = getXVal(j), y1 = getYVal(values[j]);
+		const int x1 = getXVal(j), y1 = getYVal(values[((unsigned)headIndex+j)%maxValues]);
 		if(forceSquareWaveform){
 			const int left = x1 < x2 ? x1 : x2;
 			const int top = y1 < y2 ? y1 : y2;
@@ -254,8 +254,8 @@ void TrendBase::resetRenderCache(){
     // init() releases projections, not the pixels already on the target.
     if(renderValid && renderedRadius && renderedPoints) {
         for(int s=0; s<renderedSeries; ++s) {
-            const int mx=rendered[0];
-            const int my=rendered[renderedPoints*(renderedSeries+1)+2*renderedSeries+s];
+            const int mx=projection(0);
+            const int my=projection(renderedPoints*(renderedSeries+1)+2*renderedSeries+s);
             const int right=max(renderStyle[0]+renderStyle[2],mx+renderedRadius+1);
             const int bottom=max(renderStyle[1]+renderStyle[3],my+renderedRadius+1);
             renderStyle[0]=min(renderStyle[0],mx-renderedRadius);
@@ -267,24 +267,36 @@ void TrendBase::resetRenderCache(){
     renderValid = false; renderInvalid = true;
 }
 
+int TrendBase::projection(size_t i) const{
+    if(renderedWide) return static_cast<const int*>(rendered)[i];
+    const size_t colorStart=(size_t)renderedPoints*(renderedSeries+1);
+    if(i>=colorStart && i<colorStart+2*renderedSeries)
+        return static_cast<const uint16_t*>(rendered)[i];
+    return static_cast<const int16_t*>(rendered)[i];
+}
+void TrendBase::project(size_t i,int v){
+    if(renderedWide) static_cast<int*>(rendered)[i]=v;
+    else static_cast<uint16_t*>(rendered)[i]=static_cast<uint16_t>(v);
+}
+
 void TrendBase::paintCommitted(bool erase){
     if(!rendered || !renderValid) return;
     const int n = renderedPoints, sCount = renderedSeries;
-    const int* colors = rendered + n*(sCount+1);
     for(int s=0; s<sCount; ++s){
-        const int* ys = rendered + n*(s+1);
-        const int color = erase ? renderStyle[4] : colors[s];
+        const int color = erase ? renderStyle[4] : projection(n*(sCount+1)+s);
         for(int j=n-1; j>0; --j){
+            const int x0=projection(j), x1=projection(j-1);
+            const int y0=projection(n*(s+1)+j), y1=projection(n*(s+1)+j-1);
             if(renderedSquare){
-                myCanvas->tft->drawHorizontalLine(rendered[j],ys[j],rendered[j-1]-rendered[j]+1,color);
-                myCanvas->tft->drawVerticalLine(rendered[j-1],min(ys[j],ys[j-1]),abs(ys[j]-ys[j-1])+1,color);
-            }else myCanvas->tft->drawLine(rendered[j],ys[j],rendered[j-1],ys[j-1],color);
+                myCanvas->tft->drawHorizontalLine(x0,y0,x1-x0+1,color);
+                myCanvas->tft->drawVerticalLine(x1,min(y0,y1),abs(y0-y1)+1,color);
+            }else myCanvas->tft->drawLine(x0,y0,x1,y1,color);
         }
     }
     // All lines and then all old pucks disappear before any new foreground.
     if(renderedRadius) for(int s=0; s<sCount; ++s){
-        const int mx=rendered[0], my=rendered[n*(sCount+1)+2*sCount+s];
-        myCanvas->tft->fillCircle(mx,my,renderedRadius,erase ? renderStyle[4] : colors[sCount+s]);
+        const int mx=projection(0), my=projection(n*(sCount+1)+2*sCount+s);
+        myCanvas->tft->fillCircle(mx,my,renderedRadius,erase ? renderStyle[4] : projection(n*(sCount+1)+sCount+s));
         if(erase && renderStyle[4]!=myCanvas->bgColor){
             // Widget background applies only inside the old widget. Restore
             // bounded outlying strips to the canvas before any new foreground.
@@ -311,11 +323,11 @@ void TrendBase::eraseCommitted(){
     renderInvalid = true;
 }
 
-void TrendBase::retainLegacyBounds(const uint8_t* data, int series, int radius){
+void TrendBase::retainLegacyBounds(const uint8_t* data, int series, int radius, const uint8_t* heads){
     if(!canDraw() || !buf || w<=0 || h<=0) return;
     int left=x, top=y, right=x+w, bottom=y+h;
     if(data && maxValues && radius>0) for(int s=0;s<series;++s){
-        const int mx=getXVal(trendWindow.minValue), my=getYVal(data[(size_t)s*maxValues]);
+        const int mx=getXVal(trendWindow.minValue), my=getYVal(data[(size_t)s*maxValues+(heads?heads[s]%maxValues:0)]);
         left=min(left,mx-radius); top=min(top,my-radius);
         right=max(right,mx+radius+1); bottom=max(bottom,my+radius+1);
     }
@@ -329,7 +341,7 @@ void TrendBase::retainLegacyBounds(const uint8_t* data, int series, int radius){
 }
 
 void TrendBase::commitFrame(const uint8_t* data, uint8_t series, const int* colors,
-                           int radius, int warn, int crit, int warnColor, int critColor, bool force){
+                           int radius, int warn, int crit, int warnColor, int critColor, bool force, const uint8_t* heads){
     if(!canDraw() || !buf || !data || !maxValues) return;
     setWindow(trendWindow.minValue,trendWindow.maxValue);
     const int first = trendWindow.minValue, n = trendWindow.maxValue-first+1;
@@ -361,18 +373,30 @@ void TrendBase::commitFrame(const uint8_t* data, uint8_t series, const int* colo
         renderedCanvas=myCanvas; renderedDisplay=myCanvas->tft;
         return;
     }
-    const size_t required = (size_t)n*(series+1)+3*series;
+    // Validate all coordinates and colors before narrowing; never clip public state.
+    bool wide=false;
+    const auto coordinateFits=[](int v){return v>=INT16_MIN && v<=INT16_MAX;};
+    for(int i=0;i<n;++i) if(!coordinateFits(getXVal(first+i))) wide=true;
+    for(int s=0;s<series;++s){
+        for(int i=0;i<n;++i)
+            if(!coordinateFits(getYVal(data[(size_t)s*maxValues+((heads?heads[s]:0)+first+i)%maxValues]))) wide=true;
+        const int v=data[(size_t)s*maxValues+(heads?heads[s]%maxValues:0)], color=colors?colors[s]:BLUE;
+        const int mc=crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color;
+        if(color<0 || color>UINT16_MAX || mc<0 || mc>UINT16_MAX || !coordinateFits(getYVal(v))) wide=true;
+    }
+    const size_t required=((size_t)n*(series+1)+3*series)*(wide?sizeof(int):sizeof(uint16_t));
+    if(wide!=renderedWide) full=true;
     bool changed = full;
     if(!changed){
-        for(int i=0;i<n;++i) if(rendered[i]!=getXVal(first+i)) changed=true;
+        for(int i=0;i<n;++i) if(projection(i)!=getXVal(first+i)) changed=true;
         for(int s=0;s<series;++s){
             for(int i=0;i<n;++i)
-                if(rendered[n*(s+1)+i]!=getYVal(data[(size_t)s*maxValues+first+i])) changed=true;
+                if(projection(n*(s+1)+i)!=getYVal(data[(size_t)s*maxValues+((heads?heads[s]:0)+first+i)%maxValues])) changed=true;
             const int color = colors ? colors[s] : BLUE;
-            const int v = data[(size_t)s*maxValues];
+            const int v = data[(size_t)s*maxValues+(heads?heads[s]%maxValues:0)];
             const int mc = crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color;
-            if(rendered[n*(series+1)+s]!=color || rendered[n*(series+1)+series+s]!=mc ||
-               (radius && rendered[n*(series+1)+2*series+s]!=getYVal(v))) changed=true;
+            if(projection(n*(series+1)+s)!=color || projection(n*(series+1)+series+s)!=mc ||
+               (radius && projection(n*(series+1)+2*series+s)!=getYVal(v))) changed=true;
         }
     }
     if(!changed) return;
@@ -388,7 +412,7 @@ void TrendBase::commitFrame(const uint8_t* data, uint8_t series, const int* colo
     }
     if(required>renderedCapacity){
         // Failed growth keeps the allocation owned and selects a safe full redraw.
-        int* replacement = (int*)realloc(rendered,required*sizeof(int));
+        void* replacement = realloc(rendered,required);
         if(replacement){ rendered=replacement; renderedCapacity=required; }
         else full=true;
     }
@@ -397,14 +421,16 @@ void TrendBase::commitFrame(const uint8_t* data, uint8_t series, const int* colo
     if(showGridlines) drawGridlines();
     drawThresholdLines(true);
     if(renderedCapacity>=required){
-        for(int i=0;i<n;++i) rendered[i]=getXVal(first+i);
+        renderedWide=wide;
+        renderedPoints=n; renderedSeries=series;
+        for(int i=0;i<n;++i) project(i,getXVal(first+i));
         for(int s=0;s<series;++s){
-            for(int i=0;i<n;++i) rendered[n*(s+1)+i]=getYVal(data[(size_t)s*maxValues+first+i]);
+            for(int i=0;i<n;++i) project(n*(s+1)+i,getYVal(data[(size_t)s*maxValues+((heads?heads[s]:0)+first+i)%maxValues]));
             const int color = colors ? colors[s] : BLUE;
-            const int v = data[(size_t)s*maxValues];
-            rendered[n*(series+1)+s]=color;
-            rendered[n*(series+1)+2*series+s]=getYVal(v);
-            rendered[n*(series+1)+series+s]=crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color;
+            const int v = data[(size_t)s*maxValues+(heads?heads[s]%maxValues:0)];
+            project(n*(series+1)+s,color);
+            project(n*(series+1)+2*series+s,getYVal(v));
+            project(n*(series+1)+series+s,crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color);
         }
         memcpy(renderStyle,style,sizeof(style));
         renderedPoints=n; renderedSeries=series; renderedRadius=radius;
@@ -415,9 +441,9 @@ void TrendBase::commitFrame(const uint8_t* data, uint8_t series, const int* colo
         // OOM fallback has no partial frame, no history loss and no stale cache.
         renderValid=false; renderInvalid=true;
         memcpy(renderStyle,style,sizeof(style));
-        for(int s=0;s<series;++s) drawValuesSeries(data+(size_t)s*maxValues,colors?colors[s]:BLUE);
+        for(int s=0;s<series;++s) drawValuesSeries(data+(size_t)s*maxValues,colors?colors[s]:BLUE,heads?heads[s]:0);
         if(radius) for(int s=0;s<series;++s){
-            const int v=data[(size_t)s*maxValues], color=colors?colors[s]:BLUE;
+            const int v=data[(size_t)s*maxValues+(heads?heads[s]%maxValues:0)], color=colors?colors[s]:BLUE;
             const int mx=getXVal(first), my=getYVal(v);
             myCanvas->tft->fillCircle(mx,my,radius,
                 crit && v>=crit ? critColor : warn && v>=warn ? warnColor : color);

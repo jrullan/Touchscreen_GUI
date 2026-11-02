@@ -45,11 +45,14 @@ private:
     enum class Action : uint8_t { None, Character, Backspace, Shift, Special, Space, Cancel, Accept };
     struct Cell { Action action; char character; const char* label; };
     Cell cell(unsigned int row, unsigned int col) const;
+    Cell cell(unsigned int row, unsigned int col, bool shift, bool special) const;
+    void paintModeChange(bool oldShift, bool oldSpecial);
     bool layoutValid() const;
     void paintRect(int64_t left, int64_t top, int64_t width, int64_t height, int color);
     void paintCell(unsigned int row, unsigned int col, unsigned int span, const char* label,
                    bool active = false, bool frame = true);
     void paintTextField(bool frame);
+    bool glyphVisible(unsigned int row, unsigned int col, unsigned int span, const char* label) const;
     char buffer_[KEYBOARD_BUF_SIZE + 1];
     uint8_t length_;
     Result result_ = Editing;

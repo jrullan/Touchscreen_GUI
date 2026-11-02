@@ -2,7 +2,7 @@
 
 MultiTrend::MultiTrend(unsigned int width, unsigned int height,
                        unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit,
-                       uint8_t numSeries, uint8_t max_trend_values, uint8_t maxSeries)
+                       uint8_t numSeries, uint8_t max_trend_values, uint8_t maxSeries, HistoryStorage storage)
 {	
 	if(maxSeries > MAX_MULTITREND_SERIES) maxSeries = MAX_MULTITREND_SERIES;
 	if(numSeries > maxSeries) numSeries = maxSeries;
@@ -12,6 +12,7 @@ MultiTrend::MultiTrend(unsigned int width, unsigned int height,
 	this->setLimits(minLimit,setpoint,maxLimit);
 	this->setColors(BLACK,BLUE,WHITE);
 	this->maxValues = max_trend_values;
+	historyStorage=storage;
 	init();
 }
 
@@ -21,6 +22,7 @@ MultiTrend::~MultiTrend(){
 }
 
 void MultiTrend::init(){
+	memset(headIndex,0,sizeof(headIndex));
 	if(maxSeries > MAX_MULTITREND_SERIES) maxSeries = MAX_MULTITREND_SERIES;
 	if(numSeries > maxSeries) numSeries = maxSeries;
 	resetRenderCache();
@@ -68,30 +70,32 @@ void MultiTrend::setMarkerRadius(uint8_t radius){
 }
 
 void MultiTrend::clear(){
+	memset(headIndex,0,sizeof(headIndex));
 	if(values){
 		memset(values,0,(uint32_t)maxSeries * maxValues * sizeof(uint8_t));
 	}
 }
 
 void MultiTrend::addValue(uint8_t series, uint8_t val, bool updateTrend){
-	if(!values || !maxValues || series >= maxSeries) return;
+	if(!values || !maxValues || series >= maxSeries || series >= MAX_MULTITREND_SERIES) return;
 	currentValue = val;
 	uint8_t* rowp = values + (uint32_t)series*maxValues;
 
 
-	for(int i = maxValues; i!=0; i--){
-		if(i==1){
-			rowp[i-1] = val;
-		}else{
-			rowp[i-1] = rowp[i-2];
-		}
-	}
+	if(historyStorage==HistoryStorage::Circular){
+        uint8_t& head=headIndex[series];
+        head=head ? head-1 : maxValues-1;
+        rowp[head]=val;
+    }else{
+        for(int i=maxValues-1;i>0;--i) rowp[i]=rowp[i-1];
+        rowp[0]=val;
+    }
 	if(updateTrend) update();
 }
 
 void MultiTrend::drawSeries(uint8_t series, uint16_t color){
 	if(!values) return;
-	drawValuesSeries(row(series), color);
+	drawValuesSeries(row(series), color, headIndex[series]);
 }
 
 // Draw a puck at each series' newest sample (rightmost), in the series color
@@ -114,7 +118,7 @@ void MultiTrend::drawMarkers(){
 
 void MultiTrend::drawTrend(){
     // Retain every intermediate layer footprint until a coherent commit.
-    retainLegacyBounds(values,min((int)numSeries,min((int)maxSeries,MAX_MULTITREND_SERIES)),markerRadius);
+    retainLegacyBounds(values,min((int)numSeries,min((int)maxSeries,MAX_MULTITREND_SERIES)),markerRadius,headIndex);
 	this->drawThresholdLines(true);
 	for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
 		drawSeries(s, seriesColor?seriesColor[s]:BLUE);
@@ -129,8 +133,7 @@ void MultiTrend::eraseTrend(){
 }
 
 uint8_t MultiTrend::latest(uint8_t series) const{
-	if(!values || !maxValues || series >= maxSeries) return 0;
-	return row(series)[0];            // index 0 is the newest sample (rightmost)
+	return sample(series,0);
 }
 
 int MultiTrend::getMin(uint8_t series){
@@ -177,7 +180,7 @@ void MultiTrend::update(){
 	
 	if(enableAutoFit){
 		for(uint8_t s = 0; s < numSeries && s < maxSeries && s < MAX_MULTITREND_SERIES; s++){
-			if(row(s)[0] >= (int64_t)scaleMax - 2 || row(s)[0] <= (int64_t)scaleMin + 2){
+			if(latest(s) >= (int64_t)scaleMax - 2 || latest(s) <= (int64_t)scaleMin + 2){
 				fitScale(true);
                 break;
 			}
@@ -186,5 +189,10 @@ void MultiTrend::update(){
 	
     const uint8_t count = min((int)numSeries,min((int)maxSeries,MAX_MULTITREND_SERIES));
     commitFrame(values,count,seriesColor,markerRadius,markerWarn,markerCrit,
-                markerWarnColor,markerCritColor,forcedUpdate);
+                markerWarnColor,markerCritColor,forcedUpdate,headIndex);
+}
+
+uint8_t MultiTrend::sample(uint8_t series,int i) const{
+    if(!row(series) || series>=MAX_MULTITREND_SERIES || i<0 || i>=maxValues) return 0;
+    return row(series)[((unsigned)headIndex[series]+i)%maxValues];
 }

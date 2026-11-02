@@ -66,6 +66,9 @@ void Keyboard::reset() {
 }
 
 Keyboard::Cell Keyboard::cell(unsigned int row, unsigned int col) const {
+    return cell(row, col, shiftActive, specialActive);
+}
+Keyboard::Cell Keyboard::cell(unsigned int row, unsigned int col, bool shift, bool special) const {
     if (row >= 6 || col >= 10) return {Action::None, 0, ""};
     if (row == 0) return col == 9 ? Cell{Action::Backspace, 0, "<"} : Cell{Action::None, 0, ""};
     if (row == 5) {
@@ -76,8 +79,8 @@ Keyboard::Cell Keyboard::cell(unsigned int row, unsigned int col) const {
     if (row == 4 && col == 9) return {Action::Special, 0, "#"};
     static const char lower[4][11] = {"qwertyuiop", "asdfghjkl`", "zxcvbnm,./", " -_=~?!:; "};
     static const char symbols[4][11] = {"1234567890", "!@#$%^&*()", "-_=+[]{}\\|", " ;:'\",.<> "};
-    char c = specialActive ? symbols[row-1][col] : lower[row-1][col];
-    if (!specialActive && shiftActive && c >= 'a' && c <= 'z') c -= 'a'-'A';
+    char c = special ? symbols[row-1][col] : lower[row-1][col];
+    if (!special && shift && c >= 'a' && c <= 'z') c -= 'a'-'A';
     return {Action::Character, c, nullptr};
 }
 bool Keyboard::layoutValid() const {
@@ -95,6 +98,16 @@ void Keyboard::paintRect(int64_t left, int64_t top, int64_t width, int64_t heigh
     const int64_t b = bottom < myCanvas->tft->height() ? bottom : myCanvas->tft->height();
     if (r > left && b > top) myCanvas->tft->fillRect(left, top, r-left, b-top, color);
 }
+bool Keyboard::glyphVisible(unsigned int row, unsigned int col, unsigned int span, const char* label) const {
+    const int64_t left = int64_t(x) + int64_t(w)*col/10;
+    const int64_t top = int64_t(y) + int64_t(h)*row/6;
+    const int64_t width = int64_t(w)*(col+span)/10 - int64_t(w)*col/10;
+    const int64_t height = int64_t(h)*(row+1)/6 - int64_t(h)*row/6;
+    const int64_t tw = strlen(label)*6LL*fontSize, th = 8LL*fontSize;
+    const int64_t tx = left+(width-tw)/2, ty = top+(height-th)/2;
+    return tw && tw <= width-2LL*borderWidth && th <= height-2LL*borderWidth &&
+           tx >= 0 && ty >= 0 && tx+tw <= myCanvas->tft->width() && ty+th <= myCanvas->tft->height();
+}
 void Keyboard::paintCell(unsigned int row, unsigned int col, unsigned int span, const char* label,
                          bool active, bool frame) {
     const int64_t left = int64_t(x) + int64_t(w)*col/10;
@@ -107,8 +120,7 @@ void Keyboard::paintCell(unsigned int row, unsigned int col, unsigned int span, 
     const int64_t tw = strlen(label)*6LL*fontSize, th = 8LL*fontSize;
     const int64_t tx = left+(width-tw)/2, ty = top+(height-th)/2;
     // Skip partial glyphs instead of relying on GFX wrapping or narrowing coordinates.
-    if (tw && tw <= width-2LL*borderWidth && th <= height-2LL*borderWidth &&
-        tx >= 0 && ty >= 0 && tx+tw <= myCanvas->tft->width() && ty+th <= myCanvas->tft->height()) {
+    if (glyphVisible(row,col,span,label)) {
         KeyboardGlyphs glyphs(*myCanvas->tft);
         for (unsigned int i = 0; label[i]; ++i)
             glyphs.drawChar(tx + i*6LL*fontSize, ty,
@@ -135,6 +147,26 @@ void Keyboard::drawFrame() {
                   (key.action == Action::Shift && shiftActive) || (key.action == Action::Special && specialActive));
     }
     paintCell(5,0,6,"Space"); paintCell(5,6,2,"Cancel"); paintCell(5,8,2,"OK");
+}
+void Keyboard::paintModeChange(bool oldShift, bool oldSpecial) {
+    if (!layoutValid()) return;
+    for (unsigned int row=1; row<=4; ++row) for (unsigned int col=0; col<10; ++col) {
+        const Cell before = cell(row,col,oldShift,oldSpecial), after = cell(row,col);
+        const bool wasActive = (before.action == Action::Shift && oldShift) ||
+                               (before.action == Action::Special && oldSpecial);
+        const bool active = (after.action == Action::Shift && shiftActive) ||
+                            (after.action == Action::Special && specialActive);
+        const uint16_t oldBackground = wasActive ? highlightColor : bgColor;
+        const uint16_t background = active ? highlightColor : bgColor;
+        if (oldBackground == background &&
+            (before.character == after.character || uint16_t(fgColor) == background)) continue;
+        char glyph[2] = {after.character,0};
+        const char* label = after.label ? after.label : glyph;
+        // Mode-dependent character labels are all one classic-font cell wide.
+        // A skipped/clipped glyph has no rendered output to invalidate.
+        if (oldBackground == background && !glyphVisible(row,col,1,label)) continue;
+        paintCell(row,col,1,label,active,false);
+    }
 }
 void Keyboard::show() {
     if (!sessionValid_) return;
@@ -220,6 +252,7 @@ bool Keyboard::checkTouch(Point* p) {
     const unsigned int col = ((dx+1)*10-1)/w, row = ((dy+1)*6-1)/h;
     const Cell key = cell(row,col);
     const uint8_t previousLength = length_;
+    const bool oldShift = shiftActive, oldSpecial = specialActive;
     switch (key.action) {
     case Action::Character: append(key.character); break;
     case Action::Backspace: deleteChar(); break;
@@ -233,6 +266,7 @@ bool Keyboard::checkTouch(Point* p) {
     // Each text action can only append one byte or delete one byte, so length
     // detects changes without a second buffer/cache. Modes need new key labels.
     if (length_ != previousLength) paintTextField(false);
-    else if (key.action == Action::Shift || key.action == Action::Special) drawFrame();
+    else if (key.action == Action::Shift || key.action == Action::Special)
+        paintModeChange(oldShift,oldSpecial);
     return false;
 }
