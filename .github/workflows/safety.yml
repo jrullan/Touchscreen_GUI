@@ -51,3 +51,7 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/host/run_optional_raster.py
+      - name: MultiTrend exact-capacity pixel equivalence
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run_multitrend_capacity.py
