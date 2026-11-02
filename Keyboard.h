@@ -12,14 +12,17 @@ static_assert(KEYBOARD_BUF_SIZE >= 1 && KEYBOARD_BUF_SIZE <= 255,
 class Keyboard : public Button {
 public:
     Keyboard();
+    explicit Keyboard(TextStorage storage);
     Keyboard(unsigned int width, unsigned int height, int backgroundColor,
-             int textColor, int borderColor);
+             int textColor, int borderColor, TextStorage storage = TextStorage::Default);
     void init();
     void append(char c);
     void deleteChar();
     void clear();
     void reset();
     bool setText(const char* text);
+    // Hides Button::getText(): this view is the independent edit buffer,
+    // not public inherited contents (null with TextStorage::None).
     const char* getText() const { return buffer_; }
     uint8_t getTextSize() const { return length_; }
     enum Result { Editing, Accepted, Cancelled };

@@ -21,9 +21,10 @@ private:
 };
 }
 
-Keyboard::Keyboard() : Button() { init(); }
+Keyboard::Keyboard() : Keyboard(TextStorage::Default) {}
+Keyboard::Keyboard(TextStorage storage) : Button(storage) { init(); }
 Keyboard::Keyboard(unsigned int width, unsigned int height, int backgroundColor,
-                   int textColor, int borderColor) : Button() {
+                   int textColor, int borderColor, TextStorage storage) : Button(storage) {
     init();
     w = width <= INT_MAX ? static_cast<int>(width) : 0;
     h = height <= INT_MAX ? static_cast<int>(height) : 0;

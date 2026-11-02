@@ -21,10 +21,12 @@
 /*
  * Basic Constructor, no parameters
  */
-Button::Button(){
-	contents = new (std::nothrow) Text(8);
+Button::Button(TextStorage storage){
+	contents = storage == TextStorage::None ? nullptr : new (std::nothrow) Text(8);
 	init();
 }
+
+Button::Button() : Button(TextStorage::Default) {}
 
 /*
  * Constructor with initial "Text" and optional "Label"
