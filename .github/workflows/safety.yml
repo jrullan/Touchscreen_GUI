@@ -55,3 +55,17 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run_multitrend_capacity.py
+      - name: Selective Keyboard mode repaint pixels and drawing counts
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run_keyboard_modes.py
+      - name: Terminal lower-copy scroll equivalence
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: |
+          python3 tests/rasterized/run_terminal_scroll.py --host
+          python3 tests/rasterized/run_terminal_scroll.py
+      - name: Chart compact cache and circular history equivalence
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: python3 tests/rasterized/run_chart_storage.py

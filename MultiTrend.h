@@ -26,7 +26,8 @@ class MultiTrend : public TrendBase{
 		MultiTrend(unsigned int width, unsigned int height,
 		           unsigned int minLimit, unsigned int setpoint, unsigned int maxLimit,
 		           uint8_t numSeries = 3, uint8_t max_trend_values = MAX_TREND_VALUES,
-		           uint8_t maxSeries = MAX_MULTITREND_SERIES);
+		           uint8_t maxSeries = MAX_MULTITREND_SERIES,
+		           HistoryStorage storage=HistoryStorage::NewestFirst);
 		~MultiTrend();
 
 		//Methods
@@ -50,6 +51,7 @@ class MultiTrend : public TrendBase{
 		// Newest sample (index 0 = rightmost) of a series, for host overlays
 		// (severity dots, % readouts) without reaching into the history layout.
 		uint8_t latest(uint8_t series) const;
+		uint8_t sample(uint8_t series, int logicalIndex) const;
 		int  latestX() { return getXVal(trendWindow.minValue); }
 		int  latestY(uint8_t series) { return getYVal(latest(series)); }
 
@@ -60,7 +62,7 @@ class MultiTrend : public TrendBase{
 		//Attributes
 		uint8_t  numSeries;
 		uint8_t  maxSeries;
-		uint8_t* values = nullptr;        // [maxSeries][maxValues], series-major
+		uint8_t* values = nullptr;        // [maxSeries][maxValues]; Circular rows are physical rings, use sample().
 		int*     seriesColor = nullptr;   // [maxSeries]
 		bool     forcedUpdate = false;
 		uint8_t  markerRadius = 0;   // draw a puck at each series' newest sample (0=off)
@@ -72,6 +74,8 @@ class MultiTrend : public TrendBase{
 		int      markerCritColor = 0xF8CE;   // red
 
 	private:
+		HistoryStorage historyStorage = HistoryStorage::NewestFirst;
+		uint8_t headIndex[MAX_MULTITREND_SERIES] = {};
 		void fitScale(bool scale);
 		//Methods
 		void drawSeries(uint8_t series, uint16_t color);

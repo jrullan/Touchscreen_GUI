@@ -22,7 +22,11 @@ void terminalBounds(Driver*, const char* text, int16_t x, int16_t y,
 }
 }
 
-Terminal::Terminal(int width, int height, uint8_t dir, int size) {
+Terminal::Terminal(int width, int height, uint8_t dir, int size)
+    : Terminal(width, height, dir, size, ScrollStorage::StableRows) {}
+
+Terminal::Terminal(int width, int height, uint8_t dir, int size, ScrollStorage storage)
+    : scrollStorage(storage) {
     w = width > 0 ? width : 0;
     h = height > 0 ? height : 0;
     // Keep public byte-sized font geometry representable.
@@ -89,6 +93,18 @@ void Terminal::scroll() {
     if (direction == TERMINAL_SCROLL_DOWN) scrollDown(); else scrollUp();
 }
 void Terminal::scrollDown() {
+    if (scrollStorage == ScrollStorage::RotateRows && lines > 1) {
+        char* recycled = linesBuffer[lines - 1];
+        for (int line = (int)lines - 1; line > 0; --line) {
+            linesBuffer[line] = linesBuffer[line - 1];
+            linesColors[line] = linesColors[line - 1];
+        }
+        linesBuffer[0] = recycled;
+        // Public scroll duplicates the exposed edge; it does not blank it.
+        // Copy its entire capacity, including caller-visible bytes after NUL.
+        memcpy(recycled, linesBuffer[1], (size_t)maxCharacters + 1);
+        return;
+    }
     for (int line = (int)lines - 1; line > 0; --line) {
         if (linesBuffer[line] && linesBuffer[line - 1])
             memmove(linesBuffer[line], linesBuffer[line - 1], (size_t)maxCharacters + 1);
@@ -96,6 +112,16 @@ void Terminal::scrollDown() {
     }
 }
 void Terminal::scrollUp() {
+    if (scrollStorage == ScrollStorage::RotateRows && lines > 1) {
+        char* recycled = linesBuffer[0];
+        for (int line = 0; line + 1 < lines; ++line) {
+            linesBuffer[line] = linesBuffer[line + 1];
+            linesColors[line] = linesColors[line + 1];
+        }
+        linesBuffer[lines - 1] = recycled;
+        memcpy(recycled, linesBuffer[lines - 2], (size_t)maxCharacters + 1);
+        return;
+    }
     for (int line = 0; line + 1 < lines; ++line) {
         if (linesBuffer[line] && linesBuffer[line + 1])
             memmove(linesBuffer[line], linesBuffer[line + 1], (size_t)maxCharacters + 1);

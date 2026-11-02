@@ -28,6 +28,8 @@
 #endif
 #endif
 
+enum class HistoryStorage : uint8_t { NewestFirst, Circular };
+
 class TrendBase : public Indicator{
 	public:
 		TrendBase();
@@ -74,7 +76,7 @@ class TrendBase : public Indicator{
 		void drawThresholdLines(bool colors);
 		void drawGridlines();
 		// Plot one series' current window. Pass bgColor to erase it.
-		void drawValuesSeries(const uint8_t* values, uint16_t color);
+		void drawValuesSeries(const uint8_t* values, uint16_t color, uint8_t headIndex=0);
 		int  minOf(const uint8_t* values);
 		int  maxOf(const uint8_t* values);
 
@@ -84,14 +86,16 @@ class TrendBase : public Indicator{
 
 		void commitFrame(const uint8_t* data, uint8_t series, const int* colors,
 		                 int radius=0, int warn=0, int crit=0,
-		                 int warnColor=0, int critColor=0, bool force=false);
+		                 int warnColor=0, int critColor=0, bool force=false, const uint8_t* heads=nullptr);
 		void eraseCommitted();
 		void resetRenderCache();
-		void retainLegacyBounds(const uint8_t* data, int series, int radius=0);
+		void retainLegacyBounds(const uint8_t* data, int series, int radius=0, const uint8_t* heads=nullptr);
 
 	private:
-		int* rendered = nullptr; // shared X[N], Y[S*N], colors[S], marker colors[S], marker Y[S]
-		size_t renderedCapacity = 0;
+		void* rendered = nullptr; // shared X[N], Y[S*N], colors[S], marker colors[S], marker Y[S]
+		size_t renderedCapacity = 0; // bytes, not slots
+		int projection(size_t index) const;
+		void project(size_t index, int value);
 		int renderStyle[36] = {};
 		int renderedPoints = 0, renderedSeries = 0, renderedRadius = 0;
 		bool renderedSquare = false, renderValid = false, renderInvalid = true, hasFrame = false;
@@ -105,6 +109,8 @@ class TrendBase : public Indicator{
 	protected:
 		byte yScaleWidth  = 4 * FONT_X + 10; // four chars + 10px tick
 		byte xScaleHeight = 2 * FONT_Y + 10 + borderWidth;
+	private:
+		bool renderedWide = false; // use tail padding rather than growing legacy objects
 };
 
 #endif // TRENDBASE_H

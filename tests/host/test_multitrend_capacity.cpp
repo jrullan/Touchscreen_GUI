@@ -29,7 +29,7 @@ static HostHeapStats measure(int s, int n, bool exact, CapacityCanvas& canvas) {
         for(int k=0;k<n;++k) for(int j=0;j<s;++j) m.addValue(j,(k+j*23)%101,false);
         m.setMarkerRadius(2); m.show();
         render=host_heap_stats();
-        const size_t cache=(n*(s+1)+3*s)*sizeof(int);
+        const size_t cache=(n*(s+1)+3*s)*sizeof(uint16_t);
         assert(render.calls==ctor.calls+1);
         assert(render.retained==ctor.retained+cache);
         for(int j=0;j<s;++j) m.addValue(j,71+j,false);
