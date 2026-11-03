@@ -192,20 +192,22 @@ void Button::drawBorder(){
  */
 void Button::drawLabel(){
     if (!canDraw()) return;
-	int xl=0;
-	int yl=0;
+	int64_t xl=0;
+	int64_t yl=0;
 	int labelWidth=getLabelSize();
 	int labelHeight = fontSize * FONT_Y;
 	
 	// Draw label
 	if(labelWidth > 0){
 		if(labelPos == LABEL_TOP){ // top
-		
+			xl = static_cast<int64_t>(x) + (static_cast<int64_t>(w)-labelWidth)/2;
+			yl = static_cast<int64_t>(y) - labelHeight - FONT_SPACE*fontSize/2;
 		}else if(labelPos == LABEL_RIGHT){ // right
 			xl = x + w + FONT_SPACE*fontSize/2;
 			yl = y+(h-labelHeight)/2;
 		}else if(labelPos == LABEL_BOTTOM){ // bottom
-			
+			xl = static_cast<int64_t>(x) + (static_cast<int64_t>(w)-labelWidth)/2;
+			yl = static_cast<int64_t>(y) + h + FONT_SPACE*fontSize/2;
 		}else{ 	// default LABEL_LEFT 
 			xl = x-(labelWidth + FONT_SPACE*fontSize/2);
 			yl = y+(h-labelHeight)/2;	
@@ -215,7 +217,8 @@ void Button::drawLabel(){
 		if(xl > 0 && xl <= (myCanvas->w - labelWidth) && yl>0 && yl <= (myCanvas->h - labelHeight)){
 			myCanvas->tft->drawString(label,xl,yl,fontSize,fgColor);
 		}else{	// if not within screen area draw a red rectangle around the button as a warning
-			myCanvas->tft->fillRect(x-4,y-4,w+8,h+8,RED);
+			myCanvas->tft->fillRect(static_cast<int64_t>(x)-4,static_cast<int64_t>(y)-4,
+			                      static_cast<int64_t>(w)+8,static_cast<int64_t>(h)+8,RED);
 		}
 	}
 }
