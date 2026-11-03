@@ -4,7 +4,15 @@
 #include <vector>
 class Adafruit_ILI9341 {
  int width_=240,height_=320,cx=0,cy=0,sz=1;uint16_t fg=0xffff;
+ protected:
+ const void* gfxFont=nullptr; bool wrap=true, _cp437=false; uint8_t rotation=0;
  public:
+ void setFont(const void* f=nullptr){gfxFont=f;}
+ void setTextWrap(bool w){wrap=w;}
+ void drawChar(int16_t x,int16_t y,unsigned char c,uint16_t color,uint16_t bg,uint8_t size){
+  ops.push_back({std::string("char:")+(char)c,x,y,6*size,8*size,color});
+  for(int yy=y;yy<y+8*size;++yy)for(int xx=x;xx<x+6*size;++xx)drawPixel(xx,yy,bg);
+ }
  std::vector<HostDraw> ops;
  std::vector<uint16_t> pixels=std::vector<uint16_t>(240*320);
  Adafruit_ILI9341(int8_t=-1,int8_t=-1,int8_t=-1){}

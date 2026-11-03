@@ -25,6 +25,12 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run.py
+      - name: Display clock character deltas and full-repaint fallbacks
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: |
+          python3 tests/rasterized/run_display_deltas.py --host
+          python3 tests/rasterized/run_display_deltas.py
       - name: Nested SPI transaction dispatch regression tests
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library

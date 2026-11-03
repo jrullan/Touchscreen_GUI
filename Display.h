@@ -55,10 +55,13 @@ private:
 		unsigned char font, length;
 		int16_t textX, textY;
 		uint16_t textW, textH;
+		Guitft::TextLayout layout;
 	} rendered;
 	bool renderedValid = false;
 	void render(bool force);
 	bool matchesRendered() const;
+	bool sameLayout() const;
+	bool drawCharacterDeltas();
 	void rememberRender();
 };
 #endif // !defined(EA_B5B4E3E3_B9E7_43df_9DCA_EF77F36BA339__INCLUDED_)

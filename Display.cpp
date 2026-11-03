@@ -102,6 +102,72 @@ void Display::deleteChar() {
 }
 bool Display::checkTouch(Point*) { return true; }
 void Display::show() { visible = true; update(); }
+bool Display::sameLayout() const {
+    const Guitft::TextLayout now = myCanvas->tft->textLayout();
+    return rendered.layout.font == now.font && rendered.layout.flags == now.flags &&
+        rendered.layout.width == now.width && rendered.layout.height == now.height;
+}
+bool Display::drawCharacterDeltas() {
+#if defined(__STM32F1__)
+    return false;
+#else
+    if (!renderedValid || !renderedText || !contents || !contents->text ||
+        !fontSize || !rendered.length || !(rendered.layout.flags & 1) ||
+        rendered.layout.font || !sameLayout() ||
+        rendered.canvas != myCanvas || rendered.driver != myCanvas->tft ||
+        rendered.x != x || rendered.y != y || rendered.w != w || rendered.h != h ||
+        rendered.borderWidth != borderWidth || rendered.bg != bgColor ||
+        rendered.fg != fgColor || rendered.border != borderColor ||
+        rendered.font != fontSize || rendered.length != contents->getTextSize()) return false;
+    // Keep eligibility arithmetic wide even on 16-bit-int targets. In
+    // particular, do not call Widget's native-int centering helpers until safe:
+    // offscreen geometry and length * cell width can overflow before rejection.
+    const int64_t wx = x, wy = y, ww = w, wh = h, border = borderWidth;
+    const int64_t cellWidth = int64_t(FONT_X) * fontSize;
+    const int64_t cellHeight = int64_t(FONT_Y) * fontSize;
+    const int64_t textWidth = cellWidth * rendered.length;
+    // Exactly Widget's centering formula, including truncation toward zero
+    // and the final +1; promoting after a native-int helper would be too late.
+    const int64_t textX = wx + (ww - textWidth) / 2 + 1;
+    const int64_t textY = wy + (wh - cellHeight) / 2 + 1;
+    const int64_t textRight = textX + textWidth;
+    const int64_t textBottom = textY + cellHeight;
+    if (border < 0 || ww <= 0 || wh <= 0 || wx < 0 || wy < 0 ||
+        wx + ww > rendered.layout.width || wy + wh > rendered.layout.height ||
+        textX < wx + border || textY < wy + border ||
+        textRight > wx + ww - border || textBottom > wy + wh - border ||
+        textX < 0 || textY < 0 || textRight > rendered.layout.width ||
+        textBottom > rendered.layout.height || rendered.textX != textX ||
+        rendered.textY != textY || rendered.textW != textWidth ||
+        rendered.textH != cellHeight) return false;
+    // Whole widget/cells now fit the signed-16-bit panel and committed footprint.
+    const int tx = int(textX), ty = int(textY);
+    const int cw = int(cellWidth), ch = int(cellHeight), right = int(textRight);
+    for (unsigned i = 0; i < rendered.length; ++i) {
+        // Control characters are layout operations, not fixed-width glyphs.
+        if ((unsigned char)contents->text[i] < 32 || (unsigned char)renderedText[i] < 32)
+            return false;
+    }
+    Guitft* tft = myCanvas->tft;
+    for (unsigned i = 0; i < rendered.length; ++i) {
+        if (contents->text[i] == renderedText[i]) continue;
+        // GFX treats equal colors as transparent. A solid cell is its exact
+        // opaque equivalent and also replaces the glyph's spacing column.
+        if ((uint16_t)fgColor == (uint16_t)bgColor)
+            tft->fillRect(tx + i * cw, ty, cw, ch, bgColor);
+        else
+            tft->drawChar(tx + i * cw, ty, (unsigned char)contents->text[i],
+                          fgColor, bgColor, fontSize);
+    }
+    // drawChar doesn't advance the cursor or establish print's text state.
+    // Match a whole drawString without touching shared font/wrap/encoding.
+    tft->setTextSize(fontSize);
+    tft->setTextColor(fgColor);
+    tft->setCursor(right, ty);
+    rememberRender();
+    return true;
+#endif
+}
 bool Display::matchesRendered() const {
     if (!renderedValid || !renderedText) return false;
     unsigned char length = contents ? contents->getTextSize() : 0;
@@ -109,13 +175,14 @@ bool Display::matchesRendered() const {
         rendered.x == x && rendered.y == y && rendered.w == w && rendered.h == h &&
         rendered.borderWidth == borderWidth && rendered.bg == bgColor &&
         rendered.fg == fgColor && rendered.border == borderColor &&
-        rendered.font == fontSize && rendered.length == length &&
+        rendered.font == fontSize && rendered.length == length && sameLayout() &&
         (!length || memcmp(renderedText, contents->text, length) == 0);
 }
 void Display::rememberRender() {
     unsigned char length = contents ? contents->getTextSize() : 0;
     rendered = {myCanvas, myCanvas->tft, x, y, w, h, borderWidth,
-                bgColor, fgColor, borderColor, fontSize, length, 0, 0, 0, 0};
+                bgColor, fgColor, borderColor, fontSize, length, 0, 0, 0, 0,
+                myCanvas->tft->textLayout()};
     if (length) {
         // Preserve Widget's origin, including its public fontSize==0 centering.
         // Guitft passes these through uint16_t to the driver's signed cursor.
@@ -133,6 +200,7 @@ void Display::rememberRender() {
 void Display::render(bool force) {
     if (!canDraw()) return;
     if (!force && matchesRendered()) return;
+    if (!force && drawCharacterDeltas()) return;
     const bool sameTarget = renderedValid && rendered.canvas == myCanvas &&
                             rendered.driver == myCanvas->tft;
     const bool moved = sameTarget && (rendered.x != x || rendered.y != y ||
