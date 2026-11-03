@@ -11,6 +11,8 @@ jobs:
         run: python3 tests/tools/test_check_arduino.py
       - name: Portable icon declarations and flash-storage regression tests
         run: python3 tests/tools/test_icons.py
+      - name: Optimized allocator calibration regression
+        run: python3 tests/tools/test_allocation_calibration.py
       - name: Address, undefined behavior and leak regression tests
         run: python3 tests/host/run.py
       - name: Actual bundled XPT2046 lifecycle, mapping and cache regressions
@@ -25,6 +27,12 @@ jobs:
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
         run: python3 tests/rasterized/run.py
+      - name: Display clock character deltas and full-repaint fallbacks
+        env:
+          ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library
+        run: |
+          python3 tests/rasterized/run_display_deltas.py --host
+          python3 tests/rasterized/run_display_deltas.py
       - name: Nested SPI transaction dispatch regression tests
         env:
           ADAFRUIT_GFX_DIR: ${{ github.workspace }}/.test-deps/Adafruit-GFX-Library

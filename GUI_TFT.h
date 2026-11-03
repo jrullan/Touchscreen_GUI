@@ -91,6 +91,28 @@ private:
 #endif
 public:
 
+	// Read, never change, the shared GFX font/wrap/encoding/rotation state.
+	// Unknown/legacy backends deliberately cannot prove classic-cell layout.
+	struct TextLayout {
+		const void* font;
+		uint8_t flags;
+		int16_t width, height;
+	};
+	TextLayout textLayout() const { return inspectTextLayout(this, 0); }
+private:
+#if !defined(__STM32F1__)
+	template<class Driver>
+	static auto inspectTextLayout(const Driver* d, int)
+		-> decltype(d->gfxFont, d->wrap, d->_cp437, d->rotation, TextLayout()) {
+		return {d->gfxFont, (uint8_t)(1 | (d->wrap ? 2 : 0) |
+		        (d->_cp437 ? 4 : 0) | (d->rotation << 3)), d->width(), d->height()};
+	}
+#endif
+	template<class Driver>
+	static TextLayout inspectTextLayout(const Driver* d, long) {
+		return {NULL, 0, d->width(), d->height()};
+	}
+public:
 	void drawString(char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor);
 	void drawString(const char *string,uint16_t poX, uint16_t poY,uint16_t size,uint16_t fgcolor)
 	{
