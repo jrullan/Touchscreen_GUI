@@ -4,6 +4,8 @@
 #include "allocation_hooks.h"
 #include <cassert>
 #include <cstdio>
+#include <cstdlib>
+#include <new>
 template<class Factory>
 static HostHeapStats measure(const char* name, Factory factory, std::size_t calls, std::size_t bytes) {
     host_heap_begin();
@@ -36,11 +38,20 @@ int main() {
     measure("Icon label default",[]{return IconButton(1,1,nullptr,nullptr,(char*)"Lamp");},3,textBytes+5);
     measure("Icon label None",[]{return IconButton(1,1,nullptr,nullptr,(char*)"Lamp",Policy::None);},1,5);
     // Calibrate each C route and ordinary C++ new/delete, not just nothrow Text.
+    // --wrap runs at link time, after the compiler's allocation-pair elision.
+    // Volatile function pointers make these calibration calls opaque, including
+    // operator new/delete: a volatile pointee alone does not prevent new elision.
+    decltype(&std::malloc) volatile callMalloc=&std::malloc;
+    decltype(&std::calloc) volatile callCalloc=&std::calloc;
+    decltype(&std::realloc) volatile callRealloc=&std::realloc;
+    decltype(&std::free) volatile callFree=&std::free;
+    void* (*volatile callNew)(std::size_t)=&::operator new;
+    void (*volatile callDelete)(void*)=&::operator delete;
     host_heap_begin();
-    void* p=malloc(7); assert(p && host_heap_stats().retained==7);
-    p=realloc(p,13); assert(p && host_heap_stats().retained==13);
-    free(p); p=calloc(3,5); assert(p && host_heap_stats().retained==15); free(p);
-    volatile int* integer=new int(4); assert(host_heap_stats().retained==sizeof(int)); delete integer;
+    void* p=callMalloc(7); assert(p && host_heap_stats().retained==7);
+    p=callRealloc(p,13); assert(p && host_heap_stats().retained==13);
+    callFree(p); p=callCalloc(3,5); assert(p && host_heap_stats().retained==15); callFree(p);
+    void* integer=callNew(sizeof(int)); assert(host_heap_stats().retained==sizeof(int)); callDelete(integer);
     assert(host_heap_stats().calls==4 && host_heap_stats().requested==7+13+15+sizeof(int));
     assert(host_heap_stats().retained==0); host_heap_end();
 }
